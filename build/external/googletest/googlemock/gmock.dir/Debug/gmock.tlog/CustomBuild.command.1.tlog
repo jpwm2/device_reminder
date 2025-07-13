@@ -1,0 +1,10 @@
+^C:\USERS\KOHSA\ONEDRIVE\DOCUMENTS\自己啓発活動\スマホ忘れ外出検知システム\開発\DEVICE_REMINDER\EXTERNAL\GOOGLETEST\GOOGLEMOCK\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder -BC:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build --check-stamp-file C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googlemock/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

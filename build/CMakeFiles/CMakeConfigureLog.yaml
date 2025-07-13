@@ -1,0 +1,457 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 7/13/2025 4:26:49 PM.
+      Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc142.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:02.85
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/3.31.8/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 7/13/2025 4:26:53 PM.
+      Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc142.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\3.31.8\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:02.63
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/3.31.8/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8mapl4"
+      binary: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8mapl4"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8mapl4'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe" cmTC_ef28a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 7/13/2025 4:26:57 PM.
+        Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mapl4\\cmTC_ef28a.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_ef28a.dir\\Debug\\".
+          Creating directory "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mapl4\\Debug\\".
+          Creating directory "cmTC_ef28a.dir\\Debug\\cmTC_ef28a.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_ef28a.dir\\Debug\\cmTC_ef28a.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ef28a.dir\\Debug\\\\" /Fd"cmTC_ef28a.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30146 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CMakeCCompilerABI.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_ef28a.dir\\Debug\\\\" /Fd"cmTC_ef28a.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mapl4\\Debug\\cmTC_ef28a.exe" /INCREMENTAL /ILK:"cmTC_ef28a.dir\\Debug\\cmTC_ef28a.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8mapl4/Debug/cmTC_ef28a.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8mapl4/Debug/cmTC_ef28a.lib" /MACHINE:X64  /machine:x64 cmTC_ef28a.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_ef28a.vcxproj -> C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mapl4\\Debug\\cmTC_ef28a.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_ef28a.dir\\Debug\\cmTC_ef28a.tlog\\unsuccessfulbuild".
+          Touching "cmTC_ef28a.dir\\Debug\\cmTC_ef28a.tlog\\cmTC_ef28a.lastbuildstate".
+        Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8mapl4\\cmTC_ef28a.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:02.85
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'C': C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the C compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.29.30146.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-k6apei"
+      binary: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-k6apei"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-k6apei'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe" cmTC_2acbb.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 7/13/2025 4:27:02 PM.
+        Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k6apei\\cmTC_2acbb.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_2acbb.dir\\Debug\\".
+          Creating directory "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k6apei\\Debug\\".
+          Creating directory "cmTC_2acbb.dir\\Debug\\cmTC_2acbb.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_2acbb.dir\\Debug\\cmTC_2acbb.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_2acbb.dir\\Debug\\\\" /Fd"cmTC_2acbb.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30146 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CMakeCXXCompilerABI.cpp
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_2acbb.dir\\Debug\\\\" /Fd"cmTC_2acbb.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k6apei\\Debug\\cmTC_2acbb.exe" /INCREMENTAL /ILK:"cmTC_2acbb.dir\\Debug\\cmTC_2acbb.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-k6apei/Debug/cmTC_2acbb.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-k6apei/Debug/cmTC_2acbb.lib" /MACHINE:X64  /machine:x64 cmTC_2acbb.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_2acbb.vcxproj -> C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k6apei\\Debug\\cmTC_2acbb.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_2acbb.dir\\Debug\\cmTC_2acbb.tlog\\unsuccessfulbuild".
+          Touching "cmTC_2acbb.dir\\Debug\\cmTC_2acbb.tlog\\cmTC_2acbb.lastbuildstate".
+        Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k6apei\\cmTC_2acbb.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:02.84
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.29.30146.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "external/googletest/googletest/cmake/internal_utils.cmake:66 (find_package)"
+      - "external/googletest/googletest/CMakeLists.txt:83 (config_compiler_and_linker)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8ulcta"
+      binary: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8ulcta"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-8ulcta'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe" cmTC_7529d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 7/13/2025 4:27:06 PM.
+        Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\cmTC_7529d.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7529d.dir\\Debug\\".
+          Creating directory "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\Debug\\".
+          Creating directory "cmTC_7529d.dir\\Debug\\cmTC_7529d.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7529d.dir\\Debug\\cmTC_7529d.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7529d.dir\\Debug\\\\" /Fd"cmTC_7529d.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\src.c"
+          Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30146 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          src.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7529d.dir\\Debug\\\\" /Fd"cmTC_7529d.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\src.c"
+        C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\src.c(1,10): fatal error C1083: include ファイルを開けません。'pthread.h':No such file or directory [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\cmTC_7529d.vcxproj]
+        Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\cmTC_7529d.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\cmTC_7529d.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\src.c(1,10): fatal error C1083: include ファイルを開けません。'pthread.h':No such file or directory [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8ulcta\\cmTC_7529d.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:02.21
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "external/googletest/googletest/cmake/internal_utils.cmake:66 (find_package)"
+      - "external/googletest/googletest/CMakeLists.txt:83 (config_compiler_and_linker)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-66nn4h"
+      binary: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-66nn4h"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-66nn4h'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe" cmTC_68ba0.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 7/13/2025 4:27:10 PM.
+        Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\cmTC_68ba0.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_68ba0.dir\\Debug\\".
+          Creating directory "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\Debug\\".
+          Creating directory "cmTC_68ba0.dir\\Debug\\cmTC_68ba0.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_68ba0.dir\\Debug\\cmTC_68ba0.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_68ba0.dir\\Debug\\\\" /Fd"cmTC_68ba0.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\CheckFunctionExists.c"
+          Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30146 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_68ba0.dir\\Debug\\\\" /Fd"cmTC_68ba0.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\CheckFunctionExists.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\Debug\\cmTC_68ba0.exe" /INCREMENTAL /ILK:"cmTC_68ba0.dir\\Debug\\cmTC_68ba0.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-66nn4h/Debug/cmTC_68ba0.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-66nn4h/Debug/cmTC_68ba0.lib" /MACHINE:X64  /machine:x64 cmTC_68ba0.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: ファイル 'pthreads.lib' を開くことができません。 [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\cmTC_68ba0.vcxproj]
+        Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\cmTC_68ba0.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\cmTC_68ba0.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: ファイル 'pthreads.lib' を開くことができません。 [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-66nn4h\\cmTC_68ba0.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:02.26
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "external/googletest/googletest/cmake/internal_utils.cmake:66 (find_package)"
+      - "external/googletest/googletest/CMakeLists.txt:83 (config_compiler_and_linker)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-b27rql"
+      binary: "C:/Users/kohsa/OneDrive/Documents/\u81ea\u5df1\u5553\u767a\u6d3b\u52d5/\u30b9\u30de\u30db\u5fd8\u308c\u5916\u51fa\u691c\u77e5\u30b7\u30b9\u30c6\u30e0/\u958b\u767a/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-b27rql"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-b27rql'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe" cmTC_33c62.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=16.0 /v:n
+        Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 7/13/2025 4:27:13 PM.
+        Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\cmTC_33c62.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_33c62.dir\\Debug\\".
+          Creating directory "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\Debug\\".
+          Creating directory "cmTC_33c62.dir\\Debug\\cmTC_33c62.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_33c62.dir\\Debug\\cmTC_33c62.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_33c62.dir\\Debug\\\\" /Fd"cmTC_33c62.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\CheckFunctionExists.c"
+          Microsoft(R) C/C++ Optimizing Compiler Version 19.29.30146 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          CheckFunctionExists.c
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_33c62.dir\\Debug\\\\" /Fd"cmTC_33c62.dir\\Debug\\vc142.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\CheckFunctionExists.c"
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\Debug\\cmTC_33c62.exe" /INCREMENTAL /ILK:"cmTC_33c62.dir\\Debug\\cmTC_33c62.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-b27rql/Debug/cmTC_33c62.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/CMakeFiles/CMakeScratch/TryCompile-b27rql/Debug/cmTC_33c62.lib" /MACHINE:X64  /machine:x64 cmTC_33c62.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: ファイル 'pthread.lib' を開くことができません。 [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\cmTC_33c62.vcxproj]
+        Done Building Project "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\cmTC_33c62.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\cmTC_33c62.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: ファイル 'pthread.lib' を開くことができません。 [C:\\Users\\kohsa\\OneDrive\\Documents\\自己啓発活動\\スマホ忘れ外出検知システム\\開発\\device_reminder\\build\\CMakeFiles\\CMakeScratch\\TryCompile-b27rql\\cmTC_33c62.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:02.32
+        
+      exitCode: 1
+...

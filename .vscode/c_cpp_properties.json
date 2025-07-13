@@ -1,0 +1,39 @@
+{
+    "configurations": [
+      {
+        "name": "Win32",
+        "includePath": [
+
+          "${workspaceFolder}/external/spdlog/include",
+          "${workspaceFolder}/external/di/include",
+          "${workspaceFolder}/external/googletest/googletest/include",
+          "${workspaceFolder}/external/googletest/googlemock/include",
+          "${workspaceFolder}/src",
+          "${workspaceFolder}/include",
+          "${workspaceFolder}/tests",
+          "${workspaceFolder}/**"
+        ],
+        "defines": [],
+        "compilerPath": "C:\\MinGW\\bin\\g++.exe", // または clang, MSVC などの自分のコンパイラ
+        "cppStandard": "c++20",
+        "intelliSenseMode": "gcc-x64"     // コンパイラに合わせる
+      },
+      {
+        "name": "Mac",
+        "includePath": [
+          "${workspaceFolder}/**",
+          "/usr/local/include",          // Homebrew や標準のインクルードパス
+          "/Library/Developer/CommandLineTools/usr/include/c++/v1",
+          "${workspaceFolder}/external/spdlog/include",
+          "${workspaceFolder}/external/di/include",
+          "${workspaceFolder}/external/**"
+        ],
+        "defines": [],
+        "compilerPath": "/usr/bin/clang",
+        "cppStandard": "c++20",
+        "intelliSenseMode": "macos-clang-x64"
+      }
+    ],
+    "version": 4
+  }
+  
