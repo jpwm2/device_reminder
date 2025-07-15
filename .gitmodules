@@ -1,0 +1,12 @@
+[submodule "external/external/googletest"]
+	path = external/external/googletest
+	url = https://github.com/google/googletest.git
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/google/googletest.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "external/di"]
+	path = external/di
+	url = https://github.com/boost-ext/di.git
