@@ -1,0 +1,1 @@
+/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/test_app.dir/tests/test_app.cpp.o CMakeFiles/test_app.dir/src/app.cpp.o -o test_app  lib/libgtest.a lib/libgmock.a lib/libgtest_main.a -lpthread lib/libgtest.a

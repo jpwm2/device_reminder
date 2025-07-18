@@ -1,33 +1,33 @@
-Start testing: Jul 13 16:30 Tokyo Standard Time
+Start testing: Jul 15 20:57 JST
 ----------------------------------------------------------
 1/1 Testing: AllTests
 1/1 Test: AllTests
-Command: "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/Debug/test_app.exe"
-Directory: C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build
-"AllTests" start time: Jul 13 16:30 Tokyo Standard Time
+Command: "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/test_app"
+Directory: /Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build
+"AllTests" start time: Jul 15 20:57 JST
 Output:
 ----------------------------------------------------------
-Running main() from C:\Users\kohsa\OneDrive\Documents\自己啓発活動\スマホ忘れ外出検知システム\開発\device_reminder\external\googletest\googletest\src\gtest_main.cc
+Running main() from /Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/external/googletest/googletest/src/gtest_main.cc
 [==========] Running 3 tests from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 3 tests from AppTest
 [ RUN      ] AppTest.Run_CallsAllProcessRunMethods
-[       OK ] AppTest.Run_CallsAllProcessRunMethods (1 ms)
+[       OK ] AppTest.Run_CallsAllProcessRunMethods (0 ms)
 [ RUN      ] AppTest.Run_LogsAndReturns1OnStdException
-[       OK ] AppTest.Run_LogsAndReturns1OnStdException (2 ms)
+[       OK ] AppTest.Run_LogsAndReturns1OnStdException (0 ms)
 [ RUN      ] AppTest.Run_LogsAndReturns2OnUnknownException
 [       OK ] AppTest.Run_LogsAndReturns2OnUnknownException (0 ms)
-[----------] 3 tests from AppTest (4 ms total)
+[----------] 3 tests from AppTest (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 3 tests from 1 test suite ran. (5 ms total)
+[==========] 3 tests from 1 test suite ran. (0 ms total)
 [  PASSED  ] 3 tests.
 <end of output>
-Test time =   0.10 sec
+Test time =   0.20 sec
 ----------------------------------------------------------
 Test Passed.
-"AllTests" end time: Jul 13 16:30 Tokyo Standard Time
+"AllTests" end time: Jul 15 20:57 JST
 "AllTests" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Jul 13 16:30 Tokyo Standard Time
+End testing: Jul 15 20:57 JST

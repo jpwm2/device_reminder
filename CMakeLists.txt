@@ -11,10 +11,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/tests
-    ${CMAKE_SOURCE_DIR}/main_process
-    ${CMAKE_SOURCE_DIR}/human_process
-    ${CMAKE_SOURCE_DIR}/bluetooth_process
-    ${CMAKE_SOURCE_DIR}/buzzer_process
+    ${CMAKE_SOURCE_DIR}/main_task
+    ${CMAKE_SOURCE_DIR}/human_task
+    ${CMAKE_SOURCE_DIR}/bluetooth_task
+    ${CMAKE_SOURCE_DIR}/buzzer_task
 )
 
 # app.cpp などもコンパイル対象に含める

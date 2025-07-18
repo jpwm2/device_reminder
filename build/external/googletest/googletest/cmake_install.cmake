@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/external/googletest/googletest
+# Install script for directory: /Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/external/googletest/googletest
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/device_reminder_test")
+  set(CMAKE_INSTALL_PREFIX "/usr/local")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -12,7 +12,7 @@ if(NOT DEFINED CMAKE_INSTALL_CONFIG_NAME)
     string(REGEX REPLACE "^[^A-Za-z0-9_]+" ""
            CMAKE_INSTALL_CONFIG_NAME "${BUILD_TYPE}")
   else()
-    set(CMAKE_INSTALL_CONFIG_NAME "Release")
+    set(CMAKE_INSTALL_CONFIG_NAME "")
   endif()
   message(STATUS "Install configuration: \"${CMAKE_INSTALL_CONFIG_NAME}\"")
 endif()
@@ -32,11 +32,16 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
+# Set path to fallback-tool for dependency-resolution.
+if(NOT DEFINED CMAKE_OBJDUMP)
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest/GTestTargets.cmake")
     file(DIFFERENT _cmake_export_file_changed FILES
          "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest/GTestTargets.cmake"
-         "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake")
+         "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake")
     if(_cmake_export_file_changed)
       file(GLOB _cmake_old_config_files "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest/GTestTargets-*.cmake")
       if(_cmake_old_config_files)
@@ -49,91 +54,50 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
     endif()
     unset(_cmake_export_file_changed)
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake")
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-debug.cmake")
-  endif()
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-minsizerel.cmake")
-  endif()
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-relwithdebinfo.cmake")
-  endif()
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-release.cmake")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake")
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^()$")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-noconfig.cmake")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/GTest" TYPE FILE FILES
-    "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/generated/GTestConfigVersion.cmake"
-    "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/generated/GTestConfig.cmake"
+    "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/generated/GTestConfigVersion.cmake"
+    "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/generated/GTestConfig.cmake"
     )
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/external/googletest/googletest/include/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/external/googletest/googletest/include/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/Debug/gtest.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/Release/gtest.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/MinSizeRel/gtest.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/RelWithDebInfo/gtest.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/lib/libgtest.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest.a")
+    execute_process(COMMAND "/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest.a")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/Debug/gtest_main.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/Release/gtest_main.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/MinSizeRel/gtest_main.lib")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/lib/RelWithDebInfo/gtest_main.lib")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/lib/libgtest_main.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest_main.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest_main.a")
+    execute_process(COMMAND "/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libgtest_main.a")
   endif()
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtestpdb_debug_postfix-NOTFOUND.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest.pdb")
-  endif()
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/generated/gtest.pc")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest_mainpdb_debug_postfix-NOTFOUND.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest_main.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest_main.pdb")
-  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE FILE OPTIONAL FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/bin/${CMAKE_INSTALL_CONFIG_NAME}/gtest_main.pdb")
-  endif()
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/generated/gtest.pc")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "gtest" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/generated/gtest_main.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/generated/gtest_main.pc")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "C:/Users/kohsa/OneDrive/Documents/自己啓発活動/スマホ忘れ外出検知システム/開発/device_reminder/build/external/googletest/googletest/install_local_manifest.txt"
+  file(WRITE "/Users/kohsaku/Library/CloudStorage/OneDrive-個人用/Documents/workspace/ローカル開発/device_reminder/build/external/googletest/googletest/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

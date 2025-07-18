@@ -3,15 +3,20 @@
       {
         "name": "Win32",
         "includePath": [
-
+          "${workspaceFolder}/**",
           "${workspaceFolder}/external/spdlog/include",
           "${workspaceFolder}/external/di/include",
           "${workspaceFolder}/external/googletest/googletest/include",
           "${workspaceFolder}/external/googletest/googlemock/include",
           "${workspaceFolder}/src",
+          "${workspaceFolder}/src/core",
+          "${workspaceFolder}/src/infra",
+          "${workspaceFolder}/include/core",
+          "${workspaceFolder}/include/infra",
           "${workspaceFolder}/include",
           "${workspaceFolder}/tests",
-          "${workspaceFolder}/**"
+          "${workspaceFolder}/tests/core",
+          "${workspaceFolder}/tests/infra"
         ],
         "defines": [],
         "compilerPath": "C:\\MinGW\\bin\\g++.exe", // または clang, MSVC などの自分のコンパイラ
@@ -22,11 +27,19 @@
         "name": "Mac",
         "includePath": [
           "${workspaceFolder}/**",
-          "/usr/local/include",          // Homebrew や標準のインクルードパス
-          "/Library/Developer/CommandLineTools/usr/include/c++/v1",
+          "${workspaceFolder}/src",
+          "${workspaceFolder}/src/core",
+          "${workspaceFolder}/src/infra",
+          "${workspaceFolder}/include/core",
+          "${workspaceFolder}/include/infra",
+          "${workspaceFolder}/include",
+          "${workspaceFolder}/tests",
+          "${workspaceFolder}/tests/core",
+          "${workspaceFolder}/tests/infra",
           "${workspaceFolder}/external/spdlog/include",
           "${workspaceFolder}/external/di/include",
-          "${workspaceFolder}/external/**"
+          "${workspaceFolder}/external/googletest/googletest/include",
+          "${workspaceFolder}/external/googletest/googlemock/include"
         ],
         "defines": [],
         "compilerPath": "/usr/bin/clang",
