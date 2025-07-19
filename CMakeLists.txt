@@ -9,7 +9,10 @@ add_subdirectory(external/googletest)
 # ヘッダーファイルのパス
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/core
+    ${CMAKE_SOURCE_DIR}/include/infra
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/tests
     ${CMAKE_SOURCE_DIR}/main_task
     ${CMAKE_SOURCE_DIR}/human_task
@@ -17,10 +20,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/buzzer_task
 )
 
-# app.cpp などもコンパイル対象に含める
+# テストコードと対象ソース
 add_executable(test_app
-    tests/test_app.cpp
-    src/app.cpp         # 必要に応じて他の cpp も追加
+    tests/core/test_app.cpp
+    src/core/app.cpp
 )
 
 # GoogleTestライブラリをリンク
