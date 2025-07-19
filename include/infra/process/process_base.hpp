@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "message_operator/thread_safe_queue.hpp"
 #include "message_operator/message_receiver.hpp"
 #include "worker_dispatcher/worker_dispatcher.hpp"
 
@@ -21,7 +20,6 @@ public:
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
 
-    std::shared_ptr<TSQueue<std::string>> queue_;   ///< 内部メッセージキュー
     std::unique_ptr<MessageReceiver>       receiver_;
     std::unique_ptr<WorkerDispatcher>      worker_;
 };
