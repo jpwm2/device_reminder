@@ -19,7 +19,7 @@ mqd_t open_or_create_queue(const std::string& name, long max_messages)
     mq_attr attr{};
     attr.mq_flags   = 0;
     attr.mq_maxmsg  = max_messages;
-    attr.mq_msgsize = static_cast<long>(sizeof(uint32_t));
+    attr.mq_msgsize = static_cast<long>(MESSAGE_SIZE);
     attr.mq_curmsgs = 0;
 
     mqd_t mq = mq_open(name.c_str(), O_WRONLY | O_CREAT, 0644, &attr);
@@ -36,7 +36,7 @@ mqd_t open_or_create_queue(const std::string& name, long max_messages)
 //--------------------------------------------------------------------
 MessageSender::MessageSender(const std::string& queue_name,
                              long               max_messages,
-                             std::shared_ptr<TSQueue<uint32_t>> q)
+                             std::shared_ptr<TSQueue<Message>> q)
     : queue_name_{queue_name},
       queue_{std::move(q)},
       mq_{open_or_create_queue(queue_name_, max_messages)}
@@ -49,7 +49,7 @@ MessageSender::~MessageSender()
     stop();
 }
 //--------------------------------------------------------------------
-bool MessageSender::enqueue(uint32_t msg)
+bool MessageSender::enqueue(const Message& msg)
 {
     if (!running_) return false;
     return queue_->push(msg);
@@ -68,7 +68,7 @@ void MessageSender::stop()
 //--------------------------------------------------------------------
 void MessageSender::run()
 {
-    uint32_t msg{};
+    Message msg{};
     while (running_) {
         if (!queue_->pop_wait(msg)) {
             // shutdown() でキューが閉じられた
@@ -76,7 +76,7 @@ void MessageSender::run()
         }
         if (mq_send(mq_,
                     reinterpret_cast<const char*>(&msg),
-                    sizeof(uint32_t),
+                    MESSAGE_SIZE,
                     /*prio=*/0) == -1)
         {
             // ポリシーに応じてリトライ／ドロップを選択可

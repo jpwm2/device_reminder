@@ -34,7 +34,7 @@ TimerService::~TimerService() {
     stop();
 }
 
-void TimerService::start(uint32_t ms, uint32_t timeout_msg) {
+void TimerService::start(uint32_t ms, Message timeout_msg) {
     stop();                         // 既存タイマーを殺してから再起動
     running_ = true;
     active_  = true;
@@ -47,7 +47,7 @@ void TimerService::stop() {
     active_ = false;
 }
 
-void TimerService::worker(uint32_t ms, uint32_t timeout_msg) {
+void TimerService::worker(uint32_t ms, Message timeout_msg) {
     int tfd = create_one_shot_timer_fd(ms);
     if (tfd == -1) {
         // 生成失敗時は即座にメッセージ送出して終了

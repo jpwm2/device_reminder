@@ -1,5 +1,5 @@
 #pragma once
-#include <cstdint>
+#include "message/message.hpp"
 #include <optional>
 
 namespace device_reminder {
@@ -7,17 +7,18 @@ namespace device_reminder {
 class IMessageQueue {
 public:
     virtual ~IMessageQueue() = default;
+    IMessageQueue() = default;
     IMessageQueue(const IMessageQueue&)            = delete;
     IMessageQueue& operator=(const IMessageQueue&) = delete;
 
     /// ブロッキング送信（成功で true）
-    virtual bool push(uint32_t msg) = 0;
+    virtual bool push(const Message& msg) = 0;
 
     /// ブロッキング受信（キューが閉じられていたら std::nullopt）
-    virtual std::optional<uint32_t> pop() = 0;
+    virtual std::optional<Message> pop() = 0;
 
     /// 受信値を out に格納（成功で true）
-    virtual bool pop(uint32_t& out) = 0;
+    virtual bool pop(Message& out) = 0;
 
     /// キューが有効なら true
     virtual bool is_open() const noexcept = 0;
