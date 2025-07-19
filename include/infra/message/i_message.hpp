@@ -2,7 +2,9 @@
 
 namespace device_reminder {
 
-// メッセージタイプ
+//--------------------------------------
+// 列挙: メッセージタイプ
+//--------------------------------------
 enum class MessageType {
     None,
     Timeout,
@@ -12,16 +14,18 @@ enum class MessageType {
     BuzzerOff
 };
 
-// メッセージの抽象インターフェース
+//--------------------------------------
+// 抽象クラス: IMessage
+//--------------------------------------
 class IMessage {
 public:
     virtual ~IMessage() = default;
 
-    // メッセージタイプを取得
-    virtual MessageType type() const = 0;
+    /// メッセージタイプを取得
+    virtual MessageType type() const noexcept = 0;
 
-    // ペイロードを取得
-    virtual bool payload() const = 0;
+    /// ペイロード（true/false）を取得
+    virtual bool payload() const noexcept = 0;
 };
 
 } // namespace device_reminder
