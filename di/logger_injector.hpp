@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logger.hpp"
-#include "i_logger.hpp"
+#include "infra/logger/logger.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <boost/di.hpp>
 #include <memory>
@@ -19,7 +19,7 @@ inline auto make_logger_injector() {
 
     // バインディングの束を返す（injectorは返さない）
     return std::tuple{
-        di::bind<ILogger>.to<Logger>(),
+        di::bind<ILogger>.to<SpdlogLogger>(),
         di::bind<std::shared_ptr<spdlog::logger>>.to(spd_logger).in(di::singleton)
     };
 }

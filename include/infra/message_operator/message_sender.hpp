@@ -1,7 +1,7 @@
 #pragma once
 
 #include "message_operator/i_message_sender.hpp"
-#include "concurrency/thread_safe_queue.hpp"
+#include "message_operator/thread_safe_queue.hpp"
 
 #include <atomic>
 #include <memory>
