@@ -1,13 +1,9 @@
 #pragma once
 
 #include "message_operator/i_message_sender.hpp"
-#include "message_operator/thread_safe_queue.hpp"
+#include "message_operator/message_queue.hpp"
 
-#include <atomic>
-#include <memory>
-#include <mqueue.h>
 #include <string>
-#include <thread>
 
 namespace device_reminder {
 
@@ -16,9 +12,7 @@ public:
     /// @param queue_name   POSIX メッセージキュー名（例: "/device_reminder_mq"）
     /// @param max_messages キューの最大蓄積メッセージ数（mq_attr::mq_maxmsg）
     explicit MessageSender(const std::string& queue_name,
-                           long               max_messages = 10,
-                           std::shared_ptr<TSQueue<uint32_t>> q =
-                               std::make_shared<TSQueue<uint32_t>>());
+                           long               max_messages = 10);
     ~MessageSender() override;
 
     /// IMessageSender
@@ -26,13 +20,8 @@ public:
     void stop() override;
 
 private:
-    void run();  // スレッド本体
-
-    std::string                     queue_name_;
-    std::shared_ptr<TSQueue<uint32_t>> queue_;
-    std::thread                     thread_;
-    std::atomic<bool>               running_{true};
-    mqd_t                           mq_{-1};
+    std::string     queue_name_;
+    MessageQueue    mq_;
 };
 
 } // namespace device_reminder

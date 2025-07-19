@@ -18,7 +18,7 @@ namespace device_reminder {
 class MessageReceiver : public IMessageReceiver {
 public:
     MessageReceiver(const std::string &mq_name,
-                    std::shared_ptr<IMessageQueue<uint32_t>> queue);
+                    std::shared_ptr<IMessageQueue> queue);
     ~MessageReceiver() override;
 
     void operator()() override;
@@ -34,7 +34,7 @@ private:
 
     mqd_t                                      mq_{};
     std::string                                mq_name_;
-    std::shared_ptr<IMessageQueue<uint32_t>>    queue_;
+    std::shared_ptr<IMessageQueue>             queue_;
     std::atomic<bool>                          running_{true};
 };
 
