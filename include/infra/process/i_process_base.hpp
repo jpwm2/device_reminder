@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "mesage_operator/i_message_queue.hpp"
+#include "message_operator/i_message_queue.hpp"
 
 /// 事前宣言 ― 依存インターフェース
 class IMessageQueue;

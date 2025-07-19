@@ -5,7 +5,7 @@
 #include "human_task/i_human_task.hpp"
 #include "bluetooth_task/i_bluetooth_task.hpp"
 #include "buzzer_task/i_buzzer_task.hpp"
-#include "logger/i_logger.hpp"
+#include "infra/logger/i_logger.hpp"
 
 namespace device_reminder {
 

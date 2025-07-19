@@ -34,7 +34,7 @@ void MessageReceiver::close_queue() {
 }
 
 MessageReceiver::MessageReceiver(const std::string &mq_name,
-                                 std::shared_ptr<IMessageQueue<uint32_t>> queue)
+                                 std::shared_ptr<IMessageQueue> queue)
     : mq_name_(mq_name), queue_(std::move(queue)) {
     mq_ = open_queue(mq_name_);
 }
