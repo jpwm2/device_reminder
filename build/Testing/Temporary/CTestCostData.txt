@@ -1,2 +1,3 @@
-AllTests 1 0.201193
+AllTests 1 0
 ---
+AllTests

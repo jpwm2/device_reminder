@@ -2,7 +2,7 @@
 
 #include "pir_driver/i_pir_driver.hpp"
 #include "gpio_driver/i_gpio_driver.hpp"
-#include "logger/logger.hpp" // ロガーのインターフェース（ILogger）を含むと仮定
+#include "infra/logger/logger.hpp" // ロガーのインターフェース（ILogger）を含むと仮定
 
 #include <string>
 
