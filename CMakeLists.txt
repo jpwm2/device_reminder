@@ -11,9 +11,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/core
     ${CMAKE_SOURCE_DIR}/include/infra
+    ${CMAKE_SOURCE_DIR}/include/infra/gpio_driver
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/tests
+    ${CMAKE_SOURCE_DIR}/tests/stubs
     ${CMAKE_SOURCE_DIR}/main_task
     ${CMAKE_SOURCE_DIR}/human_task
     ${CMAKE_SOURCE_DIR}/bluetooth_task
@@ -26,8 +28,21 @@ add_executable(test_app
     src/core/app.cpp
 )
 
+# GPIODriver tests
+add_executable(test_gpio_driver
+    tests/infra/test_gpio_driver.cpp
+    src/infra/gpio_driver.cpp
+    tests/stubs/gpiod_stub.cpp
+)
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
+    gtest
+    gmock
+    gtest_main
+)
+
+target_link_libraries(test_gpio_driver
     gtest
     gmock
     gtest_main
@@ -37,8 +52,13 @@ if(UNIX)
     target_link_libraries(test_app pthread)
 endif()
 
+if(UNIX)
+    target_link_libraries(test_gpio_driver pthread)
+endif()
+
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
+add_test(NAME GPIODriverTests COMMAND test_gpio_driver)
 
 
 # 動的ランタイム(MDd)に統一する
