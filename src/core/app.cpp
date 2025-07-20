@@ -18,7 +18,7 @@ int App::run() {
     try {
         main_task_->run(Message{});
         human_task_->run(Message{});
-        bluetooth_task_->run();
+        bluetooth_task_->run(Message{});
         buzzer_task_->run();
     } catch (const std::exception& e) {
         logger_->error(std::string("[App::run] std::exception caught: ") + e.what());

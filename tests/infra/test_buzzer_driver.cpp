@@ -2,9 +2,12 @@
 #include <gmock/gmock.h>
 
 #include "infra/buzzer_driver/buzzer_driver.hpp"
+#include "infra/gpio_driver/i_gpio_driver.hpp"
+#include <filesystem>
+#include <fstream>
 
 using namespace device_reminder;
-using ::testing::StrictMock;
+using ::testing::NiceMock;
 
 namespace {
 class MockLogger : public ILogger {
@@ -12,17 +15,46 @@ public:
     MOCK_METHOD(void, info, (const std::string&), (override));
     MOCK_METHOD(void, error, (const std::string&), (override));
 };
+class MockGPIO : public IGPIODriver {
+public:
+    MOCK_METHOD(void, openChip, (const std::string&), (override));
+    MOCK_METHOD(void, setupLine, (unsigned int), (override));
+    MOCK_METHOD(int, readLine, (), (override));
+    MOCK_METHOD(void, close, (), (override));
+};
 } // namespace
 
-TEST(BuzzerDriverTest, StartStopLogAndOutput) {
-    testing::internal::CaptureStdout();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
-    BuzzerDriver driver(logger);
-    EXPECT_CALL(*logger, info(testing::HasSubstr("Start Buzzer"))).Times(1);
-    driver.start_buzzer();
-    EXPECT_CALL(*logger, info(testing::HasSubstr("Stop Buzzer"))).Times(1);
-    driver.stop_buzzer();
-    std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_THAT(output, testing::HasSubstr("Start Buzzer"));
-    EXPECT_THAT(output, testing::HasSubstr("Stop Buzzer"));
+TEST(BuzzerDriverTest, StartStopWritesSysfs) {
+    namespace fs = std::filesystem;
+    fs::path base = fs::temp_directory_path() / "pwm_test";
+    fs::remove_all(base);
+    fs::create_directories(base / "pwmchip0" / "pwm0");
+    std::ofstream(base / "pwmchip0" / "export");
+    std::ofstream(base / "pwmchip0" / "unexport");
+    std::ofstream(base / "pwmchip0" / "pwm0" / "period");
+    std::ofstream(base / "pwmchip0" / "pwm0" / "duty_cycle");
+    std::ofstream(base / "pwmchip0" / "pwm0" / "enable");
+
+    NiceMock<MockGPIO> gpio;
+    EXPECT_CALL(gpio, openChip("/dev/gpiochip0"));
+    EXPECT_CALL(gpio, setupLine(18));
+    EXPECT_CALL(gpio, close());
+    NiceMock<MockLogger> logger;
+    BuzzerDriver driver(&gpio, &logger, "/dev/gpiochip0", 18, 261.63, 0.5, base.string());
+
+    std::string val;
+    std::ifstream(base / "pwmchip0" / "pwm0" / "enable") >> val;
+    EXPECT_EQ(val, "0");
+
+    EXPECT_TRUE(driver.start());
+    val.clear();
+    std::ifstream(base / "pwmchip0" / "pwm0" / "enable") >> val;
+    EXPECT_EQ(val, "1");
+
+    EXPECT_TRUE(driver.stop());
+    val.clear();
+    std::ifstream(base / "pwmchip0" / "pwm0" / "enable") >> val;
+    EXPECT_EQ(val, "0");
+
+    fs::remove_all(base);
 }

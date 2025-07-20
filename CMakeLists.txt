@@ -29,6 +29,7 @@ add_executable(test_app
     tests/core/test_main_task.cpp
     tests/core/test_human_task.cpp
     tests/core/test_buzzer_task.cpp
+    tests/core/test_bluetooth_task.cpp
     tests/infra/test_logger.cpp
     src/core/app.cpp
     src/core/main_task.cpp
@@ -37,6 +38,7 @@ add_executable(test_app
     src/core/human_task_handler.cpp
     src/core/buzzer_task.cpp
     src/core/buzzer_handler.cpp
+    src/core/bluetooth_task.cpp
 )
 
 # GPIODriver tests
@@ -64,6 +66,7 @@ add_executable(test_infra_extra
     src/infra/message_operator/message_sender.cpp
     src/infra/pir_driver.cpp
     src/infra/timer_service.cpp
+    src/infra/buzzer_driver.cpp
     src/infra/worker_dispatcher.cpp
     src/infra/bluetooth_driver.cpp
     tests/stubs/posix_mq_stub.cpp
