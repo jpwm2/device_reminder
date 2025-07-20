@@ -18,11 +18,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/human_task
     ${CMAKE_SOURCE_DIR}/bluetooth_task
     ${CMAKE_SOURCE_DIR}/buzzer_task
+    ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
 
 # テストコードと対象ソース
 add_executable(test_app
     tests/core/test_app.cpp
+    tests/infra/test_logger.cpp
     src/core/app.cpp
 )
 
