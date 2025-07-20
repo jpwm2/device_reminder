@@ -4,6 +4,7 @@
 
 #include "process/process_base.hpp"
 #include "message_operator/i_message_queue.hpp"
+#include "message_operator/local_message_queue.hpp"
 #include "interfaces/i_message_handler.hpp"
 #include "infra/logger/i_logger.hpp"
 
@@ -12,8 +13,9 @@ std::atomic<bool> ProcessBase::g_stop_flag{false};
 ProcessBase::ProcessBase(const std::string& mq_name,
                          std::shared_ptr<IMessageHandler> handler,
                          std::shared_ptr<ILogger> logger)
-    : receiver_{std::make_unique<MessageReceiver>(mq_name, nullptr)},
-      worker_  {std::make_unique<WorkerDispatcher>(0, handler, logger)},
+    : queue_{std::make_shared<LocalMessageQueue>(logger)},
+      receiver_{std::make_unique<MessageReceiver>(mq_name, queue_, logger)},
+      worker_  {std::make_unique<WorkerDispatcher>(queue_, handler, logger)},
       logger_(std::move(logger))
 {
     // Ctrl‑C (SIGINT) を捕捉して終了フラグを立てる
