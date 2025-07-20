@@ -11,6 +11,8 @@ enum class MessageType {
     HumanDetected,
     HumanDetectStart,
     HumanDetectStop,
+    StartScan,
+    DeviceScanResult,
     BluetoothEvent,
     BuzzerOn,
     BuzzerOff

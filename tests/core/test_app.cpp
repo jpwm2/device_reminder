@@ -11,8 +11,7 @@ namespace device_reminder {
 // 各プロセスのモッククラス
 class MockMainTask : public device_reminder::IMainTask {
 public:
-    MOCK_METHOD(void, run, (), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(void, run, (const device_reminder::IMessage& msg), (override));
 };
 
 class MockHumanTask : public device_reminder::IHumanTask {
@@ -61,7 +60,7 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
     auto* logger_ptr = logger.get();
 
     // 各 run メソッドが1回ずつ呼び出されることを期待
-    EXPECT_CALL(*main_ptr, run()).Times(1);
+    EXPECT_CALL(*main_ptr, run(testing::_)).Times(1);
     EXPECT_CALL(*human_ptr, run(testing::_)).Times(1);
     EXPECT_CALL(*bluetooth_ptr, run()).Times(1);
     EXPECT_CALL(*buzzer_ptr, run()).Times(1);
@@ -88,7 +87,7 @@ TEST(AppTest, Run_LogsAndReturns1OnStdException) {
     auto* logger_ptr = logger.get();
 
     // main_task の run が例外を投げる
-    EXPECT_CALL(*main, run()).WillOnce(testing::Throw(std::runtime_error("test error")));
+    EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(std::runtime_error("test error")));
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("test error")));
 
@@ -110,7 +109,7 @@ TEST(AppTest, Run_LogsAndReturns2OnUnknownException) {
     auto* logger_ptr = logger.get();
 
     // main_task の run が不明な例外を投げる
-    EXPECT_CALL(*main, run()).WillOnce(testing::Throw(42));  // 整数例外
+    EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(42));  // 整数例外
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("Unknown exception")));
 
