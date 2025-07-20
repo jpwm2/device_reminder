@@ -1,5 +1,6 @@
 #include "message_operator/message_receiver.hpp"
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <chrono>
 #include <cstring>
@@ -35,14 +36,17 @@ void MessageReceiver::close_queue() {
 }
 
 MessageReceiver::MessageReceiver(const std::string &mq_name,
-                                 std::shared_ptr<IMessageQueue> queue)
-    : mq_name_(mq_name), queue_(std::move(queue)) {
+                                 std::shared_ptr<IMessageQueue> queue,
+                                 std::shared_ptr<ILogger> logger)
+    : mq_name_(mq_name), queue_(std::move(queue)), logger_(std::move(logger)) {
     mq_ = open_queue(mq_name_);
+    if (logger_) logger_->info("MessageReceiver open: " + mq_name_);
 }
 
 MessageReceiver::~MessageReceiver() {
     stop();
     close_queue();
+    if (logger_) logger_->info("MessageReceiver destroyed");
 }
 
 void MessageReceiver::stop() {
@@ -56,6 +60,7 @@ void MessageReceiver::stop() {
         mq_send(sender, reinterpret_cast<const char *>(&dummy), kMsgSize, 0);
         mq_close(sender);
     }
+    if (logger_) logger_->info("MessageReceiver stop requested");
 }
 
 void MessageReceiver::operator()() {
@@ -65,13 +70,16 @@ void MessageReceiver::operator()() {
         if (n >= 0) {
             if (!running_) break;                 // stopped via dummy message
             if (queue_) queue_->push(msg);
+            if (logger_) logger_->info("MessageReceiver got message");
         } else if (errno == EINTR) {
             continue;                             // interrupted by a signal, retry
         } else {
             // Unexpected error – avoid busy looping
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            if (logger_) logger_->error("mq_receive error");
         }
     }
+    if (logger_) logger_->info("MessageReceiver loop end");
 }
 
 } // namespace device_reminder

@@ -2,6 +2,7 @@
 #include "timer_service/i_timer_service.hpp"
 #include "message_operator/i_message_sender.hpp"
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <atomic>
 #include <cstdint>
@@ -12,7 +13,8 @@ namespace device_reminder {
 
 class TimerService : public ITimerService {
 public:
-    explicit TimerService(std::shared_ptr<IMessageSender> sender);
+    explicit TimerService(std::shared_ptr<IMessageSender> sender,
+                          std::shared_ptr<ILogger> logger = nullptr);
     ~TimerService() override;
 
     void start(uint32_t milliseconds,
@@ -25,6 +27,7 @@ private:
                 Message timeout_msg);
 
     std::shared_ptr<IMessageSender> sender_;
+    std::shared_ptr<ILogger>        logger_;
     std::thread                     thread_;
     std::atomic<bool>               active_{false};
     std::atomic<bool>               running_{false};

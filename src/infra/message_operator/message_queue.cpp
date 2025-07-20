@@ -1,5 +1,6 @@
 #include "message_operator/message_queue.hpp"
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <cerrno>
 #include <cstring>
@@ -22,10 +23,13 @@ namespace {
 
 MessageQueue::MessageQueue(const std::string& name,
                            bool               create,
-                           size_t             max_messages)
+                           size_t             max_messages,
+                           std::shared_ptr<ILogger> logger)
     : name_{name}
     , owner_{create}
+    , logger_(std::move(logger))
 {
+    if (logger_) logger_->info("MessageQueue created: " + name_);
     if (name_.empty() || name_[0] != '/')
         throw std::invalid_argument("POSIX mq name must start with '/'");
 
@@ -44,13 +48,16 @@ MessageQueue::MessageQueue(const std::string& name,
         mq_ = ::mq_open(name_.c_str(), O_RDWR);
     }
 
-    if (mq_ == static_cast<mqd_t>(-1))
+    if (mq_ == static_cast<mqd_t>(-1)) {
+        if (logger_) logger_->error("mq_open failed");
         throw_errno("mq_open");
+    }
 }
 
 MessageQueue::~MessageQueue() {
     try   { close(); }
     catch (...) { /* 例外は投げない */ }
+    if (logger_) logger_->info("MessageQueue destroyed");
 }
 
 bool MessageQueue::is_open() const noexcept {
@@ -64,6 +71,7 @@ void MessageQueue::close() {
     ::mq_close(mq_);
     if (owner_) { ::mq_unlink(name_.c_str()); }
     mq_ = static_cast<mqd_t>(-1);
+    if (logger_) logger_->info("MessageQueue closed");
 }
 
 bool MessageQueue::push(const Message& msg) {
@@ -73,6 +81,7 @@ bool MessageQueue::push(const Message& msg) {
     if (::mq_send(mq_, reinterpret_cast<const char*>(&msg),
                   MESSAGE_SIZE, 0) == -1) {
         if (errno == EINTR) return push(msg);   // retry
+        if (logger_) logger_->error("mq_send failed");
         throw_errno("mq_send");
     }
     return true;
@@ -94,6 +103,7 @@ bool MessageQueue::pop(Message& out) {
 
     if (n == -1) {
         if (errno == EINTR) return pop(out);    // retry
+        if (logger_) logger_->error("mq_receive failed");
         throw_errno("mq_receive");
     }
     return true;
