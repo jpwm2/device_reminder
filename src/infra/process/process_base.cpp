@@ -7,7 +7,6 @@
 #include "message_operator/local_message_queue.hpp"
 #include "interfaces/i_message_handler.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "infra/message_codec/codec.hpp"
 
 std::atomic<bool> ProcessBase::g_stop_flag{false};
 
@@ -21,8 +20,7 @@ ProcessBase::ProcessBase(const std::string& mq_name,
           queue_,
           [handler](const Message& msg) {
               if (!handler) return;
-              auto raw = encode(msg);
-              handler->handle(std::string(raw.data(), raw.size()));
+              handler->handle(msg);
           },
           logger)},
       logger_(std::move(logger)),
