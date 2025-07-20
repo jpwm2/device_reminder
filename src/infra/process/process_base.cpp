@@ -4,6 +4,7 @@
 
 #include "process/process_base.hpp"
 #include "message_operator/i_message_queue.hpp"
+#include "message_operator/local_message_queue.hpp"
 #include "interfaces/i_message_handler.hpp"
 #include "infra/logger/i_logger.hpp"
 
@@ -17,6 +18,7 @@ ProcessBase::ProcessBase(const std::string& mq_name,
       worker_  {std::make_unique<WorkerDispatcher>(0, handler, logger)},
       logger_(std::move(logger)),
       priority_(priority)
+
 {
     // Ctrl‑C (SIGINT) を捕捉して終了フラグを立てる
     struct sigaction sa {};

@@ -24,6 +24,7 @@ public:
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
 
+    std::shared_ptr<IMessageQueue>         queue_;
     std::unique_ptr<MessageReceiver>       receiver_;
     std::unique_ptr<WorkerDispatcher>      worker_;
     std::shared_ptr<ILogger>               logger_;

@@ -2,13 +2,16 @@
 #include "message/message.hpp"
 #include "infra/logger/i_logger.hpp"
 
-#include <chrono>
-#include <thread>
+#include <utility>
 
 namespace device_reminder {
 
-WorkerDispatcher::WorkerDispatcher(key_t, MessageHandler handler, long, std::shared_ptr<ILogger> logger)
-    : handler_(std::move(handler)), logger_(std::move(logger)) {
+WorkerDispatcher::WorkerDispatcher(std::shared_ptr<IMessageQueue> queue,
+                                   MessageHandler handler,
+                                   std::shared_ptr<ILogger> logger)
+    : queue_(std::move(queue)),
+      handler_(std::move(handler)),
+      logger_(std::move(logger)) {
     if (logger_) logger_->info("WorkerDispatcher created");
 }
 
@@ -21,12 +24,14 @@ WorkerDispatcher::~WorkerDispatcher() {
 void WorkerDispatcher::start() {
     if (running_) return;
     running_ = true;
+    state_   = State::IDLE;
     thread_ = std::thread(&WorkerDispatcher::loop, this);
     if (logger_) logger_->info("WorkerDispatcher started");
 }
 
 void WorkerDispatcher::stop() {
     running_ = false;
+    if (queue_) queue_->close();
     if (logger_) logger_->info("WorkerDispatcher stop requested");
 }
 
@@ -36,9 +41,14 @@ void WorkerDispatcher::join() {
 
 void WorkerDispatcher::loop() {
     while (running_) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        if (handler_) handler_(Message{});
+        state_ = State::IDLE;
+        if (!queue_) break;
+        Message msg{};
+        if (!queue_->pop(msg)) break;   // closed
+        state_ = State::RUNNING;
+        if (handler_) handler_(msg);
     }
+    state_ = State::IDLE;
     if (logger_) logger_->info("WorkerDispatcher loop end");
 }
 

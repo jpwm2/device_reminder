@@ -5,24 +5,21 @@
 
 #include <atomic>
 #include <thread>
+#include "infra/message_operator/i_message_queue.hpp"
 
 namespace device_reminder {
 
 /**
- * @brief SysV メッセージキューを監視し、ハンドラへ通知するディスパッチャ
+ * @brief 指定されたメッセージキューを監視し、ハンドラへ通知するディスパッチャ
  */
 class WorkerDispatcher final : public IWorkerDispatcher {
 public:
     /**
-     * @param mq_key         msgget で使用するキー
-     * @param handler        受信後に呼ぶユーザハンドラ
-     * @param accepted_type  受信対象とする mtype（デフォルト 1）
-     *
-     * 例: WorkerDispatcher disp(ftok("/tmp", 'Q'), cb);
+     * @param queue   監視対象となるメッセージキュー
+     * @param handler メッセージ取得後に呼ばれるハンドラ
      */
-    WorkerDispatcher(key_t mq_key,
+    WorkerDispatcher(std::shared_ptr<IMessageQueue> queue,
                      MessageHandler handler,
-                     long accepted_type = 1,
                      std::shared_ptr<ILogger> logger = nullptr);
     ~WorkerDispatcher() override;
 
@@ -31,13 +28,15 @@ public:
     void join()  override;
     bool running() const noexcept override { return running_; }
 
+    enum class State { IDLE, RUNNING };
+    State state() const noexcept { return state_; }
 private:
     void loop();            // 受信ループ
 
-    int mq_id_ = -1;        // SysV MQ ID
-    long accepted_type_;    // msgrcv フィルタ
+    std::shared_ptr<IMessageQueue> queue_;
     MessageHandler handler_;
     std::shared_ptr<ILogger> logger_;
+    State                   state_{State::IDLE};
 
     std::thread thread_;
     std::atomic<bool> running_{false};
