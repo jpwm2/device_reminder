@@ -14,10 +14,12 @@ class ProcessBase : public IProcessBase {
 public:
     ProcessBase(const std::string& mq_name,
                 std::shared_ptr<IMessageHandler> handler,
-                std::shared_ptr<ILogger> logger);
+                std::shared_ptr<ILogger> logger,
+                int priority = 0);
 
     int  run()  override;  ///< メインループ
     void stop() override;  ///< 外部停止
+    int  priority() const noexcept override { return priority_; }
 
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
@@ -25,4 +27,5 @@ private:
     std::unique_ptr<MessageReceiver>       receiver_;
     std::unique_ptr<WorkerDispatcher>      worker_;
     std::shared_ptr<ILogger>               logger_;
+    int                                    priority_{0};
 };
