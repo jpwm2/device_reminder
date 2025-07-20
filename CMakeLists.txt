@@ -61,6 +61,7 @@ add_executable(test_infra_extra
     src/infra/message_operator/message_sender.cpp
     src/infra/pir_driver.cpp
     src/infra/timer_service.cpp
+    src/infra/buzzer_driver.cpp
     src/infra/worker_dispatcher.cpp
     src/infra/bluetooth_driver.cpp
     tests/stubs/posix_mq_stub.cpp

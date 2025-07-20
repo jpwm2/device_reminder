@@ -1,28 +1,44 @@
-// buzzer_driver_impl.hpp
 #pragma once
 #include "i_buzzer_driver.hpp"
 #include "infra/logger/i_logger.hpp"
-#include <iostream>
+#include "infra/gpio_driver/i_gpio_driver.hpp"
 #include <memory>
+#include <string>
 
 namespace device_reminder {
 
 class BuzzerDriver : public IBuzzerDriver {
 public:
-    explicit BuzzerDriver(std::shared_ptr<ILogger> logger)
-        : logger_(std::move(logger)) {}
+    BuzzerDriver(IGPIODriver* gpio,
+                 ILogger* logger = nullptr,
+                 std::string chip = "/dev/gpiochip0",
+                 unsigned int line = 18,
+                 double freq_hz = 261.63,
+                 double duty = 0.5,
+                 std::string sysfs_base = "/sys/class/pwm");
+    ~BuzzerDriver() override;
 
-    void start_buzzer() override {
-        if (logger_) logger_->info("Start Buzzer");
-        std::cout << "Start Buzzer\n";
-    }
-    void stop_buzzer() override {
-        if (logger_) logger_->info("Stop Buzzer");
-        std::cout << "Stop Buzzer\n";
-    }
+    bool start() override;
+    bool stop() override;
 
 private:
-    std::shared_ptr<ILogger> logger_;
+    bool exportPwm();
+    bool unexportPwm();
+    bool setFrequency(double hz);
+    bool setDutyCycle(double ratio);
+    bool enable(bool on);
+
+    std::string chipPath_;
+    std::string sysfsBase_;
+    unsigned int line_;
+    double freq_;
+    double duty_;
+    bool isOn_{false};
+    int pwmChip_;
+    int pwmChannel_;
+    unsigned int periodNs_{0};
+    IGPIODriver* gpio_;
+    ILogger* logger_;
 };
 
 } // namespace device_reminder
