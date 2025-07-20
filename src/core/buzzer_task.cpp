@@ -35,13 +35,13 @@ void BuzzerTask::onMessage(const IMessage& msg) {
 }
 
 void BuzzerTask::startBuzzer() {
-    if (driver_) driver_->start_buzzer();
+    if (driver_) driver_->start();
     if (timer_) timer_->start(kBuzzDurationMs, Message{MessageType::Timeout});
     state_ = State::Buzzing;
 }
 
 void BuzzerTask::stopBuzzer(bool cancelTimer) {
-    if (driver_) driver_->stop_buzzer();
+    if (driver_) driver_->stop();
     if (cancelTimer && timer_) timer_->stop();
     state_ = State::WaitStart;
 }
