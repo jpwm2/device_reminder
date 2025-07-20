@@ -6,7 +6,7 @@
 
 namespace device_reminder {
 
-using RawMsg = std::array<char, BASIC_MSG_SIZE>;
+using RawMsg = std::array<char, MESSAGE_SIZE>;
 
 inline RawMsg encode(const IMessage& m) {
     RawMsg raw{};
@@ -17,7 +17,7 @@ inline RawMsg encode(const IMessage& m) {
 }
 
 inline std::unique_ptr<IMessage> decode(const char* buf, size_t sz) {
-    if (sz != BASIC_MSG_SIZE) return {};
+    if (sz != MESSAGE_SIZE) return {};
     const auto* in = reinterpret_cast<const Message*>(buf);
     return std::make_unique<Message>(in->type_, in->payload_);
 }

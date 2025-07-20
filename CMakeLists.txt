@@ -40,6 +40,27 @@ add_executable(test_gpio_driver
     tests/stubs/gpiod_stub.cpp
 )
 
+# Additional infra tests
+add_executable(test_infra_extra
+    tests/infra/test_local_message_queue.cpp
+    tests/infra/test_message_queue.cpp
+    tests/infra/test_message_sender.cpp
+    tests/infra/test_message_receiver.cpp
+    tests/infra/test_pir_driver.cpp
+    tests/infra/test_timer_service.cpp
+    tests/infra/test_worker_dispatcher.cpp
+    tests/infra/test_buzzer_driver.cpp
+    tests/infra/test_message_codec.cpp
+    src/infra/local_message_queue.cpp
+    src/infra/message_operator/message_queue.cpp
+    src/infra/message_operator/message_receiver.cpp
+    src/infra/message_operator/message_sender.cpp
+    src/infra/pir_driver.cpp
+    src/infra/timer_service.cpp
+    src/infra/worker_dispatcher.cpp
+    tests/stubs/posix_mq_stub.cpp
+)
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
     gtest
@@ -48,6 +69,12 @@ target_link_libraries(test_app
 )
 
 target_link_libraries(test_gpio_driver
+    gtest
+    gmock
+    gtest_main
+)
+
+target_link_libraries(test_infra_extra
     gtest
     gmock
     gtest_main
@@ -61,9 +88,14 @@ if(UNIX)
     target_link_libraries(test_gpio_driver pthread)
 endif()
 
+if(UNIX)
+    target_link_libraries(test_infra_extra pthread rt)
+endif()
+
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIODriverTests COMMAND test_gpio_driver)
+add_test(NAME InfraExtraTests COMMAND test_infra_extra)
 
 
 # 動的ランタイム(MDd)に統一する

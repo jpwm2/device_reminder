@@ -6,6 +6,7 @@ namespace device_reminder {
 
 class IMessageQueue {
 public:
+    IMessageQueue() = default;
     virtual ~IMessageQueue() = default;
     IMessageQueue(const IMessageQueue&)            = delete;
     IMessageQueue& operator=(const IMessageQueue&) = delete;
