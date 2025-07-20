@@ -26,9 +26,12 @@ include_directories(
 # テストコードと対象ソース
 add_executable(test_app
     tests/core/test_app.cpp
+    tests/core/test_main_task.cpp
     tests/core/test_human_task.cpp
     tests/infra/test_logger.cpp
     src/core/app.cpp
+    src/core/main_task.cpp
+    src/core/main_task_handler.cpp
     src/core/human_task.cpp
     src/core/human_task_handler.cpp
 )

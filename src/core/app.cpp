@@ -16,7 +16,7 @@ App::App(std::unique_ptr<IMainTask> main_task,
 
 int App::run() {
     try {
-        main_task_->run();
+        main_task_->run(Message{});
         human_task_->run(Message{});
         bluetooth_task_->run();
         buzzer_task_->run();
