@@ -1,0 +1,20 @@
+#ifndef GPIOD_STUB_CTRL_H
+#define GPIOD_STUB_CTRL_H
+
+#include "gpiod.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void gpiod_stub_reset(void);
+void gpiod_stub_set_fail_chip_open(int val);
+void gpiod_stub_set_fail_get_line(int val);
+void gpiod_stub_set_request_input_result(int val);
+void gpiod_stub_set_get_value_result(int val);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // GPIOD_STUB_CTRL_H
