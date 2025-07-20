@@ -1,4 +1,5 @@
 #include "worker_dispatcher/worker_dispatcher.hpp"
+#include "message/message.hpp"
 
 #include <chrono>
 #include <thread>
@@ -30,7 +31,7 @@ void WorkerDispatcher::join() {
 void WorkerDispatcher::loop() {
     while (running_) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        if (handler_) handler_(0);
+        if (handler_) handler_(Message{});
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "timer_service/i_timer_service.hpp"
 #include "message_operator/i_message_sender.hpp"
+#include "message/message.hpp"
 
 #include <atomic>
 #include <cstdint>
@@ -15,13 +16,13 @@ public:
     ~TimerService() override;
 
     void start(uint32_t milliseconds,
-               uint32_t timeout_msg) override;
+               const Message& timeout_msg) override;
     void stop() override;
     bool active() const noexcept override { return active_; }
 
 private:
     void worker(uint32_t milliseconds,
-                uint32_t timeout_msg);
+                Message timeout_msg);
 
     std::shared_ptr<IMessageSender> sender_;
     std::thread                     thread_;

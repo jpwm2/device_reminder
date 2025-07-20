@@ -1,4 +1,5 @@
 #include "message_operator/message_queue.hpp"
+#include "message/message.hpp"
 
 #include <cerrno>
 #include <cstring>
@@ -32,7 +33,7 @@ MessageQueue::MessageQueue(const std::string& name,
         ::mq_attr attr{};
         attr.mq_flags   = 0;                       // ブロッキング
         attr.mq_maxmsg  = static_cast<long>(max_messages);
-        attr.mq_msgsize = static_cast<long>(sizeof(uint32_t));
+        attr.mq_msgsize = static_cast<long>(MESSAGE_SIZE);
         attr.mq_curmsgs = 0;
 
         mq_ = ::mq_open(name_.c_str(),
@@ -65,31 +66,31 @@ void MessageQueue::close() {
     mq_ = static_cast<mqd_t>(-1);
 }
 
-bool MessageQueue::push(uint32_t msg) {
+bool MessageQueue::push(const Message& msg) {
     std::lock_guard lk{mtx_};
     if (!is_open()) return false;
 
     if (::mq_send(mq_, reinterpret_cast<const char*>(&msg),
-                  sizeof(uint32_t), 0) == -1) {
+                  MESSAGE_SIZE, 0) == -1) {
         if (errno == EINTR) return push(msg);   // retry
         throw_errno("mq_send");
     }
     return true;
 }
 
-std::optional<uint32_t> MessageQueue::pop() {
-    uint32_t out{};
+std::optional<Message> MessageQueue::pop() {
+    Message out{};
     if (pop(out)) return out;
     return std::nullopt;
 }
 
-bool MessageQueue::pop(uint32_t& out) {
+bool MessageQueue::pop(Message& out) {
     std::lock_guard lk{mtx_};
     if (!is_open()) return false;
 
     ssize_t n = ::mq_receive(mq_,
                              reinterpret_cast<char*>(&out),
-                             sizeof(uint32_t), nullptr);
+                             MESSAGE_SIZE, nullptr);
 
     if (n == -1) {
         if (errno == EINTR) return pop(out);    // retry

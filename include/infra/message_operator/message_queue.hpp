@@ -1,5 +1,6 @@
 #pragma once
 #include "i_message_queue.hpp"
+#include "message/message.hpp"
 
 #include <mqueue.h>
 #include <mutex>
@@ -20,9 +21,9 @@ public:
 
     ~MessageQueue() override;
 
-    bool push(uint32_t msg) override;
-    std::optional<uint32_t> pop() override;
-    bool pop(uint32_t& out) override;
+    bool push(const Message& msg) override;
+    std::optional<Message> pop() override;
+    bool pop(Message& out) override;
 
     bool is_open() const noexcept override;
     void close() override;
