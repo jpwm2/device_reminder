@@ -15,7 +15,9 @@ enum class MessageType {
     DeviceScanResult,
     BluetoothEvent,
     BuzzerOn,
-    BuzzerOff
+    BuzzerOff,
+    BluetoothScanRequest,
+    DevicePresenceResponse
 };
 
 //--------------------------------------
