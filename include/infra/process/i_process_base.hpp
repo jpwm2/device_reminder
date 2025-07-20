@@ -26,4 +26,7 @@ public:
 
     /// 非同期に終了要求を出す（Ctrl‑C 以外でも停止できるように）
     virtual void stop() = 0;
+
+    /// 優先度を取得（値が小さいほど高優先）
+    virtual int priority() const noexcept = 0;
 };

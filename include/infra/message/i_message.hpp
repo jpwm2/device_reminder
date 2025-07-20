@@ -9,6 +9,8 @@ enum class MessageType {
     None,
     Timeout,
     HumanDetected,
+    HumanDetectStart,
+    HumanDetectStop,
     BluetoothEvent,
     BuzzerOn,
     BuzzerOff

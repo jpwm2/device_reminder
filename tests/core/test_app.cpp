@@ -17,8 +17,7 @@ public:
 
 class MockHumanTask : public device_reminder::IHumanTask {
 public:
-    MOCK_METHOD(void, run, (), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(void, run, (const device_reminder::IMessage& msg), (override));
 };
 
 class MockBluetoothTask : public device_reminder::IBluetoothTask {
@@ -63,7 +62,7 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
 
     // 各 run メソッドが1回ずつ呼び出されることを期待
     EXPECT_CALL(*main_ptr, run()).Times(1);
-    EXPECT_CALL(*human_ptr, run()).Times(1);
+    EXPECT_CALL(*human_ptr, run(testing::_)).Times(1);
     EXPECT_CALL(*bluetooth_ptr, run()).Times(1);
     EXPECT_CALL(*buzzer_ptr, run()).Times(1);
     EXPECT_CALL(*logger_ptr, info(testing::_)).Times(testing::AtLeast(1));

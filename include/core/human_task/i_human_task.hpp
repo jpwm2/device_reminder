@@ -8,8 +8,7 @@ class IHumanTask {
 public:
     virtual ~IHumanTask() = default;
 
-    virtual void run() = 0;
-    virtual bool send_message(const IMessage& msg) = 0;
+    virtual void run(const IMessage& msg) = 0;
 };
 
 } // namespace device_reminder

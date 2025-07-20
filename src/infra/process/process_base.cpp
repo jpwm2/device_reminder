@@ -12,11 +12,13 @@ std::atomic<bool> ProcessBase::g_stop_flag{false};
 
 ProcessBase::ProcessBase(const std::string& mq_name,
                          std::shared_ptr<IMessageHandler> handler,
-                         std::shared_ptr<ILogger> logger)
-    : queue_{std::make_shared<LocalMessageQueue>(logger)},
-      receiver_{std::make_unique<MessageReceiver>(mq_name, queue_, logger)},
-      worker_  {std::make_unique<WorkerDispatcher>(queue_, handler, logger)},
-      logger_(std::move(logger))
+                         std::shared_ptr<ILogger> logger,
+                         int priority)
+    : receiver_{std::make_unique<MessageReceiver>(mq_name, nullptr)},
+      worker_  {std::make_unique<WorkerDispatcher>(0, handler, logger)},
+      logger_(std::move(logger)),
+      priority_(priority)
+
 {
     // Ctrl‑C (SIGINT) を捕捉して終了フラグを立てる
     struct sigaction sa {};
