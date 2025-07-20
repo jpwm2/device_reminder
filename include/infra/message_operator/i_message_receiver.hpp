@@ -1,12 +1,11 @@
 #pragma once
 
-#include <cstdint>
 
 namespace device_reminder {
 
 /**
  * @brief Abstract interface for a message receiver working on its own thread.
- *        Implementations block waiting for incoming uint32_t messages and
+ *        Implementations block waiting for incoming Message objects and
  *        typically forward them to a thread‑safe queue or handler.
  */
 class IMessageReceiver {

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include "message/message.hpp"
 
 namespace device_reminder {
 
@@ -9,9 +10,9 @@ public:
 
     /// ワンショットタイマーを開始
     /// @param milliseconds  タイムアウトまでの時間 [ms]
-    /// @param timeout_msg   タイムアウト時に送信するメッセージ ID
+    /// @param timeout_msg   タイムアウト時に送信するメッセージ
     virtual void start(uint32_t milliseconds,
-                       uint32_t timeout_msg) = 0;
+                       const Message& timeout_msg) = 0;
 
     /// タイマー停止（起動していない場合は無視）
     virtual void stop() = 0;

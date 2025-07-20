@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
 #include <functional>
+#include "message/message.hpp"
 
 namespace device_reminder {
 
@@ -13,7 +13,7 @@ namespace device_reminder {
  */
 class IWorkerDispatcher {
 public:
-    using MessageHandler = std::function<void(uint32_t /* msg */)>;
+    using MessageHandler = std::function<void(const Message& /* msg */)>;
 
     virtual ~IWorkerDispatcher() = default;
 
