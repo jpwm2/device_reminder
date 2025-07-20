@@ -51,14 +51,14 @@ void MessageReceiver::stop() {
     // Wake the blocking mq_receive() by sending a dummy message.
     mqd_t sender = mq_open(mq_name_.c_str(), O_WRONLY);
     if (sender != static_cast<mqd_t>(-1)) {
-        uint32_t dummy = 0;
+        Message dummy{};
         mq_send(sender, reinterpret_cast<const char *>(&dummy), kMsgSize, 0);
         mq_close(sender);
     }
 }
 
 void MessageReceiver::operator()() {
-    uint32_t msg{};
+    Message msg{};
     while (running_) {
         ssize_t n = mq_receive(mq_, reinterpret_cast<char *>(&msg), kMsgSize, nullptr);
         if (n >= 0) {

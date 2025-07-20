@@ -2,6 +2,7 @@
 
 #include "message_operator/i_message_sender.hpp"
 #include "message_operator/message_queue.hpp"
+#include "message/message.hpp"
 
 #include <string>
 
@@ -16,7 +17,7 @@ public:
     ~MessageSender() override;
 
     /// IMessageSender
-    bool enqueue(uint32_t msg) override;
+    bool enqueue(const Message& msg) override;
     void stop() override;
 
 private:

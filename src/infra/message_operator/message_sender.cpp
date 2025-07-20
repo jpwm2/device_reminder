@@ -24,7 +24,7 @@ MessageSender::~MessageSender()
     stop();
 }
 //--------------------------------------------------------------------
-bool MessageSender::enqueue(uint32_t msg)
+bool MessageSender::enqueue(const Message& msg)
 {
     return mq_.push(msg);
 }
