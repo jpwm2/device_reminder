@@ -3,6 +3,8 @@
 #include "message_operator/i_message_sender.hpp"
 #include "message_operator/message_queue.hpp"
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
+#include <memory>
 
 #include <string>
 
@@ -13,7 +15,8 @@ public:
     /// @param queue_name   POSIX メッセージキュー名（例: "/device_reminder_mq"）
     /// @param max_messages キューの最大蓄積メッセージ数（mq_attr::mq_maxmsg）
     explicit MessageSender(const std::string& queue_name,
-                           long               max_messages = 10);
+                           long               max_messages = 10,
+                           std::shared_ptr<ILogger> logger = nullptr);
     ~MessageSender() override;
 
     /// IMessageSender
@@ -23,6 +26,7 @@ public:
 private:
     std::string     queue_name_;
     MessageQueue    mq_;
+    std::shared_ptr<ILogger> logger_;
 };
 
 } // namespace device_reminder

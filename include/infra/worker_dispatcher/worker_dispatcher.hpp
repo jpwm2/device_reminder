@@ -1,5 +1,7 @@
 #pragma once
 #include "worker_dispatcher/i_worker_dispatcher.hpp"
+#include "infra/logger/i_logger.hpp"
+#include <memory>
 
 #include <atomic>
 #include <thread>
@@ -20,7 +22,8 @@ public:
      */
     WorkerDispatcher(key_t mq_key,
                      MessageHandler handler,
-                     long accepted_type = 1);
+                     long accepted_type = 1,
+                     std::shared_ptr<ILogger> logger = nullptr);
     ~WorkerDispatcher() override;
 
     void start() override;
@@ -34,6 +37,7 @@ private:
     int mq_id_ = -1;        // SysV MQ ID
     long accepted_type_;    // msgrcv フィルタ
     MessageHandler handler_;
+    std::shared_ptr<ILogger> logger_;
 
     std::thread thread_;
     std::atomic<bool> running_{false};

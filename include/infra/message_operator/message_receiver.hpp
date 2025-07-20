@@ -3,6 +3,7 @@
 #include "message_operator/i_message_receiver.hpp"
 #include "message_operator/i_message_queue.hpp"   // forward declaration of the queue interface
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <mqueue.h>
 #include <atomic>
@@ -19,7 +20,8 @@ namespace device_reminder {
 class MessageReceiver : public IMessageReceiver {
 public:
     MessageReceiver(const std::string &mq_name,
-                    std::shared_ptr<IMessageQueue> queue);
+                    std::shared_ptr<IMessageQueue> queue,
+                    std::shared_ptr<ILogger> logger = nullptr);
     ~MessageReceiver() override;
 
     void operator()() override;
@@ -37,6 +39,7 @@ private:
     std::string                                mq_name_;
     std::shared_ptr<IMessageQueue>             queue_;
     std::atomic<bool>                          running_{true};
+    std::shared_ptr<ILogger>                   logger_;
 };
 
 } // namespace device_reminder

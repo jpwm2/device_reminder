@@ -1,4 +1,5 @@
 #include "timer_service/timer_service.hpp"
+#include "infra/logger/i_logger.hpp"
 
 #include <sys/timerfd.h>
 #include <poll.h>
@@ -27,11 +28,15 @@ int create_one_shot_timer_fd(uint32_t ms) {
 
 } // unnamed namespace
 
-TimerService::TimerService(std::shared_ptr<IMessageSender> sender)
-    : sender_(std::move(sender)) {}
+TimerService::TimerService(std::shared_ptr<IMessageSender> sender,
+                           std::shared_ptr<ILogger> logger)
+    : sender_(std::move(sender)), logger_(std::move(logger)) {
+    if (logger_) logger_->info("TimerService created");
+}
 
 TimerService::~TimerService() {
     stop();
+    if (logger_) logger_->info("TimerService destroyed");
 }
 
 void TimerService::start(uint32_t ms, const Message& timeout_msg) {
@@ -39,12 +44,14 @@ void TimerService::start(uint32_t ms, const Message& timeout_msg) {
     running_ = true;
     active_  = true;
     thread_  = std::thread(&TimerService::worker, this, ms, timeout_msg);
+    if (logger_) logger_->info("TimerService started");
 }
 
 void TimerService::stop() {
     running_ = false;
     if (thread_.joinable()) thread_.join();
     active_ = false;
+    if (logger_) logger_->info("TimerService stopped");
 }
 
 void TimerService::worker(uint32_t ms, Message timeout_msg) {
@@ -52,6 +59,7 @@ void TimerService::worker(uint32_t ms, Message timeout_msg) {
     if (tfd == -1) {
         // 生成失敗時は即座にメッセージ送出して終了
         if (sender_) sender_->enqueue(timeout_msg);
+        if (logger_) logger_->error("failed to create timerfd");
         active_ = false;
         return;
     }
@@ -67,11 +75,13 @@ void TimerService::worker(uint32_t ms, Message timeout_msg) {
             uint64_t expirations;
             ::read(tfd, &expirations, sizeof(expirations));  // カウンタ読み捨て
             if (sender_) sender_->enqueue(timeout_msg);      // タイムアウト通知
+            if (logger_) logger_->info("TimerService timeout");
             break;
         }
     }
     ::close(tfd);
     active_ = false;
+    if (logger_) logger_->info("TimerService worker exit");
 }
 
 } // namespace device_reminder

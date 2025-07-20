@@ -1,6 +1,8 @@
 #pragma once
 #include "i_message_queue.hpp"
 #include "message/message.hpp"
+#include "infra/logger/i_logger.hpp"
+#include <memory>
 
 #include <mqueue.h>
 #include <mutex>
@@ -17,7 +19,8 @@ public:
      */
     explicit MessageQueue(const std::string& name,
                           bool   create        = false,
-                          size_t max_messages  = 16);
+                          size_t max_messages  = 16,
+                          std::shared_ptr<ILogger> logger = nullptr);
 
     ~MessageQueue() override;
 
@@ -33,6 +36,7 @@ private:
     std::string name_;
     std::mutex  mtx_;
     bool        owner_{false};   ///< create==true だった場合に true
+    std::shared_ptr<ILogger> logger_;
 };
 
 } // namespace device_reminder
