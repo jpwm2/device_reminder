@@ -26,7 +26,7 @@ void BluetoothTask::run(const IMessage& msg) {
     bool detected = false;
     try {
         if (driver_) {
-            auto devices = driver_->scan_once(2.0);
+            auto devices = driver_->scan();
             detected = !devices.empty();
         }
     } catch (const std::exception& e) {
