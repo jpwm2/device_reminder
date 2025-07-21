@@ -1,37 +1,46 @@
 #include "bluetooth_driver/bluetooth_driver.hpp"
 
-#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+#include <vector>
 
 namespace device_reminder {
 
-BluetoothDriver::BluetoothDriver(std::shared_ptr<IBluetoothScanner> scanner,
-                                 std::shared_ptr<ILogger> logger)
-    : scanner_(std::move(scanner)), logger_(std::move(logger)) {}
+BluetoothDriver::BluetoothDriver(ILogger& logger)
+    : logger_{&logger} {}
 
-std::vector<DeviceInfo> BluetoothDriver::scan_once(double radius_m) {
-    std::lock_guard lk{mtx_};
-    if (!scanner_) throw BluetoothDriverError("scanner not initialized");
+std::vector<std::string> BluetoothDriver::scan() {
+    std::vector<std::string> result;
 
-    std::vector<AdvertisementInfo> advs;
-    try {
-        advs = scanner_->scan();
-    } catch (const std::exception& ex) {
-        throw BluetoothDriverError(ex.what());
+    FILE* pipe = popen("hcitool scan", "r");
+    if (!pipe) {
+        if (logger_) logger_->error("failed to run hcitool scan");
+        throw BluetoothDriverError("hcitool scan failed");
     }
 
-    std::vector<DeviceInfo> results;
-    for (const auto& adv : advs) {
-        int8_t txp = adv.tx_power.value_or(-59);
-        double dist = rssi_to_distance(adv.rssi, txp);
-        if (dist <= radius_m) {
-            results.push_back(DeviceInfo{adv.addr, adv.rssi, dist});
+    char line[256];
+    bool first = true;
+    while (fgets(line, sizeof(line), pipe)) {
+        std::string str{line};
+        if (first) { // skip header "Scanning ..."
+            first = false;
+            continue;
+        }
+        auto pos = str.find('\t');
+        if (pos == std::string::npos) continue;
+        std::string name = str.substr(pos + 1);
+        while (!name.empty() && (name.back() == '\n' || name.back() == '\r')) {
+            name.pop_back();
+        }
+        if (!name.empty()) {
+            result.push_back(name);
+            if (logger_) logger_->info("detected device: " + name);
         }
     }
-    return results;
-}
+    pclose(pipe);
 
-double BluetoothDriver::rssi_to_distance(int8_t rssi, int8_t tx_power, double n) {
-    return std::pow(10.0, (tx_power - rssi) / (10.0 * n));
+    return result;
 }
 
 } // namespace device_reminder

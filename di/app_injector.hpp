@@ -37,11 +37,6 @@ auto merge_injectors(Tuples&&... tuples) {
 
 inline auto make_app_injector() {
     auto logger = make_logger_injector();
-    // BluetoothScanner の実装が存在しないため、簡易スキャナを定義
-    struct DummyBluetoothScanner : IBluetoothScanner {
-        std::vector<AdvertisementInfo> scan() override { return {}; }
-    };
-
     auto core = std::tuple{
         di::bind<IMainTask>.to<MainTask>(),
         di::bind<IHumanTask>.to<HumanTask>(),
@@ -56,7 +51,6 @@ inline auto make_app_injector() {
         di::bind<IGPIODriver>.to<GPIODriver>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),
         di::bind<IPIRDriver>.to<PIRDriver>(),
-        di::bind<IBluetoothScanner>.to<DummyBluetoothScanner>(),
         di::bind<IBluetoothDriver>.to<BluetoothDriver>()
     };
 
