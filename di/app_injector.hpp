@@ -10,9 +10,9 @@
 #include "infra/gpio_driver/gpio_driver.hpp"
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
-#include "infra/message_operator/message_sender.hpp"
-#include "infra/message_operator/local_message_queue.hpp"
-#include "infra/message_operator/i_message_queue.hpp"
+#include "process_message_operation/process_message_sender.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
 
 #include <tuple>
 #include <boost/di.hpp>
@@ -43,10 +43,10 @@ inline auto make_app_injector() {
         di::bind<IBluetoothTask>.to<BluetoothTask>(),
         di::bind<IBuzzerTask>.to<BuzzerTask>(),
         di::bind<ITimerService>.to<TimerService>(),
-        di::bind<IMessageQueue>.to<LocalMessageQueue>(),
-        di::bind<IMessageSender>.to([](const std::shared_ptr<ILogger>& lg) {
+        di::bind<IThreadMessageQueue>.to<ThreadMessageQueue>(),
+        di::bind<IProcessMessageSender>.to([](const std::shared_ptr<ILogger>& lg) {
             static int id = 0;
-            return std::make_shared<MessageSender>("/devreminder_" + std::to_string(id++), 10, lg);
+            return std::make_shared<ProcessMessageSender>("/devreminder_" + std::to_string(id++), 10, lg);
         }),
         di::bind<IGPIODriver>.to<GPIODriver>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),

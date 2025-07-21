@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interfaces/i_message_handler.hpp"
-#include "infra/message/message.hpp"
+#include "infra/thread_message_operation/thread_message.hpp"
 #include "main_task/main_task.hpp"
 #include <memory>
 
@@ -12,7 +12,7 @@ public:
     explicit MainTaskHandler(std::shared_ptr<MainTask> task)
         : task_(std::move(task)) {}
 
-    void handle(const Message& msg) override;
+    void handle(const ThreadMessage& msg) override;
 
 private:
     std::shared_ptr<MainTask> task_;

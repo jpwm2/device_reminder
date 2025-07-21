@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
 
-#include "message_operator/i_message_queue.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
 
 /// 事前宣言 ― 依存インターフェース
-class IMessageQueue;
+class IThreadMessageQueue;
 class IMessageHandler;
 
 /**

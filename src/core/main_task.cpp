@@ -1,13 +1,13 @@
 #include "main_task/main_task.hpp"
-#include "message/message.hpp"
+#include "process_message_operation/process_message.hpp"
 
 namespace device_reminder {
 
 MainTask::MainTask(std::shared_ptr<ITimerService> det_timer,
                    std::shared_ptr<ITimerService> cooldown_timer,
-                   std::shared_ptr<IMessageSender> human_sender,
-                   std::shared_ptr<IMessageSender> bluetooth_sender,
-                   std::shared_ptr<IMessageSender> buzzer_sender,
+                   std::shared_ptr<IProcessMessageSender> human_sender,
+                   std::shared_ptr<IProcessMessageSender> bluetooth_sender,
+                   std::shared_ptr<IProcessMessageSender> buzzer_sender,
                    std::shared_ptr<ILogger> logger)
     : det_timer_(std::move(det_timer))
     , cooldown_timer_(std::move(cooldown_timer))
@@ -30,10 +30,10 @@ void MainTask::run(const IMessage& msg) {
         if (type == MessageType::HumanDetected) {
             if (det_timer_)
                 det_timer_->start(4000,
-                                  Message{MessageType::Timeout,
+                                  ProcessMessage{MessageType::Timeout,
                                           static_cast<bool>(TimerId::T_DET_TIMEOUT)});
             if (bluetooth_sender_)
-                bluetooth_sender_->enqueue(Message{MessageType::StartScan});
+                bluetooth_sender_->enqueue(ProcessMessage{MessageType::StartScan});
             state_ = State::WaitDeviceResponse;
             if (logger_) logger_->info("Human detected -> wait device response");
         }
@@ -42,15 +42,15 @@ void MainTask::run(const IMessage& msg) {
         if (type == MessageType::DeviceScanResult) {
             if (msg.payload()) {
                 if (human_sender_)
-                    human_sender_->enqueue(Message{MessageType::HumanDetectStart});
+                    human_sender_->enqueue(ProcessMessage{MessageType::HumanDetectStart});
                 if (buzzer_sender_)
-                    buzzer_sender_->enqueue(Message{MessageType::BuzzerOff});
+                    buzzer_sender_->enqueue(ProcessMessage{MessageType::BuzzerOff});
                 if (det_timer_ && det_timer_->active()) det_timer_->stop();
                 state_ = State::WaitHumanDetect;
             } else {
                 if (cooldown_timer_)
                     cooldown_timer_->start(1000,
-                                           Message{MessageType::Timeout,
+                                           ProcessMessage{MessageType::Timeout,
                                                    static_cast<bool>(TimerId::T_COOLDOWN)});
                 state_ = State::ScanCooldown;
             }
@@ -63,7 +63,7 @@ void MainTask::run(const IMessage& msg) {
         if (type == MessageType::Timeout) {
             if (msg.payload() == static_cast<bool>(TimerId::T_COOLDOWN)) {
                 if (bluetooth_sender_)
-                    bluetooth_sender_->enqueue(Message{MessageType::StartScan});
+                bluetooth_sender_->enqueue(ProcessMessage{MessageType::StartScan});
                 state_ = State::WaitDeviceResponse;
             } else if (msg.payload() == static_cast<bool>(TimerId::T_DET_TIMEOUT)) {
                 state_ = State::WaitHumanDetect;

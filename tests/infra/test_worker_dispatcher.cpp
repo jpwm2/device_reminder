@@ -2,17 +2,17 @@
 #include <gmock/gmock.h>
 
 #include "infra/worker_dispatcher/worker_dispatcher.hpp"
-#include "infra/message_operator/local_message_queue.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
 
 using namespace device_reminder;
 
 TEST(WorkerDispatcherTest, DispatchesMessage) {
-    auto queue = std::make_shared<LocalMessageQueue>();
-    Message received{};
+    auto queue = std::make_shared<ThreadMessageQueue>();
+    ThreadMessage received{};
     std::mutex m;
     std::condition_variable cv;
     bool got = false;
-    auto handler = [&](const Message& msg){
+    auto handler = [&](const ThreadMessage& msg){
         std::lock_guard lk(m);
         received = msg;
         got = true;
@@ -22,7 +22,7 @@ TEST(WorkerDispatcherTest, DispatchesMessage) {
     WorkerDispatcher disp(queue, handler);
     disp.start();
 
-    Message msg{MessageType::BuzzerOn, true};
+    ThreadMessage msg{MessageType::BuzzerOn, true};
     queue->push(msg);
 
     {

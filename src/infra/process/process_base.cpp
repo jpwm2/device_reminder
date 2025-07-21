@@ -3,8 +3,9 @@
 #include <thread>
 
 #include "process/process_base.hpp"
-#include "message_operator/i_message_queue.hpp"
-#include "message_operator/local_message_queue.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
+#include "process_message_operation/process_message_receiver.hpp"
 #include "interfaces/i_message_handler.hpp"
 #include "infra/logger/i_logger.hpp"
 
@@ -14,11 +15,11 @@ ProcessBase::ProcessBase(const std::string& mq_name,
                          std::shared_ptr<IMessageHandler> handler,
                          std::shared_ptr<ILogger> logger,
                          int priority)
-    : queue_{std::make_shared<LocalMessageQueue>(logger)},
-      receiver_{std::make_unique<MessageReceiver>(mq_name, queue_, logger)},
+    : queue_{std::make_shared<ThreadMessageQueue>(logger)},
+      receiver_{std::make_unique<ProcessMessageReceiver>(mq_name, queue_, logger)},
       worker_{std::make_unique<WorkerDispatcher>(
           queue_,
-          [handler](const Message& msg) {
+          [handler](const ThreadMessage& msg) {
               if (!handler) return;
               handler->handle(msg);
           },

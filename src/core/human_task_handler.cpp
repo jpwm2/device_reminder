@@ -2,7 +2,7 @@
 
 namespace device_reminder {
 
-void HumanTaskHandler::handle(const Message& msg) {
+void HumanTaskHandler::handle(const ThreadMessage& msg) {
     if (task_) task_->run(msg);
 }
 

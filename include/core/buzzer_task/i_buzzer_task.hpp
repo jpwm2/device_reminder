@@ -1,6 +1,6 @@
 #pragma once
 
-#include "message/i_message.hpp"
+#include "infra/i_message.hpp"
 
 namespace device_reminder {
 

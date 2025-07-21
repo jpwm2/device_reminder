@@ -1,12 +1,12 @@
-#include "message_operator/local_message_queue.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
 #include "infra/logger/i_logger.hpp"
 
 namespace device_reminder {
 
-LocalMessageQueue::LocalMessageQueue(std::shared_ptr<ILogger> logger)
+ThreadMessageQueue::ThreadMessageQueue(std::shared_ptr<ILogger> logger)
     : logger_(std::move(logger)) {}
 
-bool LocalMessageQueue::push(const Message& msg) {
+bool ThreadMessageQueue::push(const ThreadMessage& msg) {
     std::lock_guard lk{mtx_};
     if (!open_) return false;
     q_.push(msg);
@@ -14,13 +14,13 @@ bool LocalMessageQueue::push(const Message& msg) {
     return true;
 }
 
-std::optional<Message> LocalMessageQueue::pop() {
-    Message out{};
+std::optional<ThreadMessage> ThreadMessageQueue::pop() {
+    ThreadMessage out{};
     if (!pop(out)) return std::nullopt;
     return out;
 }
 
-bool LocalMessageQueue::pop(Message& out) {
+bool ThreadMessageQueue::pop(ThreadMessage& out) {
     std::unique_lock lk{mtx_};
     cv_.wait(lk, [this]{ return !q_.empty() || !open_; });
     if (q_.empty() && !open_) return false;
@@ -29,12 +29,12 @@ bool LocalMessageQueue::pop(Message& out) {
     return true;
 }
 
-bool LocalMessageQueue::is_open() const noexcept {
+bool ThreadMessageQueue::is_open() const noexcept {
     std::lock_guard lk{mtx_};
     return open_;
 }
 
-void LocalMessageQueue::close() {
+void ThreadMessageQueue::close() {
     {
         std::lock_guard lk{mtx_};
         open_ = false;

@@ -1,5 +1,5 @@
-#include "message_operator/message_receiver.hpp"
-#include "message/message.hpp"
+#include "process_message_operation/process_message_receiver.hpp"
+#include "thread_message_operation/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 
 #include <chrono>
@@ -12,9 +12,9 @@
 
 namespace device_reminder {
 
-mqd_t MessageReceiver::open_queue(const std::string &name) {
+mqd_t ProcessMessageReceiver::open_queue(const std::string &name) {
     struct mq_attr attr {};
-    attr.mq_flags   = 0;            // blocking mode
+    attr.mq_flags   = 0;
     attr.mq_maxmsg  = kMaxMsgs;
     attr.mq_msgsize = kMsgSize;
     attr.mq_curmsgs = 0;
@@ -27,7 +27,7 @@ mqd_t MessageReceiver::open_queue(const std::string &name) {
     return mqd;
 }
 
-void MessageReceiver::close_queue() {
+void ProcessMessageReceiver::close_queue() {
     if (mq_ != static_cast<mqd_t>(-1)) {
         mq_close(mq_);
         mq_unlink(mq_name_.c_str());
@@ -35,51 +35,49 @@ void MessageReceiver::close_queue() {
     }
 }
 
-MessageReceiver::MessageReceiver(const std::string &mq_name,
-                                 std::shared_ptr<IMessageQueue> queue,
-                                 std::shared_ptr<ILogger> logger)
+ProcessMessageReceiver::ProcessMessageReceiver(const std::string &mq_name,
+                                               std::shared_ptr<IThreadMessageQueue> queue,
+                                               std::shared_ptr<ILogger> logger)
     : mq_name_(mq_name), queue_(std::move(queue)), logger_(std::move(logger)) {
     mq_ = open_queue(mq_name_);
-    if (logger_) logger_->info("MessageReceiver open: " + mq_name_);
+    if (logger_) logger_->info("ProcessMessageReceiver open: " + mq_name_);
 }
 
-MessageReceiver::~MessageReceiver() {
+ProcessMessageReceiver::~ProcessMessageReceiver() {
     stop();
     close_queue();
-    if (logger_) logger_->info("MessageReceiver destroyed");
+    if (logger_) logger_->info("ProcessMessageReceiver destroyed");
 }
 
-void MessageReceiver::stop() {
+void ProcessMessageReceiver::stop() {
     if (!running_) return;
     running_ = false;
 
-    // Wake the blocking mq_receive() by sending a dummy message.
     mqd_t sender = mq_open(mq_name_.c_str(), O_WRONLY);
     if (sender != static_cast<mqd_t>(-1)) {
-        Message dummy{};
+        ProcessMessage dummy{};
         mq_send(sender, reinterpret_cast<const char *>(&dummy), kMsgSize, 0);
         mq_close(sender);
     }
-    if (logger_) logger_->info("MessageReceiver stop requested");
+    if (logger_) logger_->info("ProcessMessageReceiver stop requested");
 }
 
-void MessageReceiver::operator()() {
-    Message msg{};
+void ProcessMessageReceiver::operator()() {
+    ProcessMessage msg{};
     while (running_) {
         ssize_t n = mq_receive(mq_, reinterpret_cast<char *>(&msg), kMsgSize, nullptr);
         if (n >= 0) {
-            if (!running_) break;                 // stopped via dummy message
-            if (queue_) queue_->push(msg);
-            if (logger_) logger_->info("MessageReceiver got message");
+            if (!running_) break;
+            if (queue_) queue_->push(ThreadMessage{msg.type_, msg.payload_});
+            if (logger_) logger_->info("ProcessMessageReceiver got message");
         } else if (errno == EINTR) {
-            continue;                             // interrupted by a signal, retry
+            continue;
         } else {
-            // Unexpected error – avoid busy looping
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             if (logger_) logger_->error("mq_receive error");
         }
     }
-    if (logger_) logger_->info("MessageReceiver loop end");
+    if (logger_) logger_->info("ProcessMessageReceiver loop end");
 }
 
 } // namespace device_reminder
