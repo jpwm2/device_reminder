@@ -16,10 +16,10 @@ public:
     void set_formatter(std::unique_ptr<spdlog::formatter>) override {}
 };
 
-TEST(SpdlogLoggerTest, InfoOutputsToSink) {
+TEST(LoggerTest, InfoOutputsToSink) {
     auto sink = std::make_shared<StrictMock<MockSink>>();
     auto spdlogger = std::make_shared<spdlog::logger>("test", sink);
-    device_reminder::SpdlogLogger logger(spdlogger);
+    device_reminder::Logger logger(spdlogger);
 
     const std::string message = "info message";
 
@@ -30,10 +30,10 @@ TEST(SpdlogLoggerTest, InfoOutputsToSink) {
     logger.info(message);
 }
 
-TEST(SpdlogLoggerTest, ErrorOutputsToSink) {
+TEST(LoggerTest, ErrorOutputsToSink) {
     auto sink = std::make_shared<StrictMock<MockSink>>();
     auto spdlogger = std::make_shared<spdlog::logger>("test", sink);
-    device_reminder::SpdlogLogger logger(spdlogger);
+    device_reminder::Logger logger(spdlogger);
 
     const std::string message = "error message";
 

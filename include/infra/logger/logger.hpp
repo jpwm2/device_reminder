@@ -6,9 +6,9 @@
 
 namespace device_reminder {
 
-class SpdlogLogger : public ILogger {
+class Logger : public ILogger {
 public:
-    explicit SpdlogLogger(std::shared_ptr<spdlog::logger> logger)
+    explicit Logger(std::shared_ptr<spdlog::logger> logger)
         : logger_(std::move(logger)) {}
 
     void info(const std::string& msg) override {
