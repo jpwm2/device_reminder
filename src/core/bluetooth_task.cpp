@@ -1,13 +1,13 @@
 #include "bluetooth_task/bluetooth_task.hpp"
-#include "message/i_message.hpp"
+#include "infra/i_message.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/bluetooth_driver/i_bluetooth_driver.hpp"
-#include "infra/message_operator/i_message_sender.hpp"
+#include "process_message_operation/i_process_message_sender.hpp"
 
 namespace device_reminder {
 
 BluetoothTask::BluetoothTask(std::shared_ptr<IBluetoothDriver> driver,
-                             std::shared_ptr<IMessageSender> sender,
+                             std::shared_ptr<IProcessMessageSender> sender,
                              std::shared_ptr<ILogger> logger)
     : driver_(std::move(driver))
     , sender_(std::move(sender))
@@ -34,7 +34,7 @@ void BluetoothTask::run(const IMessage& msg) {
     }
 
     if (sender_) {
-        sender_->enqueue(Message{MessageType::DevicePresenceResponse, detected});
+        sender_->enqueue(ProcessMessage{MessageType::DevicePresenceResponse, detected});
     }
 
     state_ = State::WaitRequest;

@@ -54,15 +54,19 @@ add_executable(test_infra_extra
     tests/infra/test_message_queue.cpp
     tests/infra/test_message_sender.cpp
     tests/infra/test_message_receiver.cpp
+    tests/infra/test_thread_message_sender.cpp
+    tests/infra/test_thread_message_receiver.cpp
     tests/infra/test_pir_driver.cpp
     tests/infra/test_timer_service.cpp
     tests/infra/test_worker_dispatcher.cpp
     tests/infra/test_buzzer_driver.cpp
     tests/infra/test_bluetooth_driver.cpp
-    src/infra/local_message_queue.cpp
-    src/infra/message_operator/message_queue.cpp
-    src/infra/message_operator/message_receiver.cpp
-    src/infra/message_operator/message_sender.cpp
+    src/infra/thread_message_operation/thread_message_queue.cpp
+    src/infra/thread_message_operation/thread_message_sender.cpp
+    src/infra/thread_message_operation/thread_message_receiver.cpp
+    src/infra/process_message_operation/process_message_queue.cpp
+    src/infra/process_message_operation/process_message_receiver.cpp
+    src/infra/process_message_operation/process_message_sender.cpp
     src/infra/pir_driver.cpp
     src/infra/timer_service.cpp
     src/infra/buzzer_driver.cpp

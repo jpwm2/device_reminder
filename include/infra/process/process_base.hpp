@@ -7,7 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "message_operator/message_receiver.hpp"
+#include "process_message_operation/process_message_receiver.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
 #include "worker_dispatcher/worker_dispatcher.hpp"
 
 class ProcessBase : public IProcessBase {
@@ -24,8 +25,8 @@ public:
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
 
-    std::shared_ptr<IMessageQueue>         queue_;
-    std::unique_ptr<MessageReceiver>       receiver_;
+    std::shared_ptr<IThreadMessageQueue>   queue_;
+    std::unique_ptr<ProcessMessageReceiver> receiver_;
     std::unique_ptr<WorkerDispatcher>      worker_;
     std::shared_ptr<ILogger>               logger_;
     int                                    priority_{0};

@@ -1,12 +1,12 @@
 #include "worker_dispatcher/worker_dispatcher.hpp"
-#include "message/message.hpp"
+#include "thread_message_operation/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 
 #include <utility>
 
 namespace device_reminder {
 
-WorkerDispatcher::WorkerDispatcher(std::shared_ptr<IMessageQueue> queue,
+WorkerDispatcher::WorkerDispatcher(std::shared_ptr<IThreadMessageQueue> queue,
                                    MessageHandler handler,
                                    std::shared_ptr<ILogger> logger)
     : queue_(std::move(queue)),
@@ -43,7 +43,7 @@ void WorkerDispatcher::loop() {
     while (running_) {
         state_ = State::IDLE;
         if (!queue_) break;
-        Message msg{};
+        ThreadMessage msg{};
         if (!queue_->pop(msg)) break;   // closed
         state_ = State::RUNNING;
         if (handler_) handler_(msg);

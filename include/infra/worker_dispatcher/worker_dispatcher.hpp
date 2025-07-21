@@ -5,7 +5,7 @@
 
 #include <atomic>
 #include <thread>
-#include "infra/message_operator/i_message_queue.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
 
 namespace device_reminder {
 
@@ -18,7 +18,7 @@ public:
      * @param queue   監視対象となるメッセージキュー
      * @param handler メッセージ取得後に呼ばれるハンドラ
      */
-    WorkerDispatcher(std::shared_ptr<IMessageQueue> queue,
+    WorkerDispatcher(std::shared_ptr<IThreadMessageQueue> queue,
                      MessageHandler handler,
                      std::shared_ptr<ILogger> logger = nullptr);
     ~WorkerDispatcher() override;
@@ -33,7 +33,7 @@ public:
 private:
     void loop();            // 受信ループ
 
-    std::shared_ptr<IMessageQueue> queue_;
+    std::shared_ptr<IThreadMessageQueue> queue_;
     MessageHandler handler_;
     std::shared_ptr<ILogger> logger_;
     State                   state_{State::IDLE};

@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "message/message.hpp"
+#include "process_message_operation/process_message.hpp"
 
 namespace device_reminder {
 
@@ -12,7 +12,7 @@ public:
     /// @param milliseconds  タイムアウトまでの時間 [ms]
     /// @param timeout_msg   タイムアウト時に送信するメッセージ
     virtual void start(uint32_t milliseconds,
-                       const Message& timeout_msg) = 0;
+                       const ProcessMessage& timeout_msg) = 0;
 
     /// タイマー停止（起動していない場合は無視）
     virtual void stop() = 0;

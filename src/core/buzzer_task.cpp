@@ -1,5 +1,5 @@
 #include "buzzer_task/buzzer_task.hpp"
-#include "message/message.hpp"
+#include "process_message_operation/process_message.hpp"
 
 namespace device_reminder {
 
@@ -36,7 +36,7 @@ void BuzzerTask::onMessage(const IMessage& msg) {
 
 void BuzzerTask::startBuzzer() {
     if (driver_) driver_->start();
-    if (timer_) timer_->start(kBuzzDurationMs, Message{MessageType::Timeout});
+    if (timer_) timer_->start(kBuzzDurationMs, ProcessMessage{MessageType::Timeout});
     state_ = State::Buzzing;
 }
 

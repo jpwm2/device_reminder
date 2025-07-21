@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/message_operator/message_receiver.hpp"
-#include "infra/message_operator/local_message_queue.hpp"
+#include "process_message_operation/process_message_receiver.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <mqueue.h>
 #include <thread>
@@ -23,15 +23,15 @@ static std::string unique_name(const std::string& base) {
 
 TEST(MessageReceiverTest, ReceivesAndPushes) {
     std::string name = unique_name("receiver_test_");
-    auto queue = std::make_shared<LocalMessageQueue>();
+    auto queue = std::make_shared<ThreadMessageQueue>();
     MockLogger logger;
-    MessageReceiver receiver(name, queue, std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
+    ProcessMessageReceiver receiver(name, queue, std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
     std::thread th{std::ref(receiver)};
 
     mqd_t mq = mq_open(name.c_str(), O_WRONLY);
     ASSERT_NE(mq, static_cast<mqd_t>(-1));
-    Message msg{MessageType::BuzzerOn, true};
-    mq_send(mq, reinterpret_cast<const char*>(&msg), MESSAGE_SIZE, 0);
+    ProcessMessage msg{MessageType::BuzzerOn, true};
+    mq_send(mq, reinterpret_cast<const char*>(&msg), PROCESS_MESSAGE_SIZE, 0);
     mq_close(mq);
 
     auto res = queue->pop();

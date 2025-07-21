@@ -1,12 +1,12 @@
 #include "human_task/human_task.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "message/message.hpp"
+#include "process_message_operation/process_message.hpp"
 
 namespace device_reminder {
 
 HumanTask::HumanTask(std::shared_ptr<IPIRDriver> pir,
                      std::shared_ptr<ITimerService> timer,
-                     std::shared_ptr<IMessageSender> sender,
+                     std::shared_ptr<IProcessMessageSender> sender,
                      std::shared_ptr<ILogger> logger)
     : pir_(std::move(pir))
     , timer_(std::move(timer))
@@ -26,7 +26,7 @@ void HumanTask::run(const IMessage& msg) {
     switch (msg.type()) {
     case MessageType::HumanDetected:
         if (state_ == State::Detecting) {
-            if (sender_) sender_->enqueue(Message{MessageType::HumanDetected, true});
+            if (sender_) sender_->enqueue(ProcessMessage{MessageType::HumanDetected, true});
             if (logger_) logger_->info("Human detected");
         }
         break;
@@ -39,7 +39,7 @@ void HumanTask::run(const IMessage& msg) {
     case MessageType::HumanDetectStart:
         if (state_ == State::Stopped) {
             state_ = State::Cooldown;
-            if (timer_) timer_->start(5000, Message{MessageType::Timeout});
+            if (timer_) timer_->start(5000, ProcessMessage{MessageType::Timeout});
             if (logger_) logger_->info("Detection cooldown");
         }
         break;

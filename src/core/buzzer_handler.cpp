@@ -2,7 +2,7 @@
 
 namespace device_reminder {
 
-void BuzzerHandler::handle(const Message& msg) {
+void BuzzerHandler::handle(const ThreadMessage& msg) {
     if (task_) task_->send_message(msg);
 }
 

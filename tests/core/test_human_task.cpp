@@ -2,7 +2,8 @@
 #include <gmock/gmock.h>
 
 #include "human_task/human_task.hpp"
-#include "message/message.hpp"
+#include "process_message_operation/process_message.hpp"
+#include "process_message_operation/i_process_message_sender.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
@@ -16,14 +17,14 @@ public:
 
 class MockTimer : public ITimerService {
 public:
-    MOCK_METHOD(void, start, (uint32_t, const Message&), (override));
+    MOCK_METHOD(void, start, (uint32_t, const ProcessMessage&), (override));
     MOCK_METHOD(void, stop, (), (override));
     MOCK_METHOD(bool, active, (), (const, noexcept, override));
 };
 
-class MockSender : public IMessageSender {
+class MockSender : public IProcessMessageSender {
 public:
-    MOCK_METHOD(bool, enqueue, (const Message&), (override));
+    MOCK_METHOD(bool, enqueue, (const ProcessMessage&), (override));
     MOCK_METHOD(void, stop, (), (override));
 };
 
@@ -42,7 +43,7 @@ TEST(HumanTaskTest, StopRequestTransitionsToStopped) {
     HumanTask task(pir, timer, sender, logger);
     EXPECT_EQ(task.state(), HumanTask::State::Detecting);
 
-    task.run(Message{MessageType::HumanDetectStop});
+    task.run(ProcessMessage{MessageType::HumanDetectStop});
     EXPECT_EQ(task.state(), HumanTask::State::Stopped);
 }
 
@@ -53,10 +54,10 @@ TEST(HumanTaskTest, StartRequestStartsCooldown) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     HumanTask task(pir, timer, sender, logger);
-    task.run(Message{MessageType::HumanDetectStop});
+    task.run(ProcessMessage{MessageType::HumanDetectStop});
 
     EXPECT_CALL(*timer, start(testing::_, testing::_));
-    task.run(Message{MessageType::HumanDetectStart});
+    task.run(ProcessMessage{MessageType::HumanDetectStart});
     EXPECT_EQ(task.state(), HumanTask::State::Cooldown);
 }
 
@@ -67,11 +68,11 @@ TEST(HumanTaskTest, TimeoutReturnsToDetecting) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     HumanTask task(pir, timer, sender, logger);
-    task.run(Message{MessageType::HumanDetectStop});
-    task.run(Message{MessageType::HumanDetectStart});
+    task.run(ProcessMessage{MessageType::HumanDetectStop});
+    task.run(ProcessMessage{MessageType::HumanDetectStart});
     EXPECT_EQ(task.state(), HumanTask::State::Cooldown);
 
-    task.run(Message{MessageType::Timeout});
+    task.run(ProcessMessage{MessageType::Timeout});
     EXPECT_EQ(task.state(), HumanTask::State::Detecting);
 }
 
@@ -83,8 +84,8 @@ TEST(HumanTaskTest, HumanDetectedSendsMessage) {
 
     HumanTask task(pir, timer, sender, logger);
 
-    EXPECT_CALL(*sender, enqueue(testing::Field(&Message::type_, MessageType::HumanDetected)));
-    task.run(Message{MessageType::HumanDetected});
+    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::HumanDetected)));
+    task.run(ProcessMessage{MessageType::HumanDetected});
 }
 
 } // namespace device_reminder

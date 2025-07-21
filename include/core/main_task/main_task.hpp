@@ -1,9 +1,9 @@
 #pragma once
-#include "message/i_message.hpp"
+#include "infra/i_message.hpp"
 #include "main_task/i_main_task.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/timer_service/i_timer_service.hpp"
-#include "message_operator/i_message_sender.hpp"
+#include "process_message_operation/i_process_message_sender.hpp"
 #include <memory>
 
 namespace device_reminder {
@@ -15,9 +15,9 @@ public:
 
     MainTask(std::shared_ptr<ITimerService> det_timer,
              std::shared_ptr<ITimerService> cooldown_timer,
-             std::shared_ptr<IMessageSender> human_sender,
-             std::shared_ptr<IMessageSender> bluetooth_sender,
-             std::shared_ptr<IMessageSender> buzzer_sender,
+             std::shared_ptr<IProcessMessageSender> human_sender,
+             std::shared_ptr<IProcessMessageSender> bluetooth_sender,
+             std::shared_ptr<IProcessMessageSender> buzzer_sender,
              std::shared_ptr<ILogger> logger);
 
     ~MainTask();
@@ -28,9 +28,9 @@ public:
 private:
     std::shared_ptr<ITimerService> det_timer_;
     std::shared_ptr<ITimerService> cooldown_timer_;
-    std::shared_ptr<IMessageSender> human_sender_;
-    std::shared_ptr<IMessageSender> bluetooth_sender_;
-    std::shared_ptr<IMessageSender> buzzer_sender_;
+    std::shared_ptr<IProcessMessageSender> human_sender_;
+    std::shared_ptr<IProcessMessageSender> bluetooth_sender_;
+    std::shared_ptr<IProcessMessageSender> buzzer_sender_;
     std::shared_ptr<ILogger> logger_;
     State state_{State::WaitHumanDetect};
 };

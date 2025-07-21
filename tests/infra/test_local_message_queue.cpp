@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/message_operator/local_message_queue.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
 #include "infra/logger/i_logger.hpp"
 
 using namespace device_reminder;
@@ -14,9 +14,9 @@ public:
 };
 } // namespace
 
-TEST(LocalMessageQueueTest, PushPopWorks) {
-    LocalMessageQueue q;
-    Message m{MessageType::BuzzerOn, true};
+TEST(ThreadMessageQueueTest, PushPopWorks) {
+    ThreadMessageQueue q;
+    ThreadMessage m{MessageType::BuzzerOn, true};
     EXPECT_TRUE(q.push(m));
     auto res = q.pop();
     ASSERT_TRUE(res.has_value());
@@ -24,10 +24,10 @@ TEST(LocalMessageQueueTest, PushPopWorks) {
     EXPECT_EQ(res->payload_, m.payload_);
 }
 
-TEST(LocalMessageQueueTest, CloseMakesPopReturnFalse) {
-    LocalMessageQueue q;
+TEST(ThreadMessageQueueTest, CloseMakesPopReturnFalse) {
+    ThreadMessageQueue q;
     q.close();
     EXPECT_FALSE(q.is_open());
-    Message out{};
+    ThreadMessage out{};
     EXPECT_FALSE(q.pop(out));
 }

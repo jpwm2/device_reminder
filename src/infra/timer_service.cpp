@@ -28,7 +28,7 @@ int create_one_shot_timer_fd(uint32_t ms) {
 
 } // unnamed namespace
 
-TimerService::TimerService(std::shared_ptr<IMessageSender> sender,
+TimerService::TimerService(std::shared_ptr<IProcessMessageSender> sender,
                            std::shared_ptr<ILogger> logger)
     : sender_(std::move(sender)), logger_(std::move(logger)) {
     if (logger_) logger_->info("TimerService created");
@@ -39,7 +39,7 @@ TimerService::~TimerService() {
     if (logger_) logger_->info("TimerService destroyed");
 }
 
-void TimerService::start(uint32_t ms, const Message& timeout_msg) {
+void TimerService::start(uint32_t ms, const ProcessMessage& timeout_msg) {
     stop();                         // 既存タイマーを殺してから再起動
     running_ = true;
     active_  = true;
@@ -54,7 +54,7 @@ void TimerService::stop() {
     if (logger_) logger_->info("TimerService stopped");
 }
 
-void TimerService::worker(uint32_t ms, Message timeout_msg) {
+void TimerService::worker(uint32_t ms, ProcessMessage timeout_msg) {
     int tfd = create_one_shot_timer_fd(ms);
     if (tfd == -1) {
         // 生成失敗時は即座にメッセージ送出して終了

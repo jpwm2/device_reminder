@@ -2,7 +2,7 @@
 
 namespace device_reminder {
 
-void BluetoothTaskHandler::handle(const Message& msg) {
+void BluetoothTaskHandler::handle(const ThreadMessage& msg) {
     if (task_) task_->run(msg);
 }
 
