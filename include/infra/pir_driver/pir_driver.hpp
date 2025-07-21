@@ -10,8 +10,7 @@ namespace device_reminder {
 
 class PIRDriver : public IPIRDriver {
 public:
-    PIRDriver(IGPIODriver* gpio_driver, ILogger* logger,
-              unsigned int gpioLine = 17, const std::string& chipName = "/dev/gpiochip0");
+    PIRDriver(IGPIODriver* gpio_driver, ILogger* logger);
 
     ~PIRDriver() override;
 

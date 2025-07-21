@@ -3,21 +3,11 @@
 
 namespace device_reminder {
 
-PIRDriver::PIRDriver(IGPIODriver* gpio_driver, ILogger* logger,
-                     unsigned int gpioLine, const std::string& chipName)
+PIRDriver::PIRDriver(IGPIODriver* gpio_driver, ILogger* logger)
     : gpio_(gpio_driver), logger_(logger)
 {
-    try {
-        gpio_->openChip(chipName);
-        gpio_->setupLine(gpioLine);
-        if (logger_) {
-            logger_->info("PIRDriver initialized: line " + std::to_string(gpioLine));
-        }
-    } catch (const std::exception& ex) {
-        if (logger_) {
-            logger_->error("PIRDriver initialization failed: " + std::string(ex.what()));
-        }
-        throw; // 例外を呼び出し元に投げ返す
+    if (logger_) {
+        logger_->info("PIRDriver initialized");
     }
 }
 
@@ -25,12 +15,11 @@ PIRDriver::~PIRDriver() {
     if (logger_) {
         logger_->info("PIRDriver shutting down");
     }
-    gpio_->close(); // リソース解放
 }
 
 int PIRDriver::read() {
     try {
-        return gpio_->readLine();
+        return gpio_->read() ? 1 : 0;
     } catch (const std::exception& ex) {
         if (logger_) {
             logger_->error("Failed to read from PIR sensor: " + std::string(ex.what()));

@@ -17,10 +17,10 @@ public:
 };
 class MockGPIO : public IGPIODriver {
 public:
-    MOCK_METHOD(void, openChip, (const std::string&), (override));
-    MOCK_METHOD(void, setupLine, (unsigned int), (override));
-    MOCK_METHOD(int, readLine, (), (override));
-    MOCK_METHOD(void, close, (), (override));
+    MOCK_METHOD(void, write, (bool), (override));
+    MOCK_METHOD(bool, read, (), (override));
+    MOCK_METHOD(void, setEdge, (EdgeType), (override));
+    MOCK_METHOD(void, waitForEdge, (), (override));
 };
 } // namespace
 
@@ -36,9 +36,6 @@ TEST(BuzzerDriverTest, StartStopWritesSysfs) {
     std::ofstream(base / "pwmchip0" / "pwm0" / "enable");
 
     NiceMock<MockGPIO> gpio;
-    EXPECT_CALL(gpio, openChip("/dev/gpiochip0"));
-    EXPECT_CALL(gpio, setupLine(18));
-    EXPECT_CALL(gpio, close());
     NiceMock<MockLogger> logger;
     BuzzerDriver driver(&gpio, &logger, "/dev/gpiochip0", 18, 261.63, 0.5, base.string());
 
