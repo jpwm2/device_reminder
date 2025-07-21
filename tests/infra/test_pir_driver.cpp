@@ -11,10 +11,10 @@ using ::testing::StrictMock;
 namespace {
 class MockGPIO : public IGPIODriver {
 public:
-    MOCK_METHOD(void, openChip, (const std::string&), (override));
-    MOCK_METHOD(void, setupLine, (unsigned int), (override));
-    MOCK_METHOD(int, readLine, (), (override));
-    MOCK_METHOD(void, close, (), (override));
+    MOCK_METHOD(void, write, (bool), (override));
+    MOCK_METHOD(bool, read, (), (override));
+    MOCK_METHOD(void, setEdge, (EdgeType), (override));
+    MOCK_METHOD(void, waitForEdge, (), (override));
 };
 class MockLogger : public ILogger {
 public:
@@ -26,13 +26,10 @@ public:
 TEST(PIRDriverTest, InitCallsGPIO) {
     StrictMock<MockGPIO> gpio;
     StrictMock<MockLogger> logger;
-    EXPECT_CALL(gpio, openChip("/dev/gpiochip0"));
-    EXPECT_CALL(gpio, setupLine(17));
     EXPECT_CALL(logger, info(testing::_)).Times(testing::AtLeast(1));
-    EXPECT_CALL(gpio, close());
     {
-        PIRDriver driver(&gpio, &logger, 17, "/dev/gpiochip0");
-        EXPECT_CALL(gpio, readLine()).WillOnce(testing::Return(1));
+        PIRDriver driver(&gpio, &logger);
+        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(true));
         EXPECT_EQ(driver.read(), 1);
     }
 }

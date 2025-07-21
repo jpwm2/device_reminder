@@ -25,10 +25,6 @@ BuzzerDriver::BuzzerDriver(IGPIODriver* gpio,
       logger_(logger)
 {
     try {
-        if (gpio_) {
-            gpio_->openChip(chipPath_);
-            gpio_->setupLine(line_);
-        }
         if (logger_) logger_->info("BuzzerDriver created");
         exportPwm();
         setFrequency(freq_);
@@ -43,7 +39,6 @@ BuzzerDriver::BuzzerDriver(IGPIODriver* gpio,
 BuzzerDriver::~BuzzerDriver() {
     stop();
     unexportPwm();
-    if (gpio_) gpio_->close();
     if (logger_) logger_->info("BuzzerDriver destroyed");
 }
 
