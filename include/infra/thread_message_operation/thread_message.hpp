@@ -1,10 +1,10 @@
 #pragma once
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 #include <cstddef>
 
 namespace device_reminder {
 
-struct ThreadMessage final : public IMessage {
+struct ThreadMessage final : public IThreadMessage {
     constexpr ThreadMessage(MessageType t = MessageType::None,
                             bool p = false) noexcept
         : type_{t}, payload_{p} {}

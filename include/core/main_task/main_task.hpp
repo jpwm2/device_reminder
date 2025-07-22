@@ -1,5 +1,5 @@
 #pragma once
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 #include "main_task/i_main_task.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/timer_service/i_timer_service.hpp"
@@ -22,7 +22,7 @@ public:
 
     ~MainTask();
 
-    void run(const IMessage& msg) override;
+    void run(const IThreadMessage& msg) override;
     State state() const noexcept { return state_; }
 
 private:

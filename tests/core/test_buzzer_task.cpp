@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "buzzer_task/buzzer_task.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "thread_message_operation/thread_message.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
@@ -37,12 +37,12 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
 
     EXPECT_CALL(*driver, start());
     EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ProcessMessage{MessageType::BuzzerOn});
+    task.send_message(ThreadMessage{MessageType::BuzzerOn});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, stop());
     EXPECT_CALL(*timer, stop()).Times(0);
-    task.send_message(ProcessMessage{MessageType::Timeout});
+    task.send_message(ThreadMessage{MessageType::Timeout});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -55,11 +55,11 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
 
     EXPECT_CALL(*driver, start());
     EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ProcessMessage{MessageType::BuzzerOn});
+    task.send_message(ThreadMessage{MessageType::BuzzerOn});
 
     EXPECT_CALL(*driver, stop());
     EXPECT_CALL(*timer, stop());
-    task.send_message(ProcessMessage{MessageType::BuzzerOff});
+    task.send_message(ThreadMessage{MessageType::BuzzerOff});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -72,10 +72,10 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
 
     EXPECT_CALL(*driver, start());
     EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ProcessMessage{MessageType::BuzzerOn});
+    task.send_message(ThreadMessage{MessageType::BuzzerOn});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    task.send_message(ProcessMessage{MessageType::BuzzerOn});
+    task.send_message(ThreadMessage{MessageType::BuzzerOn});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 

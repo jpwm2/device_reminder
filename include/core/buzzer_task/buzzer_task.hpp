@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 #include "buzzer_task/i_buzzer_task.hpp"
 #include "infra/buzzer_driver/i_buzzer_driver.hpp"
 #include "infra/timer_service/i_timer_service.hpp"
@@ -20,9 +20,9 @@ public:
                std::shared_ptr<ILogger> logger = nullptr);
 
     void run() override {}
-    bool send_message(const IMessage& msg) override;
+    bool send_message(const IThreadMessage& msg) override;
 
-    void onMessage(const IMessage& msg);
+    void onMessage(const IThreadMessage& msg);
     State state() const noexcept { return state_; }
 
 private:

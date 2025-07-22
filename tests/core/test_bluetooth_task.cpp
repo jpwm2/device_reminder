@@ -4,7 +4,7 @@
 #include "bluetooth_task/bluetooth_task.hpp"
 #include "infra/bluetooth_driver/i_bluetooth_driver.hpp"
 #include "process_message_operation/i_process_message_sender.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "thread_message_operation/thread_message.hpp"
 
 using namespace std;
 
@@ -46,7 +46,7 @@ TEST(BluetoothTaskTest, SendsDetectedTrueWhenDeviceFound) {
 
     driver->names = {"phone"};
 
-    task.run(ProcessMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, true);
@@ -60,7 +60,7 @@ TEST(BluetoothTaskTest, SendsDetectedFalseWhenNoDevice) {
     BluetoothTask task(driver, sender, logger);
 
     driver->names = {};
-    task.run(ProcessMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, false);
@@ -74,7 +74,7 @@ TEST(BluetoothTaskTest, DriverErrorLogsAndSendsFalse) {
     BluetoothTask task(driver, sender, logger);
 
     driver->fail = true;
-    task.run(ProcessMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, false);

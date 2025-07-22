@@ -2,13 +2,14 @@
 #include "infra/thread_message_operation/i_message_queue.hpp"
 #include "infra/thread_message_operation/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/thread_message_operation/i_thread_message_receiver.hpp"
 #include <functional>
 #include <memory>
 #include <atomic>
 
 namespace device_reminder {
 
-class ThreadMessageReceiver {
+class ThreadMessageReceiver : public IThreadMessageReceiver {
 public:
     using MessageHandler = std::function<void(const ThreadMessage&)>;
 

@@ -1,5 +1,5 @@
 #include "bluetooth_task/bluetooth_task.hpp"
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/bluetooth_driver/i_bluetooth_driver.hpp"
 #include "process_message_operation/i_process_message_sender.hpp"
@@ -19,7 +19,7 @@ BluetoothTask::~BluetoothTask() {
     if (logger_) logger_->info("BluetoothTask destroyed");
 }
 
-void BluetoothTask::run(const IMessage& msg) {
+void BluetoothTask::run(const IThreadMessage& msg) {
     if (msg.type() != MessageType::BluetoothScanRequest) return;
 
     state_ = State::Scanning;
@@ -40,7 +40,7 @@ void BluetoothTask::run(const IMessage& msg) {
     state_ = State::WaitRequest;
 }
 
-bool BluetoothTask::send_message(const IMessage& msg) {
+bool BluetoothTask::send_message(const IThreadMessage& msg) {
     run(msg);
     return true;
 }

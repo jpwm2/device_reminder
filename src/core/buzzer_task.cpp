@@ -13,12 +13,12 @@ BuzzerTask::BuzzerTask(std::shared_ptr<IBuzzerDriver> driver,
     if (logger_) logger_->info("BuzzerTask created");
 }
 
-bool BuzzerTask::send_message(const IMessage& msg) {
+bool BuzzerTask::send_message(const IThreadMessage& msg) {
     onMessage(msg);
     return true;
 }
 
-void BuzzerTask::onMessage(const IMessage& msg) {
+void BuzzerTask::onMessage(const IThreadMessage& msg) {
     switch (msg.type()) {
     case MessageType::BuzzerOn:
         if (state_ == State::WaitStart) startBuzzer();
