@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "main_task/main_task.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "thread_message_operation/thread_message.hpp"
 #include "process_message_operation/i_process_message_sender.hpp"
 
 using ::testing::StrictMock;
@@ -42,7 +42,7 @@ TEST(MainTaskTest, HumanDetectedStartsScanAndTimer) {
     EXPECT_CALL(*det_timer, start(4000, testing::Field(&ProcessMessage::payload_, true)));
     EXPECT_CALL(*bt_sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::StartScan)));
 
-    task.run(ProcessMessage{MessageType::HumanDetected});
+    task.run(ThreadMessage{MessageType::HumanDetected});
     EXPECT_EQ(task.state(), MainTask::State::WaitDeviceResponse);
 }
 
@@ -56,14 +56,14 @@ TEST(MainTaskTest, DeviceDetectedStopsTimerAndNotifies) {
 
     MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
 
-    task.run(ProcessMessage{MessageType::HumanDetected});
+    task.run(ThreadMessage{MessageType::HumanDetected});
 
     EXPECT_CALL(*human_sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::HumanDetectStart)));
     EXPECT_CALL(*buzzer_sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::BuzzerOff)));
     EXPECT_CALL(*det_timer, active()).WillOnce(testing::Return(true));
     EXPECT_CALL(*det_timer, stop());
 
-    task.run(ProcessMessage{MessageType::DeviceScanResult, true});
+    task.run(ThreadMessage{MessageType::DeviceScanResult, true});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 
@@ -76,10 +76,10 @@ TEST(MainTaskTest, DeviceNotDetectedStartsCooldown) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ProcessMessage{MessageType::HumanDetected});
+    task.run(ThreadMessage{MessageType::HumanDetected});
 
     EXPECT_CALL(*cd_timer, start(1000, testing::Field(&ProcessMessage::payload_, false)));
-    task.run(ProcessMessage{MessageType::DeviceScanResult, false});
+    task.run(ThreadMessage{MessageType::DeviceScanResult, false});
     EXPECT_EQ(task.state(), MainTask::State::ScanCooldown);
 }
 
@@ -92,11 +92,11 @@ TEST(MainTaskTest, CooldownTimeoutRestartsScan) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ProcessMessage{MessageType::HumanDetected});
-    task.run(ProcessMessage{MessageType::DeviceScanResult, false});
+    task.run(ThreadMessage{MessageType::HumanDetected});
+    task.run(ThreadMessage{MessageType::DeviceScanResult, false});
 
     EXPECT_CALL(*bt_sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::StartScan)));
-    task.run(ProcessMessage{MessageType::Timeout, false});
+    task.run(ThreadMessage{MessageType::Timeout, false});
     EXPECT_EQ(task.state(), MainTask::State::WaitDeviceResponse);
 }
 
@@ -109,9 +109,9 @@ TEST(MainTaskTest, DetectionTimeoutReturnsToWaitHuman) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ProcessMessage{MessageType::HumanDetected});
+    task.run(ThreadMessage{MessageType::HumanDetected});
 
-    task.run(ProcessMessage{MessageType::Timeout, true});
+    task.run(ThreadMessage{MessageType::Timeout, true});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 

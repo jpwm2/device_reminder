@@ -2,6 +2,7 @@
 #include "infra/process_message_operation/process_message.hpp"
 #include "infra/process_message_operation/process_message_queue.hpp" // forward decl
 #include "infra/thread_message_operation/i_message_queue.hpp"
+#include "infra/process_message_operation/i_process_message_receiver.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <mqueue.h>
 #include <atomic>
@@ -10,7 +11,7 @@
 
 namespace device_reminder {
 
-class ProcessMessageReceiver {
+class ProcessMessageReceiver : public IProcessMessageReceiver {
 public:
     ProcessMessageReceiver(const std::string& mq_name,
                            std::shared_ptr<IThreadMessageQueue> queue,

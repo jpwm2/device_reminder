@@ -22,7 +22,7 @@ HumanTask::~HumanTask() {
     if (logger_) logger_->info("HumanTask destroyed");
 }
 
-void HumanTask::run(const IMessage& msg) {
+void HumanTask::run(const IThreadMessage& msg) {
     switch (msg.type()) {
     case MessageType::HumanDetected:
         if (state_ == State::Detecting) {

@@ -1,11 +1,11 @@
 #pragma once
-#include "infra/message_type.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 
 namespace device_reminder {
 
-class IMessage {
+class IProcessMessage {
 public:
-    virtual ~IMessage() = default;
+    virtual ~IProcessMessage() = default;
     virtual MessageType type() const noexcept = 0;
     virtual bool payload() const noexcept = 0;
 };

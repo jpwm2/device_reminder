@@ -11,25 +11,25 @@ namespace device_reminder {
 // 各プロセスのモッククラス
 class MockMainTask : public device_reminder::IMainTask {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
 };
 
 class MockHumanTask : public device_reminder::IHumanTask {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
 };
 
 class MockBluetoothTask : public device_reminder::IBluetoothTask {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IMessage& msg), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
+    MOCK_METHOD(bool, send_message, (const device_reminder::IThreadMessage& msg), (override));
 };
 
 
 class MockBuzzerTask : public device_reminder::IBuzzerTask {
 public:
     MOCK_METHOD(void, run, (), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IMessage& msg), (override));
+    MOCK_METHOD(bool, send_message, (const device_reminder::IThreadMessage& msg), (override));
 };
 
 // ロガーのモック

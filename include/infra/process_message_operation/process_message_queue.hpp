@@ -1,6 +1,7 @@
 #pragma once
 #include "infra/process_message_operation/process_message.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/process_message_operation/i_process_message_queue.hpp"
 #include <memory>
 #include <optional>
 
@@ -10,7 +11,7 @@
 
 namespace device_reminder {
 
-class ProcessMessageQueue {
+class ProcessMessageQueue : public IProcessMessageQueue {
 public:
     explicit ProcessMessageQueue(const std::string& name,
                                  bool create = false,

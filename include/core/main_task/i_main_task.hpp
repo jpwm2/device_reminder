@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 
 namespace device_reminder {
 
@@ -8,7 +8,7 @@ class IMainTask {
 public:
     virtual ~IMainTask() = default;
 
-    virtual void run(const IMessage& msg) = 0;
+    virtual void run(const IThreadMessage& msg) = 0;
 };
 
 } // namespace device_reminder

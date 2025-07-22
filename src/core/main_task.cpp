@@ -23,7 +23,7 @@ MainTask::~MainTask() {
     if (logger_) logger_->info("MainTask destroyed");
 }
 
-void MainTask::run(const IMessage& msg) {
+void MainTask::run(const IThreadMessage& msg) {
     auto type = msg.type();
     switch (state_) {
     case State::WaitHumanDetect:

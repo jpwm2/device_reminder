@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/i_message.hpp"
+#include "infra/thread_message_operation/i_thread_message.hpp"
 #include "human_task/i_human_task.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/pir_driver/i_pir_driver.hpp"
@@ -20,7 +20,7 @@ public:
               std::shared_ptr<ILogger> logger);
     ~HumanTask();
 
-    void run(const IMessage& msg) override;
+    void run(const IThreadMessage& msg) override;
 
     State state() const noexcept { return state_; }
 

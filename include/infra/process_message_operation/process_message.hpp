@@ -1,10 +1,10 @@
 #pragma once
-#include "infra/i_message.hpp"
+#include "infra/process_message_operation/i_process_message.hpp"
 #include <cstddef>
 
 namespace device_reminder {
 
-struct ProcessMessage final : public IMessage {
+struct ProcessMessage final : public IProcessMessage {
     constexpr ProcessMessage(MessageType t = MessageType::None,
                              bool p = false) noexcept
         : type_{t}, payload_{p} {}
