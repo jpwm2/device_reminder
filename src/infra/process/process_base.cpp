@@ -3,24 +3,29 @@
 #include <thread>
 
 #include "process/process_base.hpp"
-#include "process_message_operation/i_process_message_receiver.hpp"
-#include "process_message_operation/i_process_message_sender.hpp"
-#include "worker_dispatcher/i_worker_dispatcher.hpp"
+#include "thread_message_operation/i_message_queue.hpp"
+#include "thread_message_operation/thread_message_queue.hpp"
+#include "process_message_operation/process_message_receiver.hpp"
+#include "interfaces/i_message_handler.hpp"
 #include "infra/logger/i_logger.hpp"
-#include <functional>
 
 std::atomic<bool> ProcessBase::g_stop_flag{false};
 
-ProcessBase::ProcessBase(std::shared_ptr<IProcessMessageReceiver> receiver,
-                         std::shared_ptr<IWorkerDispatcher> dispatcher,
-                         std::shared_ptr<IProcessMessageSender> sender,
-                         std::function<int()> load_setting_value,
-                         std::shared_ptr<ILogger> logger)
-    : receiver_(std::move(receiver))
-    , dispatcher_(std::move(dispatcher))
-    , sender_(std::move(sender))
-    , load_setting_value_(std::move(load_setting_value))
-    , logger_(std::move(logger))
+ProcessBase::ProcessBase(const std::string& mq_name,
+                         std::shared_ptr<IMessageHandler> handler,
+                         std::shared_ptr<ILogger> logger,
+                         int priority)
+    : queue_{std::make_shared<ThreadMessageQueue>(logger)},
+      receiver_{std::make_unique<ProcessMessageReceiver>(mq_name, queue_, logger)},
+      worker_{std::make_unique<WorkerDispatcher>(
+          queue_,
+          [handler](const ThreadMessage& msg) {
+              if (!handler) return;
+              handler->handle(msg);
+          },
+          logger)},
+      logger_(std::move(logger)),
+      priority_(priority)
 
 {
     // Ctrl‑C (SIGINT) を捕捉して終了フラグを立てる
@@ -33,7 +38,7 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessMessageReceiver> receiver,
 int ProcessBase::run()
 {
     std::thread recv_thr{std::ref(*receiver_)};
-    if (dispatcher_) dispatcher_->start();
+    std::thread work_thr{std::ref(*worker_)};
 
     if (logger_) logger_->info("ProcessBase run start");
 
@@ -42,10 +47,9 @@ int ProcessBase::run()
     }
 
     receiver_->stop();
-    if (dispatcher_) dispatcher_->stop();
-    if (sender_) sender_->stop();
+    worker_->stop();
     recv_thr.join();
-    if (dispatcher_) dispatcher_->join();
+    work_thr.join();
     if (logger_) logger_->info("ProcessBase run end");
     return 0;
 }
@@ -54,10 +58,4 @@ void ProcessBase::stop()
 {
     g_stop_flag.store(true);
     if (logger_) logger_->info("ProcessBase stop requested");
-}
-
-int ProcessBase::priority() const noexcept
-{
-    if (load_setting_value_) return load_setting_value_();
-    return 0;
 }
