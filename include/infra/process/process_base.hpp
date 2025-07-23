@@ -2,32 +2,32 @@
 
 #include "process/i_process_base.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "process_message_operation/i_process_message_receiver.hpp"
+#include "process_message_operation/i_process_message_sender.hpp"
+#include "worker_dispatcher/i_worker_dispatcher.hpp"
 
 #include <atomic>
+#include <functional>
 #include <memory>
-#include <string>
-
-#include "process_message_operation/process_message_receiver.hpp"
-#include "thread_message_operation/i_message_queue.hpp"
-#include "worker_dispatcher/worker_dispatcher.hpp"
 
 class ProcessBase : public IProcessBase {
 public:
-    ProcessBase(const std::string& mq_name,
-                std::shared_ptr<IMessageHandler> handler,
-                std::shared_ptr<ILogger> logger,
-                int priority = 0);
+    ProcessBase(std::shared_ptr<IProcessMessageReceiver> receiver,
+                std::shared_ptr<IWorkerDispatcher> dispatcher,
+                std::shared_ptr<IProcessMessageSender> sender,
+                std::function<int()> load_setting_value,
+                std::shared_ptr<ILogger> logger);
 
     int  run()  override;  ///< メインループ
     void stop() override;  ///< 外部停止
-    int  priority() const noexcept override { return priority_; }
+    int  priority() const noexcept override;
 
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
 
-    std::shared_ptr<IThreadMessageQueue>   queue_;
-    std::unique_ptr<ProcessMessageReceiver> receiver_;
-    std::unique_ptr<WorkerDispatcher>      worker_;
-    std::shared_ptr<ILogger>               logger_;
-    int                                    priority_{0};
+    std::shared_ptr<IProcessMessageReceiver> receiver_;
+    std::shared_ptr<IWorkerDispatcher>       dispatcher_;
+    std::shared_ptr<IProcessMessageSender>   sender_;
+    std::function<int()>                     load_setting_value_;
+    std::shared_ptr<ILogger>                 logger_;
 };
