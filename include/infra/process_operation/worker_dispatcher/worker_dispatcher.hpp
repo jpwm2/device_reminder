@@ -1,5 +1,5 @@
 #pragma once
-#include "worker_dispatcher/i_worker_dispatcher.hpp"
+#include "infra/process_operation/worker_dispatcher/i_worker_dispatcher.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <memory>
 
