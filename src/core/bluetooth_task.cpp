@@ -20,7 +20,7 @@ BluetoothTask::~BluetoothTask() {
 }
 
 void BluetoothTask::run(const IThreadMessage& msg) {
-    if (msg.type() != MessageType::BluetoothScanRequest) return;
+    if (msg.type() != ThreadMessageType::BluetoothScanRequested) return;
 
     state_ = State::Scanning;
     bool detected = false;
@@ -34,7 +34,7 @@ void BluetoothTask::run(const IThreadMessage& msg) {
     }
 
     if (sender_) {
-        sender_->enqueue(ProcessMessage{MessageType::DevicePresenceResponse, detected});
+        sender_->enqueue(ProcessMessage{ThreadMessageType::BluetoothScanResponse, detected});
     }
 
     state_ = State::WaitRequest;

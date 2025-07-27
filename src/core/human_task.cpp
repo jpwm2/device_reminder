@@ -24,26 +24,26 @@ HumanTask::~HumanTask() {
 
 void HumanTask::run(const IThreadMessage& msg) {
     switch (msg.type()) {
-    case MessageType::HumanDetected:
+    case ThreadMessageType::HumanDetected:
         if (state_ == State::Detecting) {
-            if (sender_) sender_->enqueue(ProcessMessage{MessageType::HumanDetected, true});
+            if (sender_) sender_->enqueue(ProcessMessage{ThreadMessageType::HumanDetected, true});
             if (logger_) logger_->info("Human detected");
         }
         break;
-    case MessageType::HumanDetectStop:
+    case ThreadMessageType::HumanDetectStop:
         if (state_ == State::Detecting) {
             state_ = State::Stopped;
             if (logger_) logger_->info("Detection stopped");
         }
         break;
-    case MessageType::HumanDetectStart:
+    case ThreadMessageType::HumanDetectStart:
         if (state_ == State::Stopped) {
             state_ = State::Cooldown;
-            if (timer_) timer_->start(5000, ProcessMessage{MessageType::Timeout});
+            if (timer_) timer_->start(5000, ProcessMessage{ThreadMessageType::Timeout});
             if (logger_) logger_->info("Detection cooldown");
         }
         break;
-    case MessageType::Timeout:
+    case ThreadMessageType::Timeout:
         if (state_ == State::Cooldown) {
             state_ = State::Detecting;
             if (logger_) logger_->info("Cooldown end; detecting");

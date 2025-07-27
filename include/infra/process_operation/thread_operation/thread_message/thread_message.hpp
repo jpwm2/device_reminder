@@ -1,18 +1,27 @@
 #pragma once
 #include "infra/thread_message_operation/i_thread_message.hpp"
 #include <cstddef>
+#include <memory>
+#include <string>
 
 namespace device_reminder {
 
 struct ThreadMessage final : public IThreadMessage {
-    constexpr ThreadMessage(MessageType t = MessageType::None,
+    constexpr ThreadMessage(ThreadMessageType t = ThreadMessageType::None,
                             bool p = false) noexcept
         : type_{t}, payload_{p} {}
 
-    MessageType type() const noexcept override { return type_; }
+    ThreadMessageType type() const noexcept override { return type_; }
     bool payload() const noexcept override { return payload_; }
+    std::shared_ptr<IThreadMessage> clone() const override {
+        return std::make_shared<ThreadMessage>(*this);
+    }
+    std::string to_string() const override {
+        return "ThreadMessage{" + std::to_string(static_cast<int>(type_)) +
+               "," + (payload_ ? "true" : "false") + "}";
+    }
 
-    MessageType type_;
+    ThreadMessageType type_;
     bool payload_;
 } __attribute__((packed));
 

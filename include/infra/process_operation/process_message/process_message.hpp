@@ -5,14 +5,14 @@
 namespace device_reminder {
 
 struct ProcessMessage final : public IProcessMessage {
-    constexpr ProcessMessage(MessageType t = MessageType::None,
+    constexpr ProcessMessage(ThreadMessageType t = ThreadMessageType::None,
                              bool p = false) noexcept
         : type_{t}, payload_{p} {}
 
-    MessageType type() const noexcept override { return type_; }
+    ThreadMessageType type() const noexcept override { return type_; }
     bool payload() const noexcept override { return payload_; }
 
-    MessageType type_;
+    ThreadMessageType type_;
     bool payload_;
 } __attribute__((packed));
 

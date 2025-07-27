@@ -22,7 +22,7 @@ TEST(ThreadMessageReceiverTest, ReceivesMessages) {
 
     std::thread th{std::ref(receiver)};
 
-    ThreadMessage msg{MessageType::BuzzerOn, true};
+    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
     queue->push(msg);
 
     {

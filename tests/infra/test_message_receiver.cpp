@@ -30,7 +30,7 @@ TEST(MessageReceiverTest, ReceivesAndPushes) {
 
     mqd_t mq = mq_open(name.c_str(), O_WRONLY);
     ASSERT_NE(mq, static_cast<mqd_t>(-1));
-    ProcessMessage msg{MessageType::BuzzerOn, true};
+    ProcessMessage msg{ThreadMessageType::StartBuzzer, true};
     mq_send(mq, reinterpret_cast<const char*>(&msg), PROCESS_MESSAGE_SIZE, 0);
     mq_close(mq);
 

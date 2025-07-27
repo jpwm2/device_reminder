@@ -20,13 +20,13 @@ bool BuzzerTask::send_message(const IThreadMessage& msg) {
 
 void BuzzerTask::onMessage(const IThreadMessage& msg) {
     switch (msg.type()) {
-    case MessageType::BuzzerOn:
+    case ThreadMessageType::StartBuzzer:
         if (state_ == State::WaitStart) startBuzzer();
         break;
-    case MessageType::BuzzerOff:
+    case ThreadMessageType::StopBuzzer:
         if (state_ == State::Buzzing) stopBuzzer(true);
         break;
-    case MessageType::Timeout:
+    case ThreadMessageType::Timeout:
         if (state_ == State::Buzzing) stopBuzzer(false);
         break;
     default:
@@ -36,7 +36,7 @@ void BuzzerTask::onMessage(const IThreadMessage& msg) {
 
 void BuzzerTask::startBuzzer() {
     if (driver_) driver_->start();
-    if (timer_) timer_->start(kBuzzDurationMs, ProcessMessage{MessageType::Timeout});
+    if (timer_) timer_->start(kBuzzDurationMs, ProcessMessage{ThreadMessageType::Timeout});
     state_ = State::Buzzing;
 }
 

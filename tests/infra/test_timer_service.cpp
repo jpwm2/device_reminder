@@ -28,8 +28,8 @@ TEST(TimerServiceTest, SendsTimeoutMessage) {
     auto sender = std::make_shared<StrictMock<MockSender>>();
     NiceMock<MockLogger> logger;
     TimerService timer(sender, std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
-    ProcessMessage m{MessageType::Timeout, false};
-    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::Timeout))).Times(1);
+    ProcessMessage m{ThreadMessageType::Timeout, false};
+    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout))).Times(1);
     timer.start(10, m);
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
     while (timer.active()) {

@@ -43,7 +43,7 @@ TEST(HumanTaskTest, StopRequestTransitionsToStopped) {
     HumanTask task(pir, timer, sender, logger);
     EXPECT_EQ(task.state(), HumanTask::State::Detecting);
 
-    task.run(ThreadMessage{MessageType::HumanDetectStop});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetectStop});
     EXPECT_EQ(task.state(), HumanTask::State::Stopped);
 }
 
@@ -54,10 +54,10 @@ TEST(HumanTaskTest, StartRequestStartsCooldown) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     HumanTask task(pir, timer, sender, logger);
-    task.run(ThreadMessage{MessageType::HumanDetectStop});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetectStop});
 
     EXPECT_CALL(*timer, start(testing::_, testing::_));
-    task.run(ThreadMessage{MessageType::HumanDetectStart});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetectStart});
     EXPECT_EQ(task.state(), HumanTask::State::Cooldown);
 }
 
@@ -68,11 +68,11 @@ TEST(HumanTaskTest, TimeoutReturnsToDetecting) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     HumanTask task(pir, timer, sender, logger);
-    task.run(ThreadMessage{MessageType::HumanDetectStop});
-    task.run(ThreadMessage{MessageType::HumanDetectStart});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetectStop});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetectStart});
     EXPECT_EQ(task.state(), HumanTask::State::Cooldown);
 
-    task.run(ThreadMessage{MessageType::Timeout});
+    task.run(ThreadMessage{ThreadMessageType::Timeout});
     EXPECT_EQ(task.state(), HumanTask::State::Detecting);
 }
 
@@ -84,8 +84,8 @@ TEST(HumanTaskTest, HumanDetectedSendsMessage) {
 
     HumanTask task(pir, timer, sender, logger);
 
-    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, MessageType::HumanDetected)));
-    task.run(ThreadMessage{MessageType::HumanDetected});
+    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::HumanDetected)));
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
 }
 
 } // namespace device_reminder

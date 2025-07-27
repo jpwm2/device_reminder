@@ -36,13 +36,13 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
     BuzzerTask task(driver, timer, logger);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ThreadMessage{MessageType::BuzzerOn});
+    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, stop());
     EXPECT_CALL(*timer, stop()).Times(0);
-    task.send_message(ThreadMessage{MessageType::Timeout});
+    task.send_message(ThreadMessage{ThreadMessageType::Timeout});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -54,12 +54,12 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
     BuzzerTask task(driver, timer, logger);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ThreadMessage{MessageType::BuzzerOn});
+    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
 
     EXPECT_CALL(*driver, stop());
     EXPECT_CALL(*timer, stop());
-    task.send_message(ThreadMessage{MessageType::BuzzerOff});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -71,11 +71,11 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     BuzzerTask task(driver, timer, logger);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, MessageType::Timeout)));
-    task.send_message(ThreadMessage{MessageType::BuzzerOn});
+    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    task.send_message(ThreadMessage{MessageType::BuzzerOn});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 

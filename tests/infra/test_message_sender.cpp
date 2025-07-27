@@ -14,7 +14,7 @@ TEST(MessageSenderTest, EnqueueSendsMessage) {
     std::string name = unique_name("sender_test_");
     ProcessMessageSender sender(name, 5);
 
-    ProcessMessage msg{MessageType::BuzzerOn, true};
+    ProcessMessage msg{ThreadMessageType::StartBuzzer, true};
     ASSERT_TRUE(sender.enqueue(msg));
 
     mqd_t mq = mq_open(name.c_str(), O_RDONLY);
