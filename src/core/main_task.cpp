@@ -27,43 +27,43 @@ void MainTask::run(const IThreadMessage& msg) {
     auto type = msg.type();
     switch (state_) {
     case State::WaitHumanDetect:
-        if (type == MessageType::HumanDetected) {
+        if (type == ThreadMessageType::HumanDetected) {
             if (det_timer_)
                 det_timer_->start(4000,
-                                  ProcessMessage{MessageType::Timeout,
+                                  ProcessMessage{ThreadMessageType::Timeout,
                                           static_cast<bool>(TimerId::T_DET_TIMEOUT)});
             if (bluetooth_sender_)
-                bluetooth_sender_->enqueue(ProcessMessage{MessageType::StartScan});
+                bluetooth_sender_->enqueue(ProcessMessage{ThreadMessageType::BluetoothScanRequested});
             state_ = State::WaitDeviceResponse;
             if (logger_) logger_->info("Human detected -> wait device response");
         }
         break;
     case State::WaitDeviceResponse:
-        if (type == MessageType::DeviceScanResult) {
+        if (type == ThreadMessageType::BluetoothScanResponse) {
             if (msg.payload()) {
                 if (human_sender_)
-                    human_sender_->enqueue(ProcessMessage{MessageType::HumanDetectStart});
+                    human_sender_->enqueue(ProcessMessage{ThreadMessageType::HumanDetectStart});
                 if (buzzer_sender_)
-                    buzzer_sender_->enqueue(ProcessMessage{MessageType::BuzzerOff});
+                    buzzer_sender_->enqueue(ProcessMessage{ThreadMessageType::StopBuzzer});
                 if (det_timer_ && det_timer_->active()) det_timer_->stop();
                 state_ = State::WaitHumanDetect;
             } else {
                 if (cooldown_timer_)
                     cooldown_timer_->start(1000,
-                                           ProcessMessage{MessageType::Timeout,
+                                           ProcessMessage{ThreadMessageType::Timeout,
                                                    static_cast<bool>(TimerId::T_COOLDOWN)});
                 state_ = State::ScanCooldown;
             }
-        } else if (type == MessageType::Timeout &&
+        } else if (type == ThreadMessageType::Timeout &&
                    msg.payload() == static_cast<bool>(TimerId::T_DET_TIMEOUT)) {
             state_ = State::WaitHumanDetect;
         }
         break;
     case State::ScanCooldown:
-        if (type == MessageType::Timeout) {
+        if (type == ThreadMessageType::Timeout) {
             if (msg.payload() == static_cast<bool>(TimerId::T_COOLDOWN)) {
                 if (bluetooth_sender_)
-                bluetooth_sender_->enqueue(ProcessMessage{MessageType::StartScan});
+                bluetooth_sender_->enqueue(ProcessMessage{ThreadMessageType::BluetoothScanRequested});
                 state_ = State::WaitDeviceResponse;
             } else if (msg.payload() == static_cast<bool>(TimerId::T_DET_TIMEOUT)) {
                 state_ = State::WaitHumanDetect;

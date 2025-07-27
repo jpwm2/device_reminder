@@ -8,7 +8,7 @@ TEST(ThreadMessageSenderTest, EnqueueAddsToQueue) {
     auto queue = std::make_shared<ThreadMessageQueue>();
     ThreadMessageSender sender(queue);
 
-    ThreadMessage msg{MessageType::BuzzerOn, true};
+    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
     ASSERT_TRUE(sender.enqueue(msg));
 
     auto res = queue->pop();

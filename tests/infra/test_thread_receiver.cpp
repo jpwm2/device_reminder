@@ -31,7 +31,7 @@ TEST(ThreadReceiverTest, DispatchesMessages) {
 
     std::thread th{[&]{ receiver.run(); }};
 
-    ThreadMessage msg{MessageType::BuzzerOn, true};
+    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
     queue->push(msg);
 
     {

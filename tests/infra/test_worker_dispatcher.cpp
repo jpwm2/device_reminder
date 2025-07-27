@@ -22,7 +22,7 @@ TEST(WorkerDispatcherTest, DispatchesMessage) {
     WorkerDispatcher disp(queue, handler);
     disp.start();
 
-    ThreadMessage msg{MessageType::BuzzerOn, true};
+    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
     queue->push(msg);
 
     {

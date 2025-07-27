@@ -16,7 +16,7 @@ public:
 
 TEST(ThreadMessageQueueTest, PushPopWorks) {
     ThreadMessageQueue q;
-    ThreadMessage m{MessageType::BuzzerOn, true};
+    ThreadMessage m{ThreadMessageType::StartBuzzer, true};
     EXPECT_TRUE(q.push(m));
     auto res = q.pop();
     ASSERT_TRUE(res.has_value());

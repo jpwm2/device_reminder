@@ -9,7 +9,7 @@ namespace device_reminder {
 
 class ThreadDispatcher : public IThreadDispatcher {
 public:
-    using HandlerMap = std::unordered_map<MessageType, std::function<void(const ThreadMessage&)>>;
+    using HandlerMap = std::unordered_map<ThreadMessageType, std::function<void(const ThreadMessage&)>>;
 
     ThreadDispatcher(std::shared_ptr<ILogger> logger,
                      HandlerMap handler_map);

@@ -46,7 +46,7 @@ TEST(BluetoothTaskTest, SendsDetectedTrueWhenDeviceFound) {
 
     driver->names = {"phone"};
 
-    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{ThreadMessageType::BluetoothScanRequested});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, true);
@@ -60,7 +60,7 @@ TEST(BluetoothTaskTest, SendsDetectedFalseWhenNoDevice) {
     BluetoothTask task(driver, sender, logger);
 
     driver->names = {};
-    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{ThreadMessageType::BluetoothScanRequested});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, false);
@@ -74,7 +74,7 @@ TEST(BluetoothTaskTest, DriverErrorLogsAndSendsFalse) {
     BluetoothTask task(driver, sender, logger);
 
     driver->fail = true;
-    task.run(ThreadMessage{MessageType::BluetoothScanRequest});
+    task.run(ThreadMessage{ThreadMessageType::BluetoothScanRequested});
 
     ASSERT_EQ(sender->sent.size(), 1u);
     EXPECT_EQ(sender->sent[0].payload_, false);

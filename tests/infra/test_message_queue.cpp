@@ -12,7 +12,7 @@ static std::string unique_queue_name(const std::string& base) {
 TEST(MessageQueueTest, PushAndPop) {
     std::string name = unique_queue_name("mq_test_");
     ProcessMessageQueue mq(name, true);
-    ProcessMessage msg{MessageType::BuzzerOn, true};
+    ProcessMessage msg{ThreadMessageType::StartBuzzer, true};
     EXPECT_TRUE(mq.push(msg));
     auto res = mq.pop();
     ASSERT_TRUE(res.has_value());
