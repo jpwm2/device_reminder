@@ -3,7 +3,7 @@
 
 #include "thread_operation/thread_sender.hpp"
 #include "thread_operation/thread_queue/thread_queue.hpp"
-#include "process_operation/thread_operation/thread_message/thread_message.hpp"
+#include "thread_operation/thread_message/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 
 using namespace device_reminder;

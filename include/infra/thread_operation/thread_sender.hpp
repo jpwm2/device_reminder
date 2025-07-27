@@ -1,7 +1,7 @@
 #pragma once
 #include "infra/thread_operation/i_thread_sender.hpp"
 #include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
-#include "infra/process_operation/thread_operation/thread_message/i_thread_message.hpp"
+#include "infra/thread_operation/thread_message/i_thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <memory>
 
