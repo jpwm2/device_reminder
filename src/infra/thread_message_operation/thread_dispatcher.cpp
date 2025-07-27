@@ -1,4 +1,4 @@
-#include "thread_message_operation/thread_dispatcher.hpp"
+#include "infra/thread_operation/thread_dispatcher/thread_dispatcher.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <utility>
 
@@ -11,10 +11,10 @@ ThreadDispatcher::ThreadDispatcher(std::shared_ptr<ILogger> logger,
     if (logger_) logger_->info("ThreadDispatcher created");
 }
 
-void ThreadDispatcher::dispatch(const ThreadMessage& msg) {
-    auto it = handler_map_.find(msg.type());
+void ThreadDispatcher::dispatch(std::shared_ptr<IThreadMessage> msg) {
+    auto it = handler_map_.find(msg);
     if (it != handler_map_.end()) {
-        it->second(msg);
+        it->second(std::move(msg));
     } else {
         if (logger_) logger_->info("Unhandled thread message");
     }

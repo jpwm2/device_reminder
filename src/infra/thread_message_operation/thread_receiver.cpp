@@ -1,6 +1,7 @@
-#include "thread_message_operation/thread_receiver.hpp"
+#include "infra/thread_operation/thread_receiver/thread_receiver.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <utility>
+#include <memory>
 
 namespace device_reminder {
 
@@ -25,7 +26,7 @@ void ThreadReceiver::run() {
         ThreadMessage msg{};
         if (!queue_->pop(msg)) break;
         if (!running_) break;
-        if (dispatcher_) dispatcher_->dispatch(msg);
+        if (dispatcher_) dispatcher_->dispatch(std::make_shared<ThreadMessage>(msg));
     }
     if (logger_) logger_->info("ThreadReceiver loop end");
 }
