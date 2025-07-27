@@ -1,10 +1,10 @@
-#include "thread_message_operation/thread_receiver.hpp"
+#include "infra/thread_operation/thread_receiver/thread_receiver.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <utility>
 
 namespace device_reminder {
 
-ThreadReceiver::ThreadReceiver(std::shared_ptr<IThreadMessageQueue> queue,
+ThreadReceiver::ThreadReceiver(std::shared_ptr<IThreadQueue<ThreadMessage>> queue,
                                std::shared_ptr<IThreadDispatcher> dispatcher,
                                std::shared_ptr<ILogger> logger)
     : queue_(std::move(queue)),
@@ -15,15 +15,15 @@ ThreadReceiver::ThreadReceiver(std::shared_ptr<IThreadMessageQueue> queue,
 
 void ThreadReceiver::stop() {
     running_ = false;
-    if (queue_) queue_->close();
     if (logger_) logger_->info("ThreadReceiver stop requested");
 }
 
 void ThreadReceiver::run() {
     while (running_) {
         if (!queue_) break;
-        ThreadMessage msg{};
-        if (!queue_->pop(msg)) break;
+        auto opt = queue_->pop();
+        if (!opt.has_value()) break;
+        ThreadMessage msg = *opt;
         if (!running_) break;
         if (dispatcher_) dispatcher_->dispatch(msg);
     }

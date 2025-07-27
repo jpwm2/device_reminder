@@ -2,9 +2,9 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include "thread_message_operation/thread_receiver.hpp"
-#include "thread_message_operation/thread_message_queue.hpp"
-#include "thread_message_operation/i_thread_dispatcher.hpp"
+#include "infra/thread_operation/thread_receiver/thread_receiver.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
+#include "infra/thread_operation/thread_dispatcher/i_thread_dispatcher.hpp"
 
 using namespace device_reminder;
 
@@ -25,7 +25,7 @@ public:
 } // namespace
 
 TEST(ThreadReceiverTest, DispatchesMessages) {
-    auto queue = std::make_shared<ThreadMessageQueue>();
+    auto queue = std::make_shared<ThreadQueue<ThreadMessage>>();
     auto dispatcher = std::make_shared<MockDispatcher>();
     ThreadReceiver receiver(queue, dispatcher);
 
