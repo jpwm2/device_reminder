@@ -57,6 +57,7 @@ add_executable(test_infra_extra
     tests/infra/test_thread_message_sender.cpp
     tests/infra/test_thread_message_receiver.cpp
     tests/infra/test_thread_receiver.cpp
+    tests/infra/test_thread_sender.cpp
     tests/infra/test_thread_queue.cpp
     tests/infra/test_thread_dispatcher.cpp
     tests/infra/test_pir_driver.cpp
@@ -73,6 +74,7 @@ add_executable(test_infra_extra
     src/infra/process_message_operation/process_message_queue.cpp
     src/infra/process_message_operation/process_message_receiver.cpp
     src/infra/process_message_operation/process_message_sender.cpp
+    src/infra/thread_operation/thread_sender.cpp
     src/infra/pir_driver.cpp
     src/infra/timer_service.cpp
     src/infra/buzzer_driver.cpp
