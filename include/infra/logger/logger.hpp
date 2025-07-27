@@ -8,16 +8,11 @@ namespace device_reminder {
 
 class Logger : public ILogger {
 public:
-    explicit Logger(std::shared_ptr<spdlog::logger> logger)
-        : logger_(std::move(logger)) {}
+    explicit Logger(std::shared_ptr<spdlog::logger> logger);
 
-    void info(const std::string& msg) override {
-        logger_->info(msg);
-    }
-
-    void error(const std::string& msg) override {
-        logger_->error(msg);
-    }
+    void info(const std::string& msg) override;
+    void error(const std::string& msg) override;
+    void warn(const std::string& msg) override;
 
 private:
     std::shared_ptr<spdlog::logger> logger_;
