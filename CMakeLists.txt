@@ -31,6 +31,7 @@ add_executable(test_app
     tests/core/test_buzzer_task.cpp
     tests/core/test_bluetooth_task.cpp
     tests/infra/test_logger.cpp
+    src/infra/logger.cpp
     src/core/app.cpp
     src/core/main_task.cpp
     src/core/main_task_handler.cpp
@@ -66,6 +67,7 @@ add_executable(test_infra_extra
     tests/infra/test_buzzer_driver.cpp
     tests/infra/test_bluetooth_driver.cpp
     tests/infra/test_file_loader.cpp
+    src/infra/logger.cpp
     src/infra/thread_message_operation/thread_message_queue.cpp
     src/infra/thread_message_operation/thread_message_sender.cpp
     src/infra/thread_message_operation/thread_message_receiver.cpp
