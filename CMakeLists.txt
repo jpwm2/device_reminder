@@ -74,6 +74,7 @@ add_executable(test_infra_extra
     src/infra/thread_message_operation/thread_message_receiver.cpp
     src/infra/thread_message_operation/thread_receiver.cpp
     src/infra/thread_message_operation/thread_dispatcher.cpp
+    src/infra/process_operation/process_message.cpp
     src/infra/process_message_operation/process_message_queue.cpp
     src/infra/process_message_operation/process_message_receiver.cpp
     src/infra/process_message_operation/process_message_sender.cpp
