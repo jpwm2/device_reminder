@@ -1,36 +1,28 @@
 #include "watch_dog/watch_dog.hpp"
-#include "infra/logger/i_logger.hpp"
-#include "infra/process_message_operation/process_message.hpp"
+#include "infra/timer_service/i_timer_service.hpp"
 
 namespace device_reminder {
 
-WatchDog::WatchDog(std::shared_ptr<ILogger> logger,
-                   std::shared_ptr<ITimerService> timer,
-                   std::function<void()> on_timeout_handler,
-                   int timeout_ms)
-    : logger_(std::move(logger))
-    , timer_(std::move(timer))
-    , on_timeout_(std::move(on_timeout_handler))
-    , timeout_ms_(timeout_ms) {
-    if (logger_) logger_->info("WatchDog created");
-}
+WatchDog::WatchDog(std::shared_ptr<ITimerService> timer_service)
+    : timer_service_(std::move(timer_service)) {}
 
 void WatchDog::start() {
-    if (!timer_) return;
-    kick();
-    if (logger_) logger_->info("WatchDog started");
+    if (!timer_service_ || running_) return;
+    timer_service_->start();
+    running_ = true;
 }
 
 void WatchDog::stop() {
-    if (timer_) timer_->stop();
-    if (logger_) logger_->info("WatchDog stopped");
+    if (!timer_service_ || !running_) return;
+    timer_service_->stop();
+    running_ = false;
 }
 
 void WatchDog::kick() {
-    if (!timer_) return;
-    ProcessMessage msg{ThreadMessageType::Timeout};
-    timer_->start(static_cast<uint32_t>(timeout_ms_), msg);
-    if (logger_) logger_->info("WatchDog kicked");
+    if (!timer_service_) return;
+    timer_service_->stop();
+    timer_service_->start();
+    running_ = true;
 }
 
 } // namespace device_reminder
