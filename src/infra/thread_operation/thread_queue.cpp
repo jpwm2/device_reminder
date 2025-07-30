@@ -1,45 +1,35 @@
-#include "thread_message_operation/thread_message_queue.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/thread_operation/thread_message/i_thread_message.hpp"
+#include <utility>
 
 namespace device_reminder {
 
-ThreadMessageQueue::ThreadMessageQueue(std::shared_ptr<ILogger> logger)
+ThreadQueue::ThreadQueue(std::shared_ptr<ILogger> logger)
     : logger_(std::move(logger)) {}
 
-bool ThreadMessageQueue::push(const ThreadMessage& msg) {
-    std::lock_guard lk{mtx_};
-    if (!open_) return false;
-    q_.push(msg);
-    cv_.notify_one();
-    return true;
+void ThreadQueue::push(std::shared_ptr<IThreadMessage> msg) {
+  {
+    std::lock_guard<std::mutex> lock(mtx_);
+    q_.push(std::move(msg));
+  }
+  if (logger_) {
+    logger_->info("ThreadQueue push");
+  }
 }
 
-std::optional<ThreadMessage> ThreadMessageQueue::pop() {
-    ThreadMessage out{};
-    if (!pop(out)) return std::nullopt;
-    return out;
+std::shared_ptr<IThreadMessage> ThreadQueue::pop() {
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (q_.empty())
+    return nullptr;
+  auto msg = q_.front();
+  q_.pop();
+  return msg;
 }
 
-bool ThreadMessageQueue::pop(ThreadMessage& out) {
-    std::unique_lock lk{mtx_};
-    cv_.wait(lk, [this]{ return !q_.empty() || !open_; });
-    if (q_.empty() && !open_) return false;
-    out = q_.front();
-    q_.pop();
-    return true;
-}
-
-bool ThreadMessageQueue::is_open() const noexcept {
-    std::lock_guard lk{mtx_};
-    return open_;
-}
-
-void ThreadMessageQueue::close() {
-    {
-        std::lock_guard lk{mtx_};
-        open_ = false;
-    }
-    cv_.notify_all();
+size_t ThreadQueue::size() const {
+  std::lock_guard<std::mutex> lock(mtx_);
+  return q_.size();
 }
 
 } // namespace device_reminder

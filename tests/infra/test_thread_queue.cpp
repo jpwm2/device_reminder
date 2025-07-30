@@ -1,30 +1,43 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "thread_operation/thread_queue/thread_queue.hpp"
+
+#include "infra/logger/i_logger.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
 
 using namespace device_reminder;
+using ::testing::NiceMock;
+
+namespace {
+class MockLogger : public ILogger {
+public:
+  MOCK_METHOD(void, info, (const std::string &), (override));
+  MOCK_METHOD(void, error, (const std::string &), (override));
+};
+} // namespace
 
 TEST(ThreadQueueTest, PushPopWorks) {
-    ThreadQueue<int> q;
-    q.push(42);
-    auto res = q.pop();
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res.value(), 42);
+  auto logger = std::make_shared<NiceMock<MockLogger>>();
+  ThreadQueue q(logger);
+  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
+                                             std::vector<std::string>{"1"});
+  q.push(msg);
+  auto res = q.pop();
+  ASSERT_NE(res, nullptr);
+  EXPECT_EQ(res->type(), msg->type());
+  EXPECT_EQ(res->payload(), msg->payload());
 }
 
-TEST(ThreadQueueTest, PopTimeoutReturnsNullopt) {
-    ThreadQueue<int> q;
-    auto res = q.pop(10);
-    EXPECT_FALSE(res.has_value());
+TEST(ThreadQueueTest, PopOnEmptyReturnsNullptr) {
+  ThreadQueue q(nullptr);
+  auto res = q.pop();
+  EXPECT_EQ(res, nullptr);
 }
 
-TEST(ThreadQueueTest, SizeAndClearWork) {
-    ThreadQueue<int> q;
-    EXPECT_TRUE(q.empty());
-    q.push(1);
-    q.push(2);
-    EXPECT_EQ(q.size(), 2u);
-    EXPECT_FALSE(q.empty());
-    q.clear();
-    EXPECT_TRUE(q.empty());
-    EXPECT_EQ(q.size(), 0u);
+TEST(ThreadQueueTest, SizeReflectsQueueState) {
+  ThreadQueue q(nullptr);
+  EXPECT_EQ(q.size(), 0u);
+  q.push(std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
+                                         std::vector<std::string>{}));
+  EXPECT_EQ(q.size(), 1u);
 }
