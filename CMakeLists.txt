@@ -32,14 +32,15 @@ add_executable(test_app
     tests/core/test_bluetooth_task.cpp
     tests/infra/test_logger.cpp
     src/infra/logger/logger.cpp
-    src/core/app.cpp
-    src/core/main_task.cpp
-    src/core/main_task_handler.cpp
-    src/core/human_task.cpp
-    src/core/human_task_handler.cpp
-    src/core/buzzer_task.cpp
-    src/core/buzzer_handler.cpp
-    src/core/bluetooth_task.cpp
+    src/core/app/app.cpp
+    src/core/main_task/main_task.cpp
+    src/core/main_task/main_task_handler.cpp
+    src/core/human_task/human_task.cpp
+    src/core/human_task/human_task_handler.cpp
+    src/core/buzzer_task/buzzer_task.cpp
+    src/core/buzzer_task/buzzer_handler.cpp
+    src/core/bluetooth_task/bluetooth_task.cpp
+    src/core/bluetooth_task/bluetooth_task_handler.cpp
 )
 
 # GPIODriver tests
@@ -61,7 +62,7 @@ add_executable(test_infra_extra
     tests/infra/test_local_message_queue.cpp
     tests/infra/test_message_queue.cpp
     tests/infra/test_message_sender.cpp
-    tests/infra/test_message_receiver.cpp
+    tests/infra/test_process_receiver.cpp
     tests/infra/test_thread_message_sender.cpp
     tests/infra/test_thread_message_receiver.cpp
     tests/infra/test_thread_receiver.cpp
@@ -77,16 +78,8 @@ add_executable(test_infra_extra
     tests/infra/test_bluetooth_driver.cpp
     tests/infra/test_file_loader.cpp
     src/infra/logger/logger.cpp
-    src/infra/thread_message_operation/thread_message_queue.cpp
-    src/infra/thread_message_operation/thread_message_sender.cpp
-    src/infra/thread_message_operation/thread_message_receiver.cpp
-    src/infra/thread_message_operation/thread_receiver.cpp
-    src/infra/thread_message_operation/thread_dispatcher.cpp
     src/infra/thread_operation/thread_queue.cpp
     src/infra/process_operation/process_message.cpp
-    src/infra/process_message_operation/process_message_queue.cpp
-    src/infra/process_message_operation/process_message_receiver.cpp
-    src/infra/process_message_operation/process_message_sender.cpp
     src/infra/thread_operation/thread_sender.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp

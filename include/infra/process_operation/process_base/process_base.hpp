@@ -14,10 +14,10 @@
 
 class ProcessBase : public IProcessBase {
 public:
-    ProcessBase(std::shared_ptr<IProcessMessageQueue>    queue,
-                std::shared_ptr<IProcessMessageReceiver> receiver,
+    ProcessBase(std::shared_ptr<IProcessQueue>    queue,
+                std::shared_ptr<IProcessReceiver> receiver,
                 std::shared_ptr<IWorkerDispatcher>       dispatcher,
-                std::shared_ptr<IProcessMessageSender>   sender,
+                std::shared_ptr<IProcessSender>   sender,
                 std::shared_ptr<IFileLoader>             file_loader,
                 std::shared_ptr<ILogger>                 logger,
                 std::string                              process_name);
@@ -29,10 +29,10 @@ public:
 private:
     static std::atomic<bool> g_stop_flag;           ///< 全スレッド共通の終了フラグ
 
-    std::shared_ptr<IProcessMessageQueue>    queue_;
-    std::shared_ptr<IProcessMessageReceiver> receiver_;
+    std::shared_ptr<IProcessQueue>    queue_;
+    std::shared_ptr<IProcessReceiver> receiver_;
     std::shared_ptr<IWorkerDispatcher>       dispatcher_;
-    std::shared_ptr<IProcessMessageSender>   sender_;
+    std::shared_ptr<IProcessSender>   sender_;
     std::shared_ptr<IFileLoader>             file_loader_;
     std::shared_ptr<ILogger>                 logger_;
     std::string                              process_name_;
