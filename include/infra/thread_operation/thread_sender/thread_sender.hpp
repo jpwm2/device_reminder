@@ -10,13 +10,13 @@ namespace device_reminder {
 class ThreadSender : public IThreadSender {
 public:
     ThreadSender(std::shared_ptr<ILogger> logger,
-                 std::shared_ptr<IThreadQueue<std::shared_ptr<IThreadMessage>>> queue,
+                 std::shared_ptr<IThreadQueue> queue,
                  std::shared_ptr<IThreadMessage> message);
     void send() override;
 
 private:
     std::shared_ptr<ILogger> logger_;
-    std::shared_ptr<IThreadQueue<std::shared_ptr<IThreadMessage>>> queue_;
+    std::shared_ptr<IThreadQueue> queue_;
     std::shared_ptr<IThreadMessage> message_;
 };
 

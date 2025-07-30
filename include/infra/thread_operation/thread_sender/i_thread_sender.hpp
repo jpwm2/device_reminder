@@ -3,8 +3,7 @@
 
 namespace device_reminder {
 
-class IThreadMessage; // forward
-template <typename T>
+class IThreadMessage; // forward declaration
 class IThreadQueue;
 
 class IThreadSender {

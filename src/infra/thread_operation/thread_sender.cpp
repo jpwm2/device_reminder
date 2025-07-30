@@ -5,7 +5,7 @@
 namespace device_reminder {
 
 ThreadSender::ThreadSender(std::shared_ptr<ILogger> logger,
-                           std::shared_ptr<IThreadQueue<std::shared_ptr<IThreadMessage>>> queue,
+                           std::shared_ptr<IThreadQueue> queue,
                            std::shared_ptr<IThreadMessage> message)
     : logger_(std::move(logger)),
       queue_(std::move(queue)),
