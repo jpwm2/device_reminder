@@ -4,23 +4,26 @@
 #include "infra/logger/i_logger.hpp"
 
 #include <string>
-#include <unordered_map>
 #include <memory>
 
 namespace device_reminder {
 
 class FileLoader : public IFileLoader {
 public:
-    FileLoader(const std::string& file_path, std::shared_ptr<ILogger> logger = nullptr);
+    FileLoader(std::shared_ptr<ILogger> logger,
+               const std::string& file_path,
+               const std::string& key);
 
-    int load_int(const std::string& key) const override;
-    std::string load_string(const std::string& key) const override;
+    int load_int() const override;
+    std::string load_string() const override;
+    std::vector<std::string> load_string_list() const override;
 
 private:
-    void parse_file(const std::string& file_path);
+    std::string load_value() const;
 
-    std::unordered_map<std::string, std::string> values_;
     std::shared_ptr<ILogger> logger_;
+    std::string              file_path_;
+    std::string              key_;
 };
 
 } // namespace device_reminder
