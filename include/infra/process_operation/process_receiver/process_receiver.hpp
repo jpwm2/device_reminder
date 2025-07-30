@@ -1,39 +1,37 @@
 #pragma once
-#include "infra/process_message_operation/process_message.hpp"
-#include "infra/process_message_operation/process_message_queue.hpp" // forward decl
-#include "infra/thread_message_operation/i_message_queue.hpp"
-#include "infra/process_message_operation/i_process_message_receiver.hpp"
+#include "infra/process_operation/process_receiver/i_process_receiver.hpp"
 #include "infra/logger/i_logger.hpp"
-#include <mqueue.h>
+#include "infra/process_operation/process_queue/i_process_queue.hpp"
+#include "infra/process_operation/process_dispatcher/i_process_dispatcher.hpp"
+
 #include <atomic>
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace device_reminder {
 
-class ProcessMessageReceiver : public IProcessMessageReceiver {
+/**
+ * @brief キューからメッセージを受信しディスパッチする受信モジュール
+ */
+class ProcessReceiver : public IProcessReceiver {
 public:
-    ProcessMessageReceiver(const std::string& mq_name,
-                           std::shared_ptr<IThreadMessageQueue> queue,
-                           std::shared_ptr<ILogger> logger = nullptr);
-    ~ProcessMessageReceiver();
+    ProcessReceiver(std::shared_ptr<ILogger> logger,
+                    std::shared_ptr<IProcessQueue> queue,
+                    std::shared_ptr<IProcessDispatcher> dispatcher);
+    ~ProcessReceiver();
 
-    void operator()();
-    void stop();
-    bool running() const noexcept { return running_; }
+    void run() override;  ///< 受信スレッド開始
+    void stop() override; ///< スレッド停止要求
 
 private:
-    static constexpr long kMsgSize = PROCESS_MESSAGE_SIZE;
-    static constexpr long kMaxMsgs = 10;
+    void loop();
 
-    mqd_t open_queue(const std::string& name);
-    void  close_queue();
-
-    mqd_t                              mq_{};
-    std::string                        mq_name_;
-    std::shared_ptr<IThreadMessageQueue> queue_;
-    std::atomic<bool>                  running_{true};
     std::shared_ptr<ILogger>           logger_;
+    std::shared_ptr<IProcessQueue>     queue_;
+    std::shared_ptr<IProcessDispatcher> dispatcher_;
+    std::atomic<bool>                  running_{false};
+    std::thread                        worker_;
 };
 
 } // namespace device_reminder

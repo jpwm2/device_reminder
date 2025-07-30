@@ -12,10 +12,10 @@
 
 std::atomic<bool> ProcessBase::g_stop_flag{false};
 
-ProcessBase::ProcessBase(std::shared_ptr<IProcessMessageQueue>    queue,
-                         std::shared_ptr<IProcessMessageReceiver> receiver,
+ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
+                         std::shared_ptr<IProcessReceiver> receiver,
                          std::shared_ptr<IWorkerDispatcher>       dispatcher,
-                         std::shared_ptr<IProcessMessageSender>   sender,
+                         std::shared_ptr<IProcessSender>   sender,
                          std::shared_ptr<IFileLoader>             file_loader,
                          std::shared_ptr<ILogger>                 logger,
                          std::string                              process_name)
@@ -38,7 +38,7 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessMessageQueue>    queue,
 
 int ProcessBase::run()
 {
-    std::thread recv_thr{std::ref(*receiver_)};
+    if (receiver_) receiver_->run();
     if (dispatcher_) dispatcher_->start();
 
     if (logger_) logger_->info("ProcessBase run start");
@@ -47,10 +47,9 @@ int ProcessBase::run()
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
-    receiver_->stop();
+    if (receiver_) receiver_->stop();
     if (dispatcher_) dispatcher_->stop();
     if (sender_) sender_->stop();
-    recv_thr.join();
     if (dispatcher_) dispatcher_->join();
     if (logger_) logger_->info("ProcessBase run end");
     return 0;

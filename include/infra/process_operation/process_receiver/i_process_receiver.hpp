@@ -1,15 +1,21 @@
 #pragma once
-#include "infra/thread_message_operation/i_message_queue.hpp"
 #include <memory>
 
 namespace device_reminder {
 
-class IProcessMessageReceiver {
+class IProcessReceiver {
 public:
-    virtual ~IProcessMessageReceiver() = default;
-    virtual void operator()() = 0;
+    virtual ~IProcessReceiver() = default;
+
+    /**
+     * @brief 受信スレッドを起動しメインループを開始する
+     */
+    virtual void run() = 0;
+
+    /**
+     * @brief スレッドの停止を指示する
+     */
     virtual void stop() = 0;
-    virtual bool running() const noexcept = 0;
 };
 
 } // namespace device_reminder
