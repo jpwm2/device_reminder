@@ -1,26 +1,19 @@
 #pragma once
-#include <functional>
-#include "thread_message_operation/thread_message.hpp"
+
+#include <memory>
 
 namespace device_reminder {
 
+class IProcessMessage;
+
 /**
- * @brief 抽象ディスパッチャ
- *  - start()  : 受信スレッド開始
- *  - stop()   : 受信ループ終了要求（非同期）
- *  - join()   : スレッド合流
- *  - running(): 稼働状態確認
+ * @brief プロセスメッセージディスパッチャのインタフェース
  */
-class IWorkerDispatcher {
+class IProcessDispatcher {
 public:
-    using MessageHandler = std::function<void(const ThreadMessage& /* msg */)>;
+    virtual ~IProcessDispatcher() = default;
 
-    virtual ~IWorkerDispatcher() = default;
-
-    virtual void start()              = 0;
-    virtual void stop()               = 0;
-    virtual void join()               = 0;
-    virtual bool running() const noexcept = 0;
+    virtual void dispatch(std::shared_ptr<IProcessMessage> msg) = 0;
 };
 
 } // namespace device_reminder

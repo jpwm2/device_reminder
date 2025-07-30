@@ -71,7 +71,7 @@ add_executable(test_infra_extra
     tests/infra/test_pir_driver.cpp
     tests/infra/test_timer_service.cpp
     tests/infra/test_watch_dog.cpp
-    tests/infra/test_worker_dispatcher.cpp
+    tests/infra/test_process_dispatcher.cpp
     tests/infra/test_gpio_setter.cpp
     tests/infra/test_buzzer_driver.cpp
     tests/infra/test_bluetooth_driver.cpp
@@ -93,7 +93,7 @@ add_executable(test_infra_extra
     src/infra/watch_dog/watch_dog.cpp
     src/infra/gpio_operation/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
-    src/infra/worker_dispatcher/worker_dispatcher.cpp
+    src/infra/process_operation/process_dispatcher.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/io/file_loader.cpp
     tests/stubs/posix_mq_stub.cpp
