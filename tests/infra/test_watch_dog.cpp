@@ -3,57 +3,49 @@
 
 #include "watch_dog/watch_dog.hpp"
 
-using ::testing::NiceMock;
 using ::testing::StrictMock;
 
 namespace device_reminder {
 
 class MockTimer : public ITimerService {
 public:
-    MOCK_METHOD(void, start, (uint32_t, const ProcessMessage&), (override));
+    MOCK_METHOD(void, start, (), (override));
     MOCK_METHOD(void, stop, (), (override));
-    MOCK_METHOD(bool, active, (), (const, noexcept, override));
-};
-
-class MockLogger : public ILogger {
-public:
-    MOCK_METHOD(void, info, (const std::string&), (override));
-    MOCK_METHOD(void, error, (const std::string&), (override));
-    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
 TEST(WatchDogTest, KickRestartsTimer) {
     auto timer = std::make_shared<StrictMock<MockTimer>>();
-    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    WatchDog wd(timer);
 
-    EXPECT_CALL(*timer, start(100, testing::_)).Times(2);
+    {
+        ::testing::InSequence s;
+        EXPECT_CALL(*timer, start()).Times(1); // from start
+        EXPECT_CALL(*timer, stop()).Times(1);  // from kick
+        EXPECT_CALL(*timer, start()).Times(1); // from kick
+    }
 
-    WatchDog wd(logger, timer, []{}, 100);
     wd.start();
     wd.kick();
 }
 
-TEST(WatchDogTest, TimeoutInvokesHandler) {
-    class FakeTimer : public ITimerService {
-    public:
-        std::function<void()> handler;
-        void start(uint32_t, const ProcessMessage&) override {
-            if (handler) handler();
-        }
-        void stop() override {}
-        bool active() const noexcept override { return false; }
-    };
+TEST(WatchDogTest, StartPreventsDoubleStart) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
 
-    auto timer = std::make_shared<FakeTimer>();
-    bool called = false;
-    timer->handler = [&]{ called = true; };
-    NiceMock<MockLogger> logger;
-
-    WatchDog wd(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), timer,
-                [&]{ called = true; }, 10);
+    EXPECT_CALL(*timer, start()).Times(1);
     wd.start();
-    EXPECT_TRUE(called);
+    wd.start();
+}
+
+TEST(WatchDogTest, StopStopsTimer) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, start()).Times(1);
+    EXPECT_CALL(*timer, stop()).Times(1);
+
+    wd.start();
+    wd.stop();
 }
 
 } // namespace device_reminder
-
