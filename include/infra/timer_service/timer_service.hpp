@@ -12,9 +12,9 @@ namespace device_reminder {
 
 class TimerService : public ITimerService {
 public:
-    TimerService(std::shared_ptr<ILogger> logger,
-                 int duration_ms,
-                 std::shared_ptr<IThreadSender> sender);
+    explicit TimerService(std::shared_ptr<ILogger> logger,
+                          int duration_ms,
+                          std::shared_ptr<IThreadSender> sender);
     ~TimerService() override;
 
     void start() override;
@@ -27,7 +27,7 @@ private:
     int duration_ms_{0};
     std::shared_ptr<IThreadSender> sender_;
     std::thread thread_;
-    std::atomic_bool running_{false};
+    std::atomic<bool> running_{false};
 };
 
 } // namespace device_reminder
