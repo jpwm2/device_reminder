@@ -5,7 +5,7 @@
 
 namespace device_reminder {
 
-ThreadReceiver::ThreadReceiver(std::shared_ptr<IThreadQueue<ThreadMessage>> queue,
+ThreadReceiver::ThreadReceiver(std::shared_ptr<IThreadQueue> queue,
                                std::shared_ptr<IThreadDispatcher> dispatcher,
                                std::shared_ptr<ILogger> logger)
     : queue_(std::move(queue)),
@@ -22,10 +22,10 @@ void ThreadReceiver::stop() {
 void ThreadReceiver::run() {
     while (running_) {
         if (!queue_) break;
-        auto msg_opt = queue_->pop();
-        if (!msg_opt.has_value()) break;
+        auto msg = queue_->pop();
+        if (!msg) break;
         if (!running_) break;
-        if (dispatcher_) dispatcher_->dispatch(std::make_shared<ThreadMessage>(*msg_opt));
+        if (dispatcher_) dispatcher_->dispatch(msg);
     }
     if (logger_) logger_->info("ThreadReceiver loop end");
 }
