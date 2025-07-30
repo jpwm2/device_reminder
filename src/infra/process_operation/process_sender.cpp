@@ -1,39 +1,20 @@
-#include "process_message_operation/process_message_sender.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/process_operation/process_sender/process_sender.hpp"
 
-#include <cerrno>
-#include <cstring>
-#include <fcntl.h>
-#include <stdexcept>
-#include <system_error>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "infra/process_operation/process_message/i_process_message.hpp"
+#include "infra/process_operation/process_queue/i_process_queue.hpp"
+
+#include <utility>
 
 namespace device_reminder {
 
-ProcessMessageSender::ProcessMessageSender(const std::string& queue_name,
-                                           long max_messages,
-                                           std::shared_ptr<ILogger> logger)
-    : queue_name_{queue_name},
-      mq_{queue_name_, true, static_cast<size_t>(max_messages), logger},
-      logger_(std::move(logger))
-{
-    if (logger_) logger_->info("ProcessMessageSender created: " + queue_name_);
-}
+ProcessSender::ProcessSender(std::shared_ptr<IProcessQueue> queue,
+                             std::shared_ptr<IProcessMessage> msg)
+    : queue_{std::move(queue)}, msg_{std::move(msg)} {}
 
-ProcessMessageSender::~ProcessMessageSender() {
-    stop();
-    if (logger_) logger_->info("ProcessMessageSender destroyed");
-}
-
-bool ProcessMessageSender::enqueue(const ProcessMessage& msg) {
-    if (logger_) logger_->info("ProcessMessageSender enqueue");
-    return mq_.push(msg);
-}
-
-void ProcessMessageSender::stop() {
-    mq_.close();
-    if (logger_) logger_->info("ProcessMessageSender stop");
+void ProcessSender::send() {
+  if (queue_) {
+    queue_->push(msg_);
+  }
 }
 
 } // namespace device_reminder
