@@ -9,6 +9,7 @@ public:
     virtual ~IFileLoader() = default;
 
     virtual int load_int(const std::string& key) const = 0;
+    virtual std::string load_string(const std::string& key) const = 0;
 };
 
 } // namespace device_reminder

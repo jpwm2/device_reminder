@@ -6,7 +6,7 @@
 #include "infra/process_operation/process_receiver/i_process_receiver.hpp"
 #include "infra/process_operation/process_sender/i_process_sender.hpp"
 #include "infra/process_operation/process_dispatcher/i_process_dispatcher.hpp"
-#include "infra/io/i_file_loader.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
 
 #include <atomic>
 #include <memory>

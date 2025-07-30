@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/io/i_file_loader.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
 #include "infra/logger/i_logger.hpp"
 
 #include <string>
@@ -14,6 +14,7 @@ public:
     FileLoader(const std::string& file_path, std::shared_ptr<ILogger> logger = nullptr);
 
     int load_int(const std::string& key) const override;
+    std::string load_string(const std::string& key) const override;
 
 private:
     void parse_file(const std::string& file_path);

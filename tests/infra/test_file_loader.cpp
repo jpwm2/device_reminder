@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "infra/io/file_loader.hpp"
+#include "infra/file_loader/file_loader.hpp"
 #include "infra/logger/logger.hpp"
 #include <spdlog/logger.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -25,4 +25,13 @@ TEST(FileLoaderTest, LoadIntThrowsIfMissing) {
 
     FileLoader loader("/tmp/test_settings.txt");
     EXPECT_THROW(loader.load_int("b"), std::runtime_error);
+}
+
+TEST(FileLoaderTest, LoadStringSuccess) {
+    std::ofstream ofs("/tmp/test_settings.txt");
+    ofs << "device_name=reminder\n";
+    ofs.close();
+
+    FileLoader loader("/tmp/test_settings.txt");
+    EXPECT_EQ(loader.load_string("device_name"), "reminder");
 }
