@@ -18,7 +18,7 @@ public:
 } // namespace
 
 TEST(ThreadSenderTest, SendPushesMessageToQueue) {
-    auto queue = std::make_shared<ThreadQueue<std::shared_ptr<IThreadMessage>>>();
+    auto queue = std::make_shared<ThreadQueue>(nullptr);
     NiceMock<MockLogger> logger;
     auto message = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzer, true);
 
@@ -27,7 +27,7 @@ TEST(ThreadSenderTest, SendPushesMessageToQueue) {
     sender.send();
 
     auto res = queue->pop();
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ((*res)->type(), message->type());
-    EXPECT_EQ((*res)->payload(), message->payload());
+    ASSERT_NE(res, nullptr);
+    EXPECT_EQ(res->type(), message->type());
+    EXPECT_EQ(res->payload(), message->payload());
 }
