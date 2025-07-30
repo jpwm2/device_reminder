@@ -1,4 +1,4 @@
-#include "infra/io/file_loader.hpp"
+#include "infra/file_loader/file_loader.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -24,6 +24,15 @@ int FileLoader::load_int(const std::string& key) const
         if (logger_) logger_->error(std::string("invalid int value for ") + key);
         throw;
     }
+}
+
+std::string FileLoader::load_string(const std::string& key) const
+{
+    auto it = values_.find(key);
+    if (it == values_.end()) {
+        throw std::runtime_error("key not found: " + key);
+    }
+    return it->second;
 }
 
 void FileLoader::parse_file(const std::string& file_path)
