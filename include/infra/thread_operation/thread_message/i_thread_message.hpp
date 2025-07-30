@@ -1,17 +1,9 @@
 #pragma once
 #include <memory>
 #include <string>
+#include "infra/thread_operation/thread_message/thread_message_type.hpp"
 
 namespace device_reminder {
-
-enum class ThreadMessageType {
-    HumanDetected,
-    StartBuzzer,
-    StopBuzzer,
-    Timeout,
-    BluetoothScanRequested,
-    BluetoothScanResponse
-};
 
 class IThreadMessage {
 public:
