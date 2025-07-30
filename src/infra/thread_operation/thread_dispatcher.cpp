@@ -1,5 +1,6 @@
 #include "infra/thread_operation/thread_dispatcher/thread_dispatcher.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/thread_operation/thread_message/i_thread_message.hpp"
 #include <utility>
 
 namespace device_reminder {
@@ -12,7 +13,11 @@ ThreadDispatcher::ThreadDispatcher(std::shared_ptr<ILogger> logger,
 }
 
 void ThreadDispatcher::dispatch(std::shared_ptr<IThreadMessage> msg) {
-    auto it = handler_map_.find(msg);
+    if (!msg) {
+        if (logger_) logger_->error("Null thread message");
+        return;
+    }
+    auto it = handler_map_.find(msg->type());
     if (it != handler_map_.end()) {
         it->second(std::move(msg));
     } else {
