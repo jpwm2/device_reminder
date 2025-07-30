@@ -49,6 +49,13 @@ add_executable(test_gpio_driver
     tests/stubs/gpiod_stub.cpp
 )
 
+# GPIOReader tests
+add_executable(test_gpio_reader
+    tests/infra/test_gpio_reader.cpp
+    src/infra/gpio_operation/gpio_reader/gpio_reader.cpp
+    tests/stubs/gpiod_stub.cpp
+)
+
 # Additional infra tests
 add_executable(test_infra_extra
     tests/infra/test_local_message_queue.cpp
@@ -104,6 +111,12 @@ target_link_libraries(test_gpio_driver
     gtest_main
 )
 
+target_link_libraries(test_gpio_reader
+    gtest
+    gmock
+    gtest_main
+)
+
 target_link_libraries(test_infra_extra
     gtest
     gmock
@@ -119,12 +132,17 @@ if(UNIX)
 endif()
 
 if(UNIX)
+    target_link_libraries(test_gpio_reader pthread)
+endif()
+
+if(UNIX)
     target_link_libraries(test_infra_extra pthread rt)
 endif()
 
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIODriverTests COMMAND test_gpio_driver)
+add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
 
 
