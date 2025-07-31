@@ -1,52 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 project(device_reminder_test)
 
-include(FetchContent)
-
 set(CMAKE_CXX_STANDARD 17)
 
 # GoogleTest を取得
-if(EXISTS ${CMAKE_SOURCE_DIR}/external/googletest/CMakeLists.txt)
-    add_subdirectory(external/googletest)
-else()
-    message(STATUS "Fetching googletest via FetchContent")
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.14.0
-    )
-    FetchContent_MakeAvailable(googletest)
-endif()
+add_subdirectory(external/googletest)
 
 # spdlog を取得（ヘッダオンリー）
-if(EXISTS ${CMAKE_SOURCE_DIR}/external/spdlog/CMakeLists.txt)
-    add_subdirectory(external/spdlog)
-    set(SPDLOG_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
-else()
-    message(STATUS "Fetching spdlog via FetchContent")
-    FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.13.0
-    )
-    FetchContent_MakeAvailable(spdlog)
-    set(SPDLOG_INCLUDE_DIR ${spdlog_SOURCE_DIR}/include)
-endif()
+add_subdirectory(external/spdlog)
+set(SPDLOG_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
 
 # boost.di を取得
-if(EXISTS ${CMAKE_SOURCE_DIR}/external/di/CMakeLists.txt)
-    add_subdirectory(external/di)
-    set(BOOST_DI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/di/include)
-else()
-    message(STATUS "Fetching boost.di via FetchContent")
-    FetchContent_Declare(
-        boost_di
-        GIT_REPOSITORY https://github.com/boost-ext/di.git
-        GIT_TAG v1.3.0
-    )
-    FetchContent_MakeAvailable(boost_di)
-    set(BOOST_DI_INCLUDE_DIR ${boost_di_SOURCE_DIR}/include)
-endif()
+add_subdirectory(external/di)
+set(BOOST_DI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/di/include)
 
 # ヘッダーファイルのパス
 include_directories(

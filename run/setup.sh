@@ -12,6 +12,3 @@ if [ ! -d googletest ]; then
   git clone --depth=1 https://github.com/google/googletest.git
 fi
 cd ..
-
-# もし他にもsubmoduleがあるなら
-git submodule update --init --recursive
