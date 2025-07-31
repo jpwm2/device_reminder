@@ -10,7 +10,7 @@
 #include "infra/gpio_driver/gpio_driver.hpp"
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
-#include "process_message_operation/process_message_sender.hpp"
+#include "infra/process_operation/process_sender/i_process_sender.hpp"
 #include "thread_message_operation/thread_message_queue.hpp"
 #include "thread_message_operation/i_message_queue.hpp"
 
@@ -44,10 +44,7 @@ inline auto make_app_injector() {
         di::bind<IBuzzerTask>.to<BuzzerTask>(),
         di::bind<ITimerService>.to<TimerService>(),
         di::bind<IThreadMessageQueue>.to<ThreadMessageQueue>(),
-        di::bind<IProcessMessageSender>.to([](const std::shared_ptr<ILogger>& lg) {
-            static int id = 0;
-            return std::make_shared<ProcessMessageSender>("/devreminder_" + std::to_string(id++), 10, lg);
-        }),
+        di::bind<IProcessSender>.to([] { return std::shared_ptr<IProcessSender>{}; }),
         di::bind<IGPIODriver>.to<GPIODriver>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),
         di::bind<IPIRDriver>.to<PIRDriver>(),

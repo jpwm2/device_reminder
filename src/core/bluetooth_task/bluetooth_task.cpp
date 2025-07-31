@@ -1,17 +1,20 @@
 #include "bluetooth_task/bluetooth_task.hpp"
-#include "infra/thread_message_operation/i_thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/bluetooth_driver/i_bluetooth_driver.hpp"
-#include "process_message_operation/i_process_message_sender.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
+#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include <algorithm>
 
 namespace device_reminder {
 
-BluetoothTask::BluetoothTask(std::shared_ptr<IBluetoothDriver> driver,
-                             std::shared_ptr<IProcessMessageSender> sender,
-                             std::shared_ptr<ILogger> logger)
-    : driver_(std::move(driver))
+BluetoothTask::BluetoothTask(std::shared_ptr<ILogger> logger,
+                             std::shared_ptr<IProcessSender> sender,
+                             std::shared_ptr<IFileLoader> loader,
+                             std::shared_ptr<IBluetoothDriver> driver)
+    : logger_(std::move(logger))
     , sender_(std::move(sender))
-    , logger_(std::move(logger)) {
+    , loader_(std::move(loader))
+    , driver_(std::move(driver)) {
     if (logger_) logger_->info("BluetoothTask created");
 }
 
@@ -19,30 +22,34 @@ BluetoothTask::~BluetoothTask() {
     if (logger_) logger_->info("BluetoothTask destroyed");
 }
 
-void BluetoothTask::run(const IThreadMessage& msg) {
-    if (msg.type() != ThreadMessageType::BluetoothScanRequested) return;
+void BluetoothTask::on_waiting(const std::vector<std::string>&) {
 
     state_ = State::Scanning;
     bool detected = false;
     try {
         if (driver_) {
             auto devices = driver_->scan();
-            detected = !devices.empty();
+            if (loader_) {
+                auto regs = loader_->load_string_list();
+                for (const auto& name : devices) {
+                    if (std::find(regs.begin(), regs.end(), name) != regs.end()) {
+                        detected = true;
+                        break;
+                    }
+                }
+            } else {
+                detected = !devices.empty();
+            }
         }
     } catch (const std::exception& e) {
         if (logger_) logger_->error(e.what());
     }
 
-    if (sender_) {
-        sender_->enqueue(ProcessMessage{ThreadMessageType::BluetoothScanResponse, detected});
+    if (detected && sender_) {
+        sender_->send();
     }
 
     state_ = State::WaitRequest;
-}
-
-bool BluetoothTask::send_message(const IThreadMessage& msg) {
-    run(msg);
-    return true;
 }
 
 } // namespace device_reminder

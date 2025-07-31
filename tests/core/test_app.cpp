@@ -23,8 +23,7 @@ public:
 
 class MockBluetoothTask : public device_reminder::IBluetoothTask {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IThreadMessage& msg), (override));
+    MOCK_METHOD(void, on_waiting, (const std::vector<std::string>&), (override));
 };
 
 
@@ -67,7 +66,7 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
     EXPECT_CALL(*human_ptr, on_detecting(testing::_)).Times(1);
     EXPECT_CALL(*human_ptr, on_stopping(testing::_)).Times(0);
     EXPECT_CALL(*human_ptr, on_cooldown(testing::_)).Times(0);
-    EXPECT_CALL(*bluetooth_ptr, run(testing::_)).Times(1);
+    EXPECT_CALL(*bluetooth_ptr, on_waiting(testing::_)).Times(1);
     EXPECT_CALL(*buzzer_ptr, run()).Times(1);
     EXPECT_CALL(*logger_ptr, info(testing::_)).Times(testing::AtLeast(1));
 
