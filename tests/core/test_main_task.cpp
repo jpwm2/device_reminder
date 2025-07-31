@@ -2,8 +2,9 @@
 #include <gmock/gmock.h>
 
 #include "main_task/main_task.hpp"
-#include "thread_message_operation/thread_message.hpp"
-#include "process_message_operation/i_process_message_sender.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
+#include "infra/process_operation/process_sender/i_process_sender.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
@@ -17,10 +18,16 @@ public:
     MOCK_METHOD(bool, active, (), (const, noexcept, override));
 };
 
-class MockSender : public IProcessMessageSender {
+class MockSender : public IProcessSender {
 public:
-    MOCK_METHOD(bool, enqueue, (const ProcessMessage&), (override));
-    MOCK_METHOD(void, stop, (), (override));
+    MOCK_METHOD(void, send, (), (override));
+};
+
+class MockFileLoader : public IFileLoader {
+public:
+    MOCK_METHOD(int, load_int, (), (const, override));
+    MOCK_METHOD(std::string, load_string, (), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
 };
 
 class MockLogger : public ILogger {
@@ -32,86 +39,108 @@ public:
 TEST(MainTaskTest, HumanDetectedStartsScanAndTimer) {
     auto det_timer = std::make_shared<NiceMock<MockTimer>>();
     auto cd_timer = std::make_shared<NiceMock<MockTimer>>();
-    auto human_sender = std::make_shared<StrictMock<MockSender>>();
-    auto bt_sender = std::make_shared<NiceMock<MockSender>>();
-    auto buzzer_sender = std::make_shared<StrictMock<MockSender>>();
+    auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto human_start = std::make_shared<StrictMock<MockSender>>();
+    auto human_stop = std::make_shared<StrictMock<MockSender>>();
+    auto bt_sender = std::make_shared<StrictMock<MockSender>>();
+    auto buz_start = std::make_shared<StrictMock<MockSender>>();
+    auto buz_stop = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
+    MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
 
-    EXPECT_CALL(*det_timer, start(4000, testing::Field(&ProcessMessage::payload_, true)));
-    EXPECT_CALL(*bt_sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::BluetoothScanRequested)));
+    EXPECT_CALL(*det_timer, start(4000, testing::_));
+    EXPECT_CALL(*bt_sender, send());
 
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
     EXPECT_EQ(task.state(), MainTask::State::WaitDeviceResponse);
 }
 
 TEST(MainTaskTest, DeviceDetectedStopsTimerAndNotifies) {
     auto det_timer = std::make_shared<NiceMock<MockTimer>>();
     auto cd_timer = std::make_shared<NiceMock<MockTimer>>();
-    auto human_sender = std::make_shared<StrictMock<MockSender>>();
-    auto bt_sender = std::make_shared<NiceMock<MockSender>>();
-    auto buzzer_sender = std::make_shared<StrictMock<MockSender>>();
+    auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto human_start = std::make_shared<StrictMock<MockSender>>();
+    auto human_stop = std::make_shared<StrictMock<MockSender>>();
+    auto bt_sender = std::make_shared<StrictMock<MockSender>>();
+    auto buz_start = std::make_shared<StrictMock<MockSender>>();
+    auto buz_stop = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
+    EXPECT_CALL(*file_loader, load_string_list()).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
 
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
+    MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
 
-    EXPECT_CALL(*human_sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::HumanDetectStart)));
-    EXPECT_CALL(*buzzer_sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::StopBuzzer)));
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+
+    EXPECT_CALL(*human_start, send());
+    EXPECT_CALL(*buz_stop, send());
     EXPECT_CALL(*det_timer, active()).WillOnce(testing::Return(true));
     EXPECT_CALL(*det_timer, stop());
 
-    task.run(ThreadMessage{ThreadMessageType::BluetoothScanResponse, true});
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceFound, {"phone"}});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 
 TEST(MainTaskTest, DeviceNotDetectedStartsCooldown) {
     auto det_timer = std::make_shared<NiceMock<MockTimer>>();
     auto cd_timer = std::make_shared<NiceMock<MockTimer>>();
-    auto human_sender = std::make_shared<StrictMock<MockSender>>();
-    auto bt_sender = std::make_shared<NiceMock<MockSender>>();
-    auto buzzer_sender = std::make_shared<StrictMock<MockSender>>();
+    auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto human_start = std::make_shared<StrictMock<MockSender>>();
+    auto human_stop = std::make_shared<StrictMock<MockSender>>();
+    auto bt_sender = std::make_shared<StrictMock<MockSender>>();
+    auto buz_start = std::make_shared<StrictMock<MockSender>>();
+    auto buz_stop = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
+    EXPECT_CALL(*file_loader, load_string_list()).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
 
-    EXPECT_CALL(*cd_timer, start(1000, testing::Field(&ProcessMessage::payload_, false)));
-    task.run(ThreadMessage{ThreadMessageType::BluetoothScanResponse, false});
+    MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+
+    EXPECT_CALL(*buz_start, send());
+    EXPECT_CALL(*cd_timer, start(1000, testing::_));
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}});
     EXPECT_EQ(task.state(), MainTask::State::ScanCooldown);
 }
 
 TEST(MainTaskTest, CooldownTimeoutRestartsScan) {
     auto det_timer = std::make_shared<NiceMock<MockTimer>>();
     auto cd_timer = std::make_shared<NiceMock<MockTimer>>();
-    auto human_sender = std::make_shared<StrictMock<MockSender>>();
-    auto bt_sender = std::make_shared<NiceMock<MockSender>>();
-    auto buzzer_sender = std::make_shared<NiceMock<MockSender>>();
+    auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto human_start = std::make_shared<StrictMock<MockSender>>();
+    auto human_stop = std::make_shared<StrictMock<MockSender>>();
+    auto bt_sender = std::make_shared<StrictMock<MockSender>>();
+    auto buz_start = std::make_shared<NiceMock<MockSender>>();
+    auto buz_stop = std::make_shared<NiceMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
-    task.run(ThreadMessage{ThreadMessageType::BluetoothScanResponse, false});
+    EXPECT_CALL(*file_loader, load_string_list()).WillRepeatedly(testing::Return(std::vector<std::string>{"phone"}));
 
-    EXPECT_CALL(*bt_sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::BluetoothScanRequested)));
-    task.run(ThreadMessage{ThreadMessageType::Timeout, false});
+    MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}});
+
+    EXPECT_CALL(*bt_sender, send());
+    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_COOLDOWN))}});
     EXPECT_EQ(task.state(), MainTask::State::WaitDeviceResponse);
 }
 
 TEST(MainTaskTest, DetectionTimeoutReturnsToWaitHuman) {
     auto det_timer = std::make_shared<NiceMock<MockTimer>>();
     auto cd_timer = std::make_shared<NiceMock<MockTimer>>();
-    auto human_sender = std::make_shared<StrictMock<MockSender>>();
-    auto bt_sender = std::make_shared<NiceMock<MockSender>>();
-    auto buzzer_sender = std::make_shared<NiceMock<MockSender>>();
+    auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto human_start = std::make_shared<StrictMock<MockSender>>();
+    auto human_stop = std::make_shared<StrictMock<MockSender>>();
+    auto bt_sender = std::make_shared<StrictMock<MockSender>>();
+    auto buz_start = std::make_shared<NiceMock<MockSender>>();
+    auto buz_stop = std::make_shared<NiceMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    MainTask task(det_timer, cd_timer, human_sender, bt_sender, buzzer_sender, logger);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected});
+    MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
 
-    task.run(ThreadMessage{ThreadMessageType::Timeout, true});
+    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_DET_TIMEOUT))}});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 
