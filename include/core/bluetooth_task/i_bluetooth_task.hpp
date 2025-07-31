@@ -1,6 +1,7 @@
 #pragma once
 
-#include "infra/thread_message_operation/i_thread_message.hpp"
+#include <string>
+#include <vector>
 
 namespace device_reminder {
 
@@ -8,8 +9,7 @@ class IBluetoothTask {
 public:
     virtual ~IBluetoothTask() = default;
 
-    virtual void run(const IThreadMessage& msg) = 0;
-    virtual bool send_message(const IThreadMessage& msg) = 0;
+    virtual void on_waiting(const std::vector<std::string>& payload) = 0;
 };
 
 } // namespace device_reminder
