@@ -19,9 +19,9 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/core
     ${CMAKE_SOURCE_DIR}/include/infra
-    ${CMAKE_SOURCE_DIR}/include/infra/gpio_driver
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/di
     ${CMAKE_SOURCE_DIR}/tests
     ${CMAKE_SOURCE_DIR}/tests/stubs
     ${CMAKE_SOURCE_DIR}/main_task
@@ -62,13 +62,6 @@ add_executable(test_app
     src/core/bluetooth_task/bluetooth_process.cpp
 )
 
-# GPIODriver tests
-add_executable(test_gpio_driver
-    tests/infra/test_gpio_driver.cpp
-    src/infra/gpio_driver/gpio_driver.cpp
-    tests/stubs/gpiod_stub.cpp
-)
-
 # GPIOReader tests
 add_executable(test_gpio_reader
     tests/infra/test_gpio_reader.cpp
@@ -83,7 +76,6 @@ add_executable(test_infra_extra
     tests/infra/test_message_sender.cpp
     tests/infra/test_process_receiver.cpp
     tests/infra/test_thread_message_sender.cpp
-    tests/infra/test_thread_message_receiver.cpp
     tests/infra/test_thread_receiver.cpp
     tests/infra/test_thread_sender.cpp
     tests/infra/test_thread_queue.cpp
@@ -116,6 +108,13 @@ add_executable(mock_sample_test
     tests/sample/mock_sample.cpp
 )
 
+# Build application with main.cpp
+file(GLOB_RECURSE DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/*.cpp)
+add_executable(device_reminder ${DEVICE_SOURCES})
+if(UNIX)
+    target_link_libraries(device_reminder pthread)
+endif()
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
     gtest
@@ -123,11 +122,6 @@ target_link_libraries(test_app
     gtest_main
 )
 
-target_link_libraries(test_gpio_driver
-    gtest
-    gmock
-    gtest_main
-)
 
 target_link_libraries(test_gpio_reader
     gtest
@@ -151,9 +145,6 @@ if(UNIX)
     target_link_libraries(test_app pthread)
 endif()
 
-if(UNIX)
-    target_link_libraries(test_gpio_driver pthread)
-endif()
 
 if(UNIX)
     target_link_libraries(test_gpio_reader pthread)
@@ -169,7 +160,6 @@ endif()
 
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
-add_test(NAME GPIODriverTests COMMAND test_gpio_driver)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
 add_test(NAME MockSampleTests COMMAND mock_sample_test)

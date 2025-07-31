@@ -3,7 +3,7 @@
 
 namespace device_reminder {
 
-PIRDriver::PIRDriver(IGPIODriver* gpio_driver, ILogger* logger)
+PIRDriver::PIRDriver(IGPIOReader* gpio_driver, ILogger* logger)
     : gpio_(gpio_driver), logger_(logger)
 {
     if (logger_) {

@@ -2,19 +2,16 @@
 #include <gmock/gmock.h>
 
 #include "infra/pir_driver/pir_driver.hpp"
-#include "infra/gpio_driver/i_gpio_driver.hpp"
+#include "infra/gpio_operation/gpio_reader/i_gpio_reader.hpp"
 #include "infra/logger/i_logger.hpp"
 
 using namespace device_reminder;
 using ::testing::StrictMock;
 
 namespace {
-class MockGPIO : public IGPIODriver {
+class MockGPIO : public IGPIOReader {
 public:
-    MOCK_METHOD(void, write, (bool), (override));
     MOCK_METHOD(bool, read, (), (override));
-    MOCK_METHOD(void, setEdge, (EdgeType), (override));
-    MOCK_METHOD(void, waitForEdge, (), (override));
 };
 class MockLogger : public ILogger {
 public:

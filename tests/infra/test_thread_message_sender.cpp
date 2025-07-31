@@ -1,20 +1,18 @@
 #include <gtest/gtest.h>
-#include "thread_message_operation/thread_message_sender.hpp"
-#include "thread_message_operation/thread_message_queue.hpp"
+#include "infra/thread_operation/thread_sender/thread_sender.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 
 using namespace device_reminder;
 
 TEST(ThreadMessageSenderTest, EnqueueAddsToQueue) {
-    auto queue = std::make_shared<ThreadMessageQueue>();
-    ThreadMessageSender sender(queue);
+    auto queue = std::make_shared<ThreadQueue>(nullptr);
+    auto message = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzer, std::vector<std::string>{"1"});
+    ThreadSender sender(nullptr, queue, message);
 
-    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
-    ASSERT_TRUE(sender.enqueue(msg));
-
+    sender.send();
     auto res = queue->pop();
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res->type_, msg.type_);
-    EXPECT_EQ(res->payload_, msg.payload_);
-
-    sender.stop();
+    ASSERT_NE(res, nullptr);
+    EXPECT_EQ(res->type(), message->type());
+    EXPECT_EQ(res->payload(), message->payload());
 }

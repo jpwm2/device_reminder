@@ -2,7 +2,7 @@
 
 #include "infra/timer_service/i_timer_service.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/i_thread_sender.hpp"
+#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
 
 #include <thread>
 #include <atomic>

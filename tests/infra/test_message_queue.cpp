@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "process_message_operation/process_message_queue.hpp"
+#include "infra/process_operation/process_queue/process_queue.hpp"
+#include "infra/process_operation/message_codec/message_codec.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
+#include "infra/logger/logger.hpp"
 
 using namespace device_reminder;
 
@@ -11,13 +14,14 @@ static std::string unique_queue_name(const std::string& base) {
 
 TEST(MessageQueueTest, PushAndPop) {
     std::string name = unique_queue_name("mq_test_");
-    ProcessMessageQueue mq(name, true);
-    ProcessMessage msg{ThreadMessageType::StartBuzzer, true};
-    EXPECT_TRUE(mq.push(msg));
+    auto logger = std::make_shared<Logger>();
+    auto codec = std::make_shared<MessageCodec>();
+    ProcessQueue mq(logger, codec, name);
+    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzer,
+                                               std::vector<std::string>{"1"});
+    mq.push(msg);
     auto res = mq.pop();
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res->type_, msg.type_);
-    EXPECT_EQ(res->payload_, msg.payload_);
-    mq.close();
-    EXPECT_FALSE(mq.is_open());
+    ASSERT_NE(res, nullptr);
+    EXPECT_EQ(res->type(), msg->type());
+    EXPECT_EQ(res->payload(), msg->payload());
 }

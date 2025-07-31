@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "thread_message_operation/thread_message_queue.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
 
 using namespace device_reminder;
@@ -15,19 +16,18 @@ public:
 } // namespace
 
 TEST(ThreadMessageQueueTest, PushPopWorks) {
-    ThreadMessageQueue q;
-    ThreadMessage m{ThreadMessageType::StartBuzzer, true};
-    EXPECT_TRUE(q.push(m));
+    ThreadQueue q(nullptr);
+    auto m = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzer, std::vector<std::string>{});
+    q.push(m);
     auto res = q.pop();
-    ASSERT_TRUE(res.has_value());
-    EXPECT_EQ(res->type_, m.type_);
-    EXPECT_EQ(res->payload_, m.payload_);
+    ASSERT_NE(res, nullptr);
+    EXPECT_EQ(res->type(), m->type());
+    EXPECT_EQ(res->payload(), m->payload());
 }
 
-TEST(ThreadMessageQueueTest, CloseMakesPopReturnFalse) {
-    ThreadMessageQueue q;
-    q.close();
-    EXPECT_FALSE(q.is_open());
-    ThreadMessage out{};
-    EXPECT_FALSE(q.pop(out));
+TEST(ThreadMessageQueueTest, SizeReflectsQueue) {
+    ThreadQueue q(nullptr);
+    EXPECT_EQ(q.size(), 0u);
+    q.push(std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzer, std::vector<std::string>{}));
+    EXPECT_EQ(q.size(), 1u);
 }

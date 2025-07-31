@@ -7,12 +7,13 @@
 #include "core/buzzer_task/buzzer_task.hpp"
 #include "infra/timer_service/timer_service.hpp"
 #include "infra/pir_driver/pir_driver.hpp"
-#include "infra/gpio_driver/gpio_driver.hpp"
+#include "infra/gpio_operation/gpio_setter/gpio_setter.hpp"
+#include "infra/gpio_operation/gpio_reader/gpio_reader.hpp"
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
 #include "infra/process_operation/process_sender/i_process_sender.hpp"
-#include "thread_message_operation/thread_message_queue.hpp"
-#include "thread_message_operation/i_message_queue.hpp"
+#include "infra/thread_operation/thread_queue/thread_queue.hpp"
+#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
 
 #include <tuple>
 #include <boost/di.hpp>
@@ -43,9 +44,10 @@ inline auto make_app_injector() {
         di::bind<IBluetoothTask>.to<BluetoothTask>(),
         di::bind<IBuzzerTask>.to<BuzzerTask>(),
         di::bind<ITimerService>.to<TimerService>(),
-        di::bind<IThreadMessageQueue>.to<ThreadMessageQueue>(),
+        di::bind<IThreadQueue>.to<ThreadQueue>(),
         di::bind<IProcessSender>.to([] { return std::shared_ptr<IProcessSender>{}; }),
-        di::bind<IGPIODriver>.to<GPIODriver>(),
+        di::bind<IGPIOSetter>.to<GPIOSetter>(),
+        di::bind<IGPIOReader>.to<GPIOReader>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),
         di::bind<IPIRDriver>.to<PIRDriver>(),
         di::bind<IBluetoothDriver>.to<BluetoothDriver>()
