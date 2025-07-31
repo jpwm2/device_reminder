@@ -73,6 +73,7 @@ add_executable(test_app
     tests/core/test_human_task.cpp
     tests/core/test_human_handler.cpp
     tests/core/test_main_handler.cpp
+    tests/core/test_buzzer_handler.cpp
     tests/core/test_buzzer_task.cpp
     tests/core/test_bluetooth_task.cpp
     tests/infra/test_logger.cpp
