@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "thread_message_operation/i_message_queue.hpp"
+#include "infra/thread_operation/thread_message/i_message_queue.hpp"
 
 /// 事前宣言 ― 依存インターフェース
 class IThreadMessageQueue;

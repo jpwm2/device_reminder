@@ -34,12 +34,12 @@ void BuzzerTask::onMessage(const IThreadMessage& msg) {
 }
 
 void BuzzerTask::startBuzzer() {
-    if (driver_) driver_->start();
+    if (driver_) driver_->on();
     state_ = State::Buzzing;
 }
 
 void BuzzerTask::stopBuzzer() {
-    if (driver_) driver_->stop();
+    if (driver_) driver_->off();
     state_ = State::WaitStart;
 }
 

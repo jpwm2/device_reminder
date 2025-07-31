@@ -11,8 +11,8 @@ namespace device_reminder {
 
 class MockDriver : public IBuzzerDriver {
 public:
-    MOCK_METHOD(bool, start, (), (override));
-    MOCK_METHOD(bool, stop, (), (override));
+    MOCK_METHOD(void, on, (), (override));
+    MOCK_METHOD(void, off, (), (override));
 };
 
 
@@ -42,11 +42,11 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
 
     BuzzerTask task(logger, sender, loader, driver);
 
-    EXPECT_CALL(*driver, start());
+    EXPECT_CALL(*driver, on());
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    EXPECT_CALL(*driver, stop());
+    EXPECT_CALL(*driver, off());
     task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
@@ -59,10 +59,10 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
 
     BuzzerTask task(logger, sender, loader, driver);
 
-    EXPECT_CALL(*driver, start());
+    EXPECT_CALL(*driver, on());
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
 
-    EXPECT_CALL(*driver, stop());
+    EXPECT_CALL(*driver, off());
     task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
@@ -75,7 +75,7 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
 
     BuzzerTask task(logger, sender, loader, driver);
 
-    EXPECT_CALL(*driver, start());
+    EXPECT_CALL(*driver, on());
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
