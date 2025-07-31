@@ -80,6 +80,7 @@ add_executable(test_app
     src/core/app/app.cpp
     src/core/main_task/main_task.cpp
     src/core/main_task/main_handler.cpp
+    src/core/main_task/main_process.cpp
     src/core/human_task/human_task.cpp
     src/core/human_task/human_handler.cpp
     src/core/human_task/human_process.cpp
