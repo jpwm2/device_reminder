@@ -15,11 +15,17 @@ public:
     MOCK_METHOD(bool, stop, (), (override));
 };
 
-class MockTimer : public ITimerService {
+
+class MockSender : public IProcessSender {
 public:
-    MOCK_METHOD(void, start, (uint32_t, const ProcessMessage&), (override));
-    MOCK_METHOD(void, stop, (), (override));
-    MOCK_METHOD(bool, active, (), (const, noexcept, override));
+    MOCK_METHOD(void, send, (), (override));
+};
+
+class MockFileLoader : public IFileLoader {
+public:
+    MOCK_METHOD(int, load_int, (), (const, override));
+    MOCK_METHOD(std::string, load_string, (), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
 };
 
 class MockLogger : public ILogger {
@@ -30,48 +36,46 @@ public:
 
 TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
     auto driver = std::make_shared<StrictMock<MockDriver>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    BuzzerTask task(driver, timer, logger);
+    BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, stop());
-    EXPECT_CALL(*timer, stop()).Times(0);
-    task.send_message(ThreadMessage{ThreadMessageType::Timeout});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
 TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
     auto driver = std::make_shared<StrictMock<MockDriver>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    BuzzerTask task(driver, timer, logger);
+    BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
 
     EXPECT_CALL(*driver, stop());
-    EXPECT_CALL(*timer, stop());
     task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
 TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     auto driver = std::make_shared<StrictMock<MockDriver>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    BuzzerTask task(driver, timer, logger);
+    BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, start());
-    EXPECT_CALL(*timer, start(4000, testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout)));
     task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 

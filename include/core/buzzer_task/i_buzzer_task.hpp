@@ -10,6 +10,9 @@ public:
 
     virtual void run() = 0;
     virtual bool send_message(const IThreadMessage& msg) = 0;
+
+    virtual void on_waiting(const std::vector<std::string>& payload) = 0;
+    virtual void on_buzzing(const std::vector<std::string>& payload) = 0;
 };
 
 } // namespace device_reminder

@@ -3,12 +3,14 @@
 
 namespace device_reminder {
 
-BuzzerTask::BuzzerTask(std::shared_ptr<IBuzzerDriver> driver,
-                       std::shared_ptr<ITimerService> timer,
-                       std::shared_ptr<ILogger> logger)
-    : driver_(std::move(driver))
-    , timer_(std::move(timer))
-    , logger_(std::move(logger))
+BuzzerTask::BuzzerTask(std::shared_ptr<ILogger> logger,
+                       std::shared_ptr<IProcessSender> sender,
+                       std::shared_ptr<IFileLoader> file_loader,
+                       std::shared_ptr<IBuzzerDriver> driver)
+    : logger_(std::move(logger))
+    , sender_(std::move(sender))
+    , file_loader_(std::move(file_loader))
+    , driver_(std::move(driver))
 {
     if (logger_) logger_->info("BuzzerTask created");
 }
@@ -24,10 +26,7 @@ void BuzzerTask::onMessage(const IThreadMessage& msg) {
         if (state_ == State::WaitStart) startBuzzer();
         break;
     case ThreadMessageType::StopBuzzer:
-        if (state_ == State::Buzzing) stopBuzzer(true);
-        break;
-    case ThreadMessageType::Timeout:
-        if (state_ == State::Buzzing) stopBuzzer(false);
+        if (state_ == State::Buzzing) stopBuzzer();
         break;
     default:
         break;
@@ -36,14 +35,20 @@ void BuzzerTask::onMessage(const IThreadMessage& msg) {
 
 void BuzzerTask::startBuzzer() {
     if (driver_) driver_->start();
-    if (timer_) timer_->start(kBuzzDurationMs, ProcessMessage{ThreadMessageType::Timeout});
     state_ = State::Buzzing;
 }
 
-void BuzzerTask::stopBuzzer(bool cancelTimer) {
+void BuzzerTask::stopBuzzer() {
     if (driver_) driver_->stop();
-    if (cancelTimer && timer_) timer_->stop();
     state_ = State::WaitStart;
+}
+
+void BuzzerTask::on_waiting(const std::vector<std::string>&) {
+    startBuzzer();
+}
+
+void BuzzerTask::on_buzzing(const std::vector<std::string>&) {
+    stopBuzzer();
 }
 
 } // namespace device_reminder
