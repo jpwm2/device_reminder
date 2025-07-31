@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/thread_message_operation/i_thread_message.hpp"
+#include "infra/thread_operation/thread_message/i_thread_message.hpp"
 #include "buzzer_task/i_buzzer_task.hpp"
 #include "infra/buzzer_driver/i_buzzer_driver.hpp"
 #include "infra/logger/i_logger.hpp"

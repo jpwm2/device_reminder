@@ -6,8 +6,8 @@ namespace device_reminder {
 class IBuzzerDriver {
 public:
     virtual ~IBuzzerDriver() = default;
-    virtual bool start() = 0;   // true: 成功
-    virtual bool stop()  = 0;   // true: 成功
-}; 
+    virtual void on()  = 0;   // ブザーON
+    virtual void off() = 0;   // ブザーOFF
+};
 
 } // namespace device_reminder

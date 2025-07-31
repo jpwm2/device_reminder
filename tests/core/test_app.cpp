@@ -12,6 +12,11 @@ namespace device_reminder {
 class MockMainTask : public device_reminder::IMainTask {
 public:
     MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
+    MOCK_METHOD(void, on_waiting_for_human, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_response_to_buzzer_task, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_response_to_human_task, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_cooldown, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_waiting_for_second_response, (const std::vector<std::string>&), (override));
 };
 
 class MockHumanTask : public device_reminder::IHumanTask {
