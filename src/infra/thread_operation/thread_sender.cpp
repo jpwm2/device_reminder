@@ -1,4 +1,4 @@
-#include "thread_operation/thread_sender.hpp"
+#include "infra/thread_operation/thread_sender/thread_sender.hpp"
 #include "infra/logger/i_logger.hpp"
 #include <utility>
 

@@ -1,10 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "infra/thread_operation/thread_message/i_message_queue.hpp"
-
-/// 事前宣言 ― 依存インターフェース
-class IThreadMessageQueue;
+#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
 
 /**
  * @brief プロセスの抽象基底クラス  

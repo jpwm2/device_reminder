@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "buzzer_task/buzzer_task.hpp"
-#include "thread_message_operation/thread_message.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
