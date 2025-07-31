@@ -1,18 +1,17 @@
 #pragma once
 
-#include "interfaces/i_message_handler.hpp"
 #include "infra/thread_message_operation/thread_message.hpp"
 #include "buzzer_task/buzzer_task.hpp"
 #include <memory>
 
 namespace device_reminder {
 
-class BuzzerHandler : public IMessageHandler {
+class BuzzerHandler {
 public:
     explicit BuzzerHandler(std::shared_ptr<BuzzerTask> task)
         : task_(std::move(task)) {}
 
-    void handle(const ThreadMessage& msg) override;
+    void handle(const ThreadMessage& msg);
 
 private:
     std::shared_ptr<BuzzerTask> task_;

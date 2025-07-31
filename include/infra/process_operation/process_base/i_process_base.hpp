@@ -5,7 +5,6 @@
 
 /// 事前宣言 ― 依存インターフェース
 class IThreadMessageQueue;
-class IMessageHandler;
 
 /**
  * @brief プロセスの抽象基底クラス  
