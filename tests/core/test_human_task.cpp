@@ -10,7 +10,8 @@ namespace device_reminder {
 
 class MockPIR : public IPIRDriver {
 public:
-    MOCK_METHOD(int, read, (), (override));
+    MOCK_METHOD(void, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
 class MockSender : public IProcessSender {
@@ -25,14 +26,14 @@ public:
     void warn(const std::string&) override {}
 };
 
-TEST(HumanTaskTest, DetectingSendsMessageOnDetection) {
+TEST(HumanTaskTest, DetectingStartsDriver) {
     auto pir = std::make_shared<StrictMock<MockPIR>>();
     auto sender = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<DummyLogger>();
     HumanTask task(logger, pir, sender);
 
-    EXPECT_CALL(*pir, read()).WillOnce(::testing::Return(1));
-    EXPECT_CALL(*sender, send()).Times(1);
+    EXPECT_CALL(*pir, run()).Times(1);
+    EXPECT_CALL(*sender, send()).Times(0);
 
     task.on_detecting({});
 }
@@ -44,7 +45,7 @@ TEST(HumanTaskTest, StoppingDoesNotSend) {
     HumanTask task(logger, pir, sender);
 
     EXPECT_CALL(*sender, send()).Times(0);
-    EXPECT_CALL(*pir, read()).Times(0);
+    EXPECT_CALL(*pir, stop()).Times(1);
 
     task.on_stopping({});
 }
@@ -56,7 +57,7 @@ TEST(HumanTaskTest, CooldownDoesNothing) {
     HumanTask task(logger, pir, sender);
 
     EXPECT_CALL(*sender, send()).Times(0);
-    EXPECT_CALL(*pir, read()).Times(0);
+    EXPECT_CALL(*pir, stop()).Times(1);
 
     task.on_cooldown({});
 }

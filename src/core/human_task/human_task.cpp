@@ -10,20 +10,23 @@ HumanTask::HumanTask(std::shared_ptr<ILogger> logger,
 }
 
 void HumanTask::on_detecting(const std::vector<std::string>&) {
-    if (!pir_) return;
-    int val = pir_->read();
-    if (val > 0 && sender_) {
-        sender_->send();
-        if (logger_) logger_->info("Human detected");
+    if (pir_) {
+        pir_->run();
     }
+    if (logger_) logger_->info("Human detection started");
 }
 
 void HumanTask::on_stopping(const std::vector<std::string>&) {
+    if (pir_) {
+        pir_->stop();
+    }
     if (logger_) logger_->info("Human detection stopped");
 }
 
 void HumanTask::on_cooldown(const std::vector<std::string>&) {
-    // intentionally do nothing
+    if (pir_) {
+        pir_->stop();
+    }
     if (logger_) logger_->info("Human detection cooldown");
 }
 

@@ -1,5 +1,5 @@
 #include "main_task/main_task.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
 #include <algorithm>
 
 namespace device_reminder {
@@ -65,9 +65,7 @@ void MainTask::run(const IThreadMessage& msg) {
 
 void MainTask::on_waiting_for_human(const std::vector<std::string>&) {
     if (det_timer_)
-        det_timer_->start(4000,
-                          ProcessMessage{ThreadMessageType::ProcessingTimeout,
-                                         {std::to_string(static_cast<int>(TimerId::T_DET_TIMEOUT))}});
+        det_timer_->start();
     if (bluetooth_sender_)
         bluetooth_sender_->send();
     state_ = State::WaitDeviceResponse;
@@ -89,9 +87,7 @@ void MainTask::on_response_to_buzzer_task(const std::vector<std::string>& payloa
         if (buzzer_start_sender_)
             buzzer_start_sender_->send();
         if (cooldown_timer_)
-            cooldown_timer_->start(1000,
-                                   ProcessMessage{ThreadMessageType::ProcessingTimeout,
-                                                  {std::to_string(static_cast<int>(TimerId::T_COOLDOWN))}});
+            cooldown_timer_->start();
         state_ = State::ScanCooldown;
     }
     if (logger_) logger_->info("Device not found -> cooldown");
@@ -113,7 +109,7 @@ void MainTask::on_response_to_human_task(const std::vector<std::string>& payload
             human_start_sender_->send();
         if (buzzer_stop_sender_)
             buzzer_stop_sender_->send();
-        if (det_timer_ && det_timer_->active())
+        if (det_timer_)
             det_timer_->stop();
         state_ = State::WaitHumanDetect;
         if (logger_) logger_->info("Device found -> resume human detect");
