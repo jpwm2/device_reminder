@@ -21,6 +21,7 @@ class MockLogger : public ILogger {
 public:
     MOCK_METHOD(void, info, (const std::string&), (override));
     MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 } // namespace
 

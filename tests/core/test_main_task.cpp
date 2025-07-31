@@ -13,9 +13,9 @@ namespace device_reminder {
 
 class MockTimer : public ITimerService {
 public:
-    MOCK_METHOD(void, start, (uint32_t, const ProcessMessage&), (override));
+    MOCK_METHOD(void, start, (), (override));
     MOCK_METHOD(void, stop, (), (override));
-    MOCK_METHOD(bool, active, (), (const, noexcept, override));
+    MOCK_METHOD(bool, active, (), (const, noexcept));
 };
 
 class MockSender : public IProcessSender {
@@ -34,6 +34,7 @@ class MockLogger : public ILogger {
 public:
     MOCK_METHOD(void, info, (const std::string&), (override));
     MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
 TEST(MainTaskTest, HumanDetectedStartsScanAndTimer) {
@@ -49,7 +50,7 @@ TEST(MainTaskTest, HumanDetectedStartsScanAndTimer) {
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
 
-    EXPECT_CALL(*det_timer, start(4000, testing::_));
+    EXPECT_CALL(*det_timer, start());
     EXPECT_CALL(*bt_sender, send());
 
     task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
@@ -75,7 +76,6 @@ TEST(MainTaskTest, DeviceDetectedStopsTimerAndNotifies) {
 
     EXPECT_CALL(*human_start, send());
     EXPECT_CALL(*buz_stop, send());
-    EXPECT_CALL(*det_timer, active()).WillOnce(testing::Return(true));
     EXPECT_CALL(*det_timer, stop());
 
     task.run(ThreadMessage{ThreadMessageType::RespondDeviceFound, {"phone"}});
@@ -99,7 +99,7 @@ TEST(MainTaskTest, DeviceNotDetectedStartsCooldown) {
     task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
 
     EXPECT_CALL(*buz_start, send());
-    EXPECT_CALL(*cd_timer, start(1000, testing::_));
+    EXPECT_CALL(*cd_timer, start());
     task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}});
     EXPECT_EQ(task.state(), MainTask::State::ScanCooldown);
 }

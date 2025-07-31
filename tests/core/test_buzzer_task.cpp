@@ -32,6 +32,7 @@ class MockLogger : public ILogger {
 public:
     MOCK_METHOD(void, info, (const std::string&), (override));
     MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
 TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
@@ -43,11 +44,11 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -60,10 +61,10 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -76,10 +77,10 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 

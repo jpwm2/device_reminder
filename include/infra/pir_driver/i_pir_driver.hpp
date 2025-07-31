@@ -6,8 +6,12 @@ class IPIRDriver {
 public:
     virtual ~IPIRDriver() = default;
 
-    // PIRセンサーの値を読み取る（0または1）
-    virtual int read() = 0;
+    // PIR センサーの監視を開始する
+    virtual void run() = 0;
+
+    // PIR センサーの監視を停止する
+    virtual void stop() = 0;
+
 };
 
 } // namespace device_reminder

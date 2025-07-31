@@ -1,5 +1,6 @@
 #include "main_task/main_handler.hpp"
 #include "infra/process_operation/process_message/process_message_type.hpp"
+#include "infra/process_operation/process_message/i_process_message.hpp"
 
 namespace device_reminder {
 

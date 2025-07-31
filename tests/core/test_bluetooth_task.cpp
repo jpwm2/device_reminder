@@ -40,6 +40,7 @@ class DummyLogger : public ILogger {
 public:
     void info(const std::string&) override {}
     void error(const std::string&) override {}
+    void warn(const std::string&) override {}
 };
 
 TEST(BluetoothTaskTest, SendsDetectedTrueWhenDeviceFound) {
