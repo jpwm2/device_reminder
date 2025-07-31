@@ -22,38 +22,50 @@ echo -e "\n\e[1;34m[INFO]\e[0m 外部ライブラリを取得中..."
 mkdir -p external
 cd external
 
-# リポジトリクローン関数
+# リポジトリクローン関数（サブモジュール初期化付き）
 clone_repo() {
   local name=$1
   local url=$2
+
+  if [ -d "$name" ] && [ -z "$(ls -A "$name")" ]; then
+    echo -e "\e[1;33m[WARN]\e[0m $name は存在しますが中身が空です。再取得します。"
+    rm -rf "$name"
+  fi
 
   if [ ! -d "$name" ]; then
     echo -e "\e[1;32m[CLONE]\e[0m $name をクローン中..."
     if git clone "$url" "$name"; then
       echo -e "\e[1;32m[SUCCESS]\e[0m $name のクローン成功"
-
-      # サブモジュール初期化
-      echo -e "\e[1;34m[INFO]\e[0m $name のサブモジュールを初期化中..."
-      cd "$name"
-      git submodule update --init --recursive || {
-        echo -e "\e[1;33m[WARN]\e[0m $name はサブモジュールを持っていない、または初期化に失敗"
-      }
-      cd ..
-
-      # ディレクトリ中身確認
-      if [ -z "$(ls -A "$name")" ]; then
-        echo -e "\e[1;31m[FAILED]\e[0m $name のディレクトリが空です。clone に失敗した可能性があります" >&2
-        exit 1
-      else
-        echo -e "\e[1;32m[CHECK]\e[0m $name の中身が確認できました"
-      fi
-
     else
       echo -e "\e[1;31m[FAILED]\e[0m $name のクローンに失敗しました" >&2
       exit 1
     fi
   else
     echo -e "\e[1;36m[SKIP]\e[0m $name は既に存在します"
+  fi
+
+  # サブモジュールの初期化と取得
+  echo -e "\e[1;34m[INFO]\e[0m $name のサブモジュール初期化を確認中..."
+  cd "$name"
+  if [ -f .gitmodules ]; then
+    echo -e "\e[1;34m[INFO]\e[0m $name のサブモジュールを初期化中..."
+    if git submodule update --init --recursive; then
+      echo -e "\e[1;32m[SUCCESS]\e[0m $name のサブモジュール初期化完了"
+    else
+      echo -e "\e[1;31m[FAILED]\e[0m $name のサブモジュール初期化に失敗しました" >&2
+      exit 1
+    fi
+  else
+    echo -e "\e[1;36m[SKIP]\e[0m $name はサブモジュールを使用していません"
+  fi
+  cd ..
+
+  # 最終チェック
+  if [ -z "$(ls -A "$name")" ]; then
+    echo -e "\e[1;31m[FAILED]\e[0m $name の中身が空です。clone に失敗した可能性があります" >&2
+    exit 1
+  else
+    echo -e "\e[1;32m[CHECK]\e[0m $name の中身が確認できました"
   fi
 }
 
