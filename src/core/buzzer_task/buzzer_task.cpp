@@ -22,10 +22,10 @@ bool BuzzerTask::send_message(const IThreadMessage& msg) {
 
 void BuzzerTask::onMessage(const IThreadMessage& msg) {
     switch (msg.type()) {
-    case ThreadMessageType::StartBuzzer:
+    case ThreadMessageType::StartBuzzing:
         if (state_ == State::WaitStart) startBuzzer();
         break;
-    case ThreadMessageType::StopBuzzer:
+    case ThreadMessageType::StopBuzzing:
         if (state_ == State::Buzzing) stopBuzzer();
         break;
     default:

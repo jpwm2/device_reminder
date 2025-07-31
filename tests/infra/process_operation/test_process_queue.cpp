@@ -17,7 +17,7 @@ TEST(MessageQueueTest, PushAndPop) {
     auto logger = std::make_shared<Logger>();
     auto codec = std::make_shared<MessageCodec>();
     ProcessQueue mq(logger, codec, name);
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzer,
+    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing,
                                                std::vector<std::string>{"1"});
     mq.push(msg);
     auto res = mq.pop();

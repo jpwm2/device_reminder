@@ -21,7 +21,7 @@ public:
 TEST(ThreadSenderTest, SendPushesMessageToQueue) {
     auto queue = std::make_shared<ThreadQueue>(nullptr);
     NiceMock<MockLogger> logger;
-    auto message = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzer, std::vector<std::string>{"1"});
+    auto message = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing, std::vector<std::string>{"1"});
 
     ThreadSender sender(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), queue, message);
 
