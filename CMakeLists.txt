@@ -35,14 +35,13 @@ add_executable(test_app
     src/infra/logger/logger.cpp
     src/core/app/app.cpp
     src/core/main_task/main_task.cpp
-    src/core/main_task/main_task_handler.cpp
     src/core/human_task/human_task.cpp
     src/core/human_task/human_handler.cpp
-    src/core/human_task/human_task_handler.cpp
+
+
     src/core/buzzer_task/buzzer_task.cpp
     src/core/buzzer_task/buzzer_handler.cpp
     src/core/bluetooth_task/bluetooth_task.cpp
-    src/core/bluetooth_task/bluetooth_task_handler.cpp
 )
 
 # GPIODriver tests
