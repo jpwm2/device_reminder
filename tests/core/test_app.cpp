@@ -32,6 +32,8 @@ class MockBuzzerTask : public device_reminder::IBuzzerTask {
 public:
     MOCK_METHOD(void, run, (), (override));
     MOCK_METHOD(bool, send_message, (const device_reminder::IThreadMessage& msg), (override));
+    MOCK_METHOD(void, on_waiting, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_buzzing, (const std::vector<std::string>&), (override));
 };
 
 // ロガーのモック
