@@ -41,6 +41,7 @@ add_executable(test_app
     tests/core/test_main_handler.cpp
     tests/core/test_buzzer_handler.cpp
     tests/core/test_buzzer_task.cpp
+    tests/core/test_bluetooth_handler.cpp
     tests/core/test_bluetooth_task.cpp
     tests/infra/test_logger.cpp
     src/infra/logger/logger.cpp
@@ -56,6 +57,7 @@ add_executable(test_app
     src/core/buzzer_task/buzzer_task.cpp
     src/core/buzzer_task/buzzer_handler.cpp
     src/core/bluetooth_task/bluetooth_task.cpp
+    src/core/bluetooth_task/bluetooth_handler.cpp
 )
 
 # GPIODriver tests
