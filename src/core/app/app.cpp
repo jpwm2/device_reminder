@@ -1,5 +1,5 @@
 #include "app/app.hpp"
-#include "thread_message_operation/thread_message.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 
 namespace device_reminder {
 
@@ -17,7 +17,7 @@ App::App(std::unique_ptr<IMainTask> main_task,
 int App::run() {
     try {
         main_task_->run(ThreadMessage{});
-        human_task_->run(ThreadMessage{});
+        human_task_->on_detecting({});
         bluetooth_task_->run(ThreadMessage{});
         buzzer_task_->run();
     } catch (const std::exception& e) {

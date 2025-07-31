@@ -1,6 +1,7 @@
 #pragma once
 
-#include "infra/thread_message_operation/i_thread_message.hpp"
+#include <string>
+#include <vector>
 
 namespace device_reminder {
 
@@ -8,7 +9,9 @@ class IHumanTask {
 public:
     virtual ~IHumanTask() = default;
 
-    virtual void run(const IThreadMessage& msg) = 0;
+    virtual void on_detecting(const std::vector<std::string>& payload) = 0;
+    virtual void on_stopping(const std::vector<std::string>& payload) = 0;
+    virtual void on_cooldown(const std::vector<std::string>& payload) = 0;
 };
 
 } // namespace device_reminder

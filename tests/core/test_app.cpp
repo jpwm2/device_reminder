@@ -16,7 +16,9 @@ public:
 
 class MockHumanTask : public device_reminder::IHumanTask {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
+    MOCK_METHOD(void, on_detecting, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_stopping, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, on_cooldown, (const std::vector<std::string>&), (override));
 };
 
 class MockBluetoothTask : public device_reminder::IBluetoothTask {
@@ -37,6 +39,7 @@ class MockLogger : public ILogger {
 public:
     MOCK_METHOD(void, info, (const std::string& message), (override));
     MOCK_METHOD(void, error, (const std::string& message), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
 } // namespace device_reminder
@@ -61,7 +64,9 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
 
     // 各 run メソッドが1回ずつ呼び出されることを期待
     EXPECT_CALL(*main_ptr, run(testing::_)).Times(1);
-    EXPECT_CALL(*human_ptr, run(testing::_)).Times(1);
+    EXPECT_CALL(*human_ptr, on_detecting(testing::_)).Times(1);
+    EXPECT_CALL(*human_ptr, on_stopping(testing::_)).Times(0);
+    EXPECT_CALL(*human_ptr, on_cooldown(testing::_)).Times(0);
     EXPECT_CALL(*bluetooth_ptr, run(testing::_)).Times(1);
     EXPECT_CALL(*buzzer_ptr, run()).Times(1);
     EXPECT_CALL(*logger_ptr, info(testing::_)).Times(testing::AtLeast(1));
@@ -88,6 +93,9 @@ TEST(AppTest, Run_LogsAndReturns1OnStdException) {
 
     // main_task の run が例外を投げる
     EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(std::runtime_error("test error")));
+    EXPECT_CALL(*human, on_detecting(testing::_)).Times(0);
+    EXPECT_CALL(*human, on_stopping(testing::_)).Times(0);
+    EXPECT_CALL(*human, on_cooldown(testing::_)).Times(0);
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("test error")));
 
@@ -110,6 +118,9 @@ TEST(AppTest, Run_LogsAndReturns2OnUnknownException) {
 
     // main_task の run が不明な例外を投げる
     EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(42));  // 整数例外
+    EXPECT_CALL(*human, on_detecting(testing::_)).Times(0);
+    EXPECT_CALL(*human, on_stopping(testing::_)).Times(0);
+    EXPECT_CALL(*human, on_cooldown(testing::_)).Times(0);
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("Unknown exception")));
 
@@ -117,4 +128,4 @@ TEST(AppTest, Run_LogsAndReturns2OnUnknownException) {
     int result = app.run();
 
     EXPECT_EQ(result, 2);
-}
+} // namespace device_reminder

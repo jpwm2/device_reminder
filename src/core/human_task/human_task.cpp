@@ -1,57 +1,30 @@
 #include "human_task/human_task.hpp"
-#include "infra/logger/i_logger.hpp"
-#include "process_message_operation/process_message.hpp"
 
 namespace device_reminder {
 
-HumanTask::HumanTask(std::shared_ptr<IPIRDriver> pir,
-                     std::shared_ptr<ITimerService> timer,
-                     std::shared_ptr<IProcessMessageSender> sender,
-                     std::shared_ptr<ILogger> logger)
-    : pir_(std::move(pir))
-    , timer_(std::move(timer))
-    , sender_(std::move(sender))
-    , logger_(std::move(logger))
-    , state_(State::Detecting)
-{
+HumanTask::HumanTask(std::shared_ptr<ILogger> logger,
+                     std::shared_ptr<IPIRDriver> pir,
+                     std::shared_ptr<IProcessSender> sender)
+    : logger_(std::move(logger)), pir_(std::move(pir)), sender_(std::move(sender)) {
     if (logger_) logger_->info("HumanTask created");
 }
 
-HumanTask::~HumanTask() {
-    if (timer_ && timer_->active()) timer_->stop();
-    if (logger_) logger_->info("HumanTask destroyed");
+void HumanTask::on_detecting(const std::vector<std::string>&) {
+    if (!pir_) return;
+    int val = pir_->read();
+    if (val > 0 && sender_) {
+        sender_->send();
+        if (logger_) logger_->info("Human detected");
+    }
 }
 
-void HumanTask::run(const IThreadMessage& msg) {
-    switch (msg.type()) {
-    case ThreadMessageType::HumanDetected:
-        if (state_ == State::Detecting) {
-            if (sender_) sender_->enqueue(ProcessMessage{ThreadMessageType::HumanDetected, true});
-            if (logger_) logger_->info("Human detected");
-        }
-        break;
-    case ThreadMessageType::HumanDetectStop:
-        if (state_ == State::Detecting) {
-            state_ = State::Stopped;
-            if (logger_) logger_->info("Detection stopped");
-        }
-        break;
-    case ThreadMessageType::HumanDetectStart:
-        if (state_ == State::Stopped) {
-            state_ = State::Cooldown;
-            if (timer_) timer_->start(5000, ProcessMessage{ThreadMessageType::Timeout});
-            if (logger_) logger_->info("Detection cooldown");
-        }
-        break;
-    case ThreadMessageType::Timeout:
-        if (state_ == State::Cooldown) {
-            state_ = State::Detecting;
-            if (logger_) logger_->info("Cooldown end; detecting");
-        }
-        break;
-    default:
-        break;
-    }
+void HumanTask::on_stopping(const std::vector<std::string>&) {
+    if (logger_) logger_->info("Human detection stopped");
+}
+
+void HumanTask::on_cooldown(const std::vector<std::string>&) {
+    // intentionally do nothing
+    if (logger_) logger_->info("Human detection cooldown");
 }
 
 } // namespace device_reminder
