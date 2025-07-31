@@ -92,6 +92,11 @@ add_executable(test_infra_extra
     tests/stubs/posix_mq_stub.cpp
 )
 
+# Simple mock test
+add_executable(mock_sample_test
+    tests/sample/mock_sample.cpp
+)
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
     gtest
@@ -116,6 +121,12 @@ target_link_libraries(test_infra_extra
     gmock
     gtest_main
 )
+
+target_link_libraries(mock_sample_test
+    gtest
+    gmock
+    gtest_main
+)
 # pthreadはUNIX系でのみリンク
 if(UNIX)
     target_link_libraries(test_app pthread)
@@ -133,11 +144,16 @@ if(UNIX)
     target_link_libraries(test_infra_extra pthread rt)
 endif()
 
+if(UNIX)
+    target_link_libraries(mock_sample_test pthread)
+endif()
+
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIODriverTests COMMAND test_gpio_driver)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
+add_test(NAME MockSampleTests COMMAND mock_sample_test)
 
 
 # 動的ランタイム(MDd)に統一する
