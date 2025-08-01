@@ -19,7 +19,7 @@ TEST(MessageSenderTest, EnqueueSendsMessage) {
     auto logger = std::make_shared<Logger>();
     auto codec = std::make_shared<MessageCodec>();
     auto queue = std::make_shared<ProcessQueue>(logger, codec, name);
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzer, std::vector<std::string>{"1"});
+    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{"1"});
     ProcessSender sender(queue, msg);
 
     sender.send();

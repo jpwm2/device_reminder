@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <gmock/gmock.h>
 
 #include "infra/gpio_operation/gpio_setter/gpio_setter.hpp"
@@ -127,4 +128,3 @@ TEST_F(GPIOSetterTest, DestructorWithNullLoggerNoThrow) {
         GPIOSetter setter(nullptr, 1);
     }
 }
-
