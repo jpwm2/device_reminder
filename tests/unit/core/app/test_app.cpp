@@ -9,35 +9,29 @@ using ::testing::StrictMock;
 namespace device_reminder {
 
 // 各プロセスのモッククラス
-class MockMainTask : public device_reminder::IMainTask {
+class MockMainProcess : public device_reminder::IMainProcess {
 public:
-    MOCK_METHOD(void, run, (const device_reminder::IThreadMessage& msg), (override));
-    MOCK_METHOD(void, on_waiting_for_human, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_response_to_buzzer_task, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_response_to_human_task, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_cooldown, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_waiting_for_second_response, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(int, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
-class MockHumanTask : public device_reminder::IHumanTask {
+class MockHumanProcess : public device_reminder::IHumanProcess {
 public:
-    MOCK_METHOD(void, on_detecting, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_stopping, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_cooldown, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(int, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
-class MockBluetoothTask : public device_reminder::IBluetoothTask {
+class MockBluetoothProcess : public device_reminder::IBluetoothProcess {
 public:
-    MOCK_METHOD(void, on_waiting, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(int, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
 
-class MockBuzzerTask : public device_reminder::IBuzzerTask {
+class MockBuzzerProcess : public device_reminder::IBuzzerProcess {
 public:
-    MOCK_METHOD(void, run, (), (override));
-    MOCK_METHOD(bool, send_message, (const device_reminder::IThreadMessage& msg), (override));
-    MOCK_METHOD(void, on_waiting, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_buzzing, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(int, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
 // ロガーのモック
@@ -55,10 +49,10 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
     using namespace device_reminder;
 
     // StrictMock を使うと予期しない呼び出しを検出できる
-    auto main = std::make_unique<StrictMock<MockMainTask>>();
-    auto human = std::make_unique<StrictMock<MockHumanTask>>();
-    auto bluetooth = std::make_unique<StrictMock<MockBluetoothTask>>();
-    auto buzzer = std::make_unique<StrictMock<MockBuzzerTask>>();
+    auto main = std::make_unique<StrictMock<MockMainProcess>>();
+    auto human = std::make_unique<StrictMock<MockHumanProcess>>();
+    auto bluetooth = std::make_unique<StrictMock<MockBluetoothProcess>>();
+    auto buzzer = std::make_unique<StrictMock<MockBuzzerProcess>>();
     auto logger = std::make_unique<StrictMock<MockLogger>>();
 
     // raw ポインタを退避して EXPECT_CALL に使う
@@ -69,11 +63,9 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
     auto* logger_ptr = logger.get();
 
     // 各 run メソッドが1回ずつ呼び出されることを期待
-    EXPECT_CALL(*main_ptr, run(testing::_)).Times(1);
-    EXPECT_CALL(*human_ptr, on_detecting(testing::_)).Times(1);
-    EXPECT_CALL(*human_ptr, on_stopping(testing::_)).Times(0);
-    EXPECT_CALL(*human_ptr, on_cooldown(testing::_)).Times(0);
-    EXPECT_CALL(*bluetooth_ptr, on_waiting(testing::_)).Times(1);
+    EXPECT_CALL(*main_ptr, run()).Times(1);
+    EXPECT_CALL(*human_ptr, run()).Times(1);
+    EXPECT_CALL(*bluetooth_ptr, run()).Times(1);
     EXPECT_CALL(*buzzer_ptr, run()).Times(1);
     EXPECT_CALL(*logger_ptr, info(testing::_)).Times(testing::AtLeast(1));
 
@@ -89,19 +81,16 @@ TEST(AppTest, Run_CallsAllTaskRunMethods) {
 TEST(AppTest, Run_LogsAndReturns1OnStdException) {
     using namespace device_reminder;
 
-    auto main = std::make_unique<StrictMock<MockMainTask>>();
-    auto human = std::make_unique<StrictMock<MockHumanTask>>();
-    auto bluetooth = std::make_unique<StrictMock<MockBluetoothTask>>();
-    auto buzzer = std::make_unique<StrictMock<MockBuzzerTask>>();
+    auto main = std::make_unique<StrictMock<MockMainProcess>>();
+    auto human = std::make_unique<StrictMock<MockHumanProcess>>();
+    auto bluetooth = std::make_unique<StrictMock<MockBluetoothProcess>>();
+    auto buzzer = std::make_unique<StrictMock<MockBuzzerProcess>>();
     auto logger = std::make_unique<StrictMock<MockLogger>>();
 
     auto* logger_ptr = logger.get();
 
     // main_task の run が例外を投げる
-    EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(std::runtime_error("test error")));
-    EXPECT_CALL(*human, on_detecting(testing::_)).Times(0);
-    EXPECT_CALL(*human, on_stopping(testing::_)).Times(0);
-    EXPECT_CALL(*human, on_cooldown(testing::_)).Times(0);
+    EXPECT_CALL(*main, run()).WillOnce(testing::Throw(std::runtime_error("test error")));
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("test error")));
 
@@ -114,19 +103,16 @@ TEST(AppTest, Run_LogsAndReturns1OnStdException) {
 TEST(AppTest, Run_LogsAndReturns2OnUnknownException) {
     using namespace device_reminder;
 
-    auto main = std::make_unique<StrictMock<MockMainTask>>();
-    auto human = std::make_unique<StrictMock<MockHumanTask>>();
-    auto bluetooth = std::make_unique<StrictMock<MockBluetoothTask>>();
-    auto buzzer = std::make_unique<StrictMock<MockBuzzerTask>>();
+    auto main = std::make_unique<StrictMock<MockMainProcess>>();
+    auto human = std::make_unique<StrictMock<MockHumanProcess>>();
+    auto bluetooth = std::make_unique<StrictMock<MockBluetoothProcess>>();
+    auto buzzer = std::make_unique<StrictMock<MockBuzzerProcess>>();
     auto logger = std::make_unique<StrictMock<MockLogger>>();
 
     auto* logger_ptr = logger.get();
 
     // main_task の run が不明な例外を投げる
-    EXPECT_CALL(*main, run(testing::_)).WillOnce(testing::Throw(42));  // 整数例外
-    EXPECT_CALL(*human, on_detecting(testing::_)).Times(0);
-    EXPECT_CALL(*human, on_stopping(testing::_)).Times(0);
-    EXPECT_CALL(*human, on_cooldown(testing::_)).Times(0);
+    EXPECT_CALL(*main, run()).WillOnce(testing::Throw(42));  // 整数例外
     // error ログが出力されることを期待
     EXPECT_CALL(*logger_ptr, error(testing::HasSubstr("Unknown exception")));
 

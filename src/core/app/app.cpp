@@ -1,25 +1,24 @@
 #include "app/app.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
 
 namespace device_reminder {
 
-App::App(std::unique_ptr<IMainTask> main_task,
-         std::unique_ptr<IHumanTask> human_task,
-         std::unique_ptr<IBluetoothTask> bluetooth_task,
-         std::unique_ptr<IBuzzerTask> buzzer_task,
+App::App(std::unique_ptr<IMainProcess> main_process,
+         std::unique_ptr<IHumanProcess> human_process,
+         std::unique_ptr<IBluetoothProcess> bluetooth_process,
+         std::unique_ptr<IBuzzerProcess> buzzer_process,
          std::unique_ptr<ILogger> logger)
-    : main_task_(std::move(main_task))
-    , human_task_(std::move(human_task))
-    , bluetooth_task_(std::move(bluetooth_task))
-    , buzzer_task_(std::move(buzzer_task))
+    : main_process_(std::move(main_process))
+    , human_process_(std::move(human_process))
+    , bluetooth_process_(std::move(bluetooth_process))
+    , buzzer_process_(std::move(buzzer_process))
     , logger_(std::move(logger)) {}
 
 int App::run() {
     try {
-        main_task_->run(ThreadMessage(ThreadMessageType::StartBuzzing, {}));
-        human_task_->on_detecting({});
-        bluetooth_task_->on_waiting({});
-        buzzer_task_->run();
+        if (main_process_) main_process_->run();
+        if (human_process_) human_process_->run();
+        if (bluetooth_process_) bluetooth_process_->run();
+        if (buzzer_process_) buzzer_process_->run();
     } catch (const std::exception& e) {
         logger_->error(std::string("[App::run] std::exception caught: ") + e.what());
         return 1;
