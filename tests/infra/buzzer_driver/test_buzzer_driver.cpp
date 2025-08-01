@@ -27,9 +27,9 @@ public:
 
 class MockLoader : public IFileLoader {
 public:
-    MOCK_METHOD(int, load_int, (), (const, override));
-    MOCK_METHOD(std::string, load_string, (), (const, override));
-    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
+    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
+    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
 };
 
 } // namespace
@@ -40,7 +40,7 @@ TEST(BuzzerDriverTest, ConstructorAllValid) {
     auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
 
     EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
-    EXPECT_CALL(*loader, load_int()).Times(1);
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).Times(1);
 
     BuzzerDriver driver(loader, logger, gpio);
 }
@@ -58,7 +58,7 @@ TEST(BuzzerDriverTest, ConstructorLoggerNull) {
     auto loader = std::make_shared<StrictMock<MockLoader>>();
     auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
 
-    EXPECT_CALL(*loader, load_int()).Times(1);
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).Times(1);
 
     BuzzerDriver driver(loader, nullptr, gpio);
 }
@@ -72,7 +72,7 @@ TEST(BuzzerDriverTest, ConstructorLoadIntThrowsLogsError) {
     auto logger = std::make_shared<StrictMock<MockLogger>>();
 
     EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
-    EXPECT_CALL(*loader, load_int()).WillOnce(Throw(std::runtime_error("err")));
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).WillOnce(Throw(std::runtime_error("err")));
     EXPECT_CALL(*logger, error("Failed to load buzzer config")).Times(1);
 
     BuzzerDriver driver(loader, logger, nullptr);

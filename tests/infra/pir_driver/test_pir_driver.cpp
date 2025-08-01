@@ -29,9 +29,9 @@ public:
 };
 class DummyLoader : public IFileLoader {
 public:
-    int load_int() const override { return 0; }
-    std::string load_string() const override { return ""; }
-    std::vector<std::string> load_string_list() const override { return {}; }
+    int load_int(const std::string&) const override { return 0; }
+    std::string load_string(const std::string&) const override { return ""; }
+    std::vector<std::string> load_string_list(const std::string&) const override { return {}; }
 };
 } // namespace
 

@@ -75,7 +75,7 @@ void MainTask::on_waiting_for_human(const std::vector<std::string>&) {
 void MainTask::on_response_to_buzzer_task(const std::vector<std::string>& payload) {
     bool found = false;
     if (file_loader_) {
-        auto regs = file_loader_->load_string_list();
+        auto regs = file_loader_->load_string_list("device_list");
         for (const auto& d : payload) {
             if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
                 found = true;
@@ -96,7 +96,7 @@ void MainTask::on_response_to_buzzer_task(const std::vector<std::string>& payloa
 void MainTask::on_response_to_human_task(const std::vector<std::string>& payload) {
     bool found = false;
     if (file_loader_) {
-        auto regs = file_loader_->load_string_list();
+        auto regs = file_loader_->load_string_list("device_list");
         for (const auto& d : payload) {
             if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
                 found = true;
@@ -126,7 +126,7 @@ void MainTask::on_cooldown(const std::vector<std::string>&) {
 void MainTask::on_waiting_for_second_response(const std::vector<std::string>& payload) {
     bool found = false;
     if (file_loader_) {
-        auto regs = file_loader_->load_string_list();
+        auto regs = file_loader_->load_string_list("device_list");
         for (const auto& d : payload) {
             if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
                 found = true;

@@ -30,7 +30,7 @@ void BluetoothTask::on_waiting(const std::vector<std::string>&) {
         if (driver_) {
             auto devices = driver_->scan();
             if (loader_) {
-                auto regs = loader_->load_string_list();
+                auto regs = loader_->load_string_list("device_list");
                 for (const auto& name : devices) {
                     if (std::find(regs.begin(), regs.end(), name) != regs.end()) {
                         detected = true;
