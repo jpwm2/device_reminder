@@ -30,6 +30,16 @@ add_executable(process_queue_tests
 
 target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
 
+# MessageCodec のテスト
+add_executable(message_codec_tests
+    infra/process_operation/test_message_codec.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/message_codec.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_message.cpp
+)
+
+target_link_libraries(message_codec_tests gtest gmock gtest_main pthread)
+
 enable_testing()
 add_test(NAME process_queue_tests COMMAND process_queue_tests)
+add_test(NAME message_codec_tests COMMAND message_codec_tests)
 
