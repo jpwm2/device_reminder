@@ -85,7 +85,7 @@ add_executable(test_infra_extra
     tests/infra/test_timer_service.cpp
     tests/infra/test_watch_dog.cpp
     tests/infra/test_process_dispatcher.cpp
-    tests/infra/test_gpio_setter.cpp
+    tests/infra/gpio_operation/gpio_setter/test_gpio_setter.cpp
     tests/infra/test_buzzer_driver.cpp
     tests/infra/test_bluetooth_driver.cpp
     tests/infra/test_file_loader.cpp
