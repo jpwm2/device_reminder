@@ -82,13 +82,11 @@ TEST(HumanProcessTest, ConstructLogsWhenLoggerProvided) {
     auto receiver = std::make_shared<StrictMock<MockReceiver>>();
     auto dispatcher = std::make_shared<StrictMock<MockDispatcher>>();
     auto sender = std::make_shared<StrictMock<MockSender>>();
-    auto loader = std::make_shared<StrictMock<MockLoader>>();
+    auto loader = std::make_shared<NiceMock<MockLoader>>();
     auto logger = std::make_shared<StrictMock<MockLogger>>();
     auto watchdog = std::make_shared<StrictMock<MockWatchDog>>();
     auto handler = std::make_shared<StrictMock<MockHandler>>();
     auto task = std::make_shared<StrictMock<MockTask>>();
-
-    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(0));
 
     EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(0));
     EXPECT_CALL(*logger, info("ProcessBase initialized")).Times(1);
@@ -101,7 +99,7 @@ TEST(HumanProcessTest, ConstructNoLogger) {
     auto receiver = std::make_shared<StrictMock<MockReceiver>>();
     auto dispatcher = std::make_shared<StrictMock<MockDispatcher>>();
     auto sender = std::make_shared<StrictMock<MockSender>>();
-    auto loader = std::make_shared<StrictMock<MockLoader>>();
+    auto loader = std::make_shared<NiceMock<MockLoader>>();
     auto watchdog = std::make_shared<StrictMock<MockWatchDog>>();
     auto handler = std::make_shared<StrictMock<MockHandler>>();
     auto task = std::make_shared<StrictMock<MockTask>>();

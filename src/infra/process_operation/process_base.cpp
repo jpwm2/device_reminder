@@ -58,9 +58,7 @@ int ProcessBase::run()
 void ProcessBase::stop()
 {
     g_stop_flag.store(true);
-    if (!running_.load()) {
-        if (logger_) logger_->info("ProcessBase stop requested");
-    }
+    if (logger_) logger_->info("ProcessBase stop requested");
 }
 
 int ProcessBase::priority() const noexcept

@@ -12,7 +12,9 @@ ProcessReceiver::ProcessReceiver(std::shared_ptr<ILogger> logger,
                                  std::shared_ptr<IProcessDispatcher> dispatcher)
     : logger_(std::move(logger)),
       queue_(std::move(queue)),
-      dispatcher_(std::move(dispatcher)) {}
+      dispatcher_(std::move(dispatcher)) {
+    if (logger_) logger_->info("ProcessReceiver created");
+}
 
 ProcessReceiver::~ProcessReceiver() {
     stop();
