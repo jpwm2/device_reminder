@@ -8,9 +8,7 @@ namespace device_reminder {
 ThreadDispatcher::ThreadDispatcher(std::shared_ptr<ILogger> logger,
                                    HandlerMap handler_map)
     : logger_(std::move(logger)),
-      handler_map_(std::move(handler_map)) {
-    if (logger_) logger_->info("ThreadDispatcher created");
-}
+      handler_map_(std::move(handler_map)) {}
 
 void ThreadDispatcher::dispatch(std::shared_ptr<IThreadMessage> msg) {
     if (!msg) {

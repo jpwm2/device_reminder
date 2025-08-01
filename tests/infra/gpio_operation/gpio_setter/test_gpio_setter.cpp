@@ -98,10 +98,11 @@ TEST_F(GPIOSetterTest, WriteWithLoggerNoError) {
     {
         ::testing::InSequence seq;
         EXPECT_CALL(*logger, info("GPIOSetter initialized"));
+
+        EXPECT_CALL(*logger, error(testing::_)).Times(0);
         EXPECT_CALL(*logger, info("GPIOSetter destroyed"));
         GPIOSetter setter(logger, 1);
         gpiod_stub_set_set_value_result(0);
-        EXPECT_CALL(*logger, error(testing::_)).Times(0);
         EXPECT_NO_THROW(setter.write(true));
     }
 }

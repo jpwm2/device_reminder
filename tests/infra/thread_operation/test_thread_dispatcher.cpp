@@ -46,7 +46,6 @@ TEST(ThreadDispatcherTest, IgnoresUnknownMessage) {
 
 TEST(ThreadDispatcherTest, ConstructorLogsCreation) {
     NiceMock<MockLogger> logger;
-    EXPECT_CALL(logger, info("ThreadDispatcher created")).Times(1);
 
     ThreadDispatcher::HandlerMap map{};
     ThreadDispatcher disp(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), map);
