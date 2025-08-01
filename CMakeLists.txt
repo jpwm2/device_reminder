@@ -21,13 +21,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include/infra
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/di
     ${CMAKE_SOURCE_DIR}/tests
     ${CMAKE_SOURCE_DIR}/tests/stubs
-    ${CMAKE_SOURCE_DIR}/main_task
-    ${CMAKE_SOURCE_DIR}/human_task
-    ${CMAKE_SOURCE_DIR}/bluetooth_task
-    ${CMAKE_SOURCE_DIR}/buzzer_task
     ${SPDLOG_INCLUDE_DIR}
     ${BOOST_DI_INCLUDE_DIR}
 )

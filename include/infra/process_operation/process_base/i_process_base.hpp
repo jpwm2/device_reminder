@@ -18,7 +18,7 @@ public:
      * - 実装は内部スレッドを起動して待機し、
      *   終了要求を受け取ったら join して戻る。
      */
-    virtual void run() = 0;
+    virtual int run() = 0;
 
     /// 非同期に終了要求を出す（Ctrl‑C 以外でも停止できるように）
     virtual void stop() = 0;

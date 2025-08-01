@@ -26,7 +26,7 @@ public:
                 std::shared_ptr<ILogger>                 logger,
                 std::string                              process_name);
 
-    void run() override;  ///< メインループ
+    int  run() override;  ///< メインループ
     void stop() override;  ///< 外部停止
     int  priority() const noexcept override;
 

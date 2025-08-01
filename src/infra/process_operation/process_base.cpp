@@ -38,7 +38,7 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
     if (logger_) logger_->info("ProcessBase initialized");
 }
 
-void ProcessBase::run()
+int ProcessBase::run()
 {
     if (receiver_) receiver_->run();
 
@@ -50,6 +50,7 @@ void ProcessBase::run()
 
     if (receiver_) receiver_->stop();
     if (logger_) logger_->info("ProcessBase run end");
+    return 0;
 }
 
 void ProcessBase::stop()
