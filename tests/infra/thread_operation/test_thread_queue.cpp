@@ -43,6 +43,7 @@ TEST(ThreadQueueTest, SizeReflectsQueueState) {
   EXPECT_EQ(q.size(), 1u);
 }
 
+
 TEST(ThreadQueueTest, ConstructorAcceptsNullLogger) {
   ThreadQueue q(nullptr);
   EXPECT_EQ(q.size(), 0u);
@@ -93,3 +94,4 @@ TEST(ThreadQueueTest, PushNullMessageWithMockLogger) {
   auto res = q.pop();
   EXPECT_EQ(res, nullptr);
 }
+

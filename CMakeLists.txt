@@ -34,16 +34,16 @@ include_directories(
 
 # テストコードと対象ソース
 add_executable(test_app
-    tests/core/test_app.cpp
-    tests/core/test_main_task.cpp
-    tests/core/test_human_task.cpp
-    tests/core/test_human_handler.cpp
-    tests/core/test_main_handler.cpp
-    tests/core/test_buzzer_handler.cpp
-    tests/core/test_buzzer_task.cpp
-    tests/core/test_bluetooth_handler.cpp
-    tests/core/test_bluetooth_task.cpp
-    tests/infra/test_logger.cpp
+    tests/core/app/test_app.cpp
+    tests/core/main_task/test_main_task.cpp
+    tests/core/human_task/test_human_task.cpp
+    tests/core/human_task/test_human_handler.cpp
+    tests/core/main_task/test_main_handler.cpp
+    tests/core/buzzer_task/test_buzzer_handler.cpp
+    tests/core/buzzer_task/test_buzzer_task.cpp
+    tests/core/bluetooth_task/test_bluetooth_handler.cpp
+    tests/core/bluetooth_task/test_bluetooth_task.cpp
+    tests/infra/logger/test_logger.cpp
     src/infra/logger/logger.cpp
     src/core/app/app.cpp
     src/core/main_task/main_task.cpp
@@ -64,30 +64,29 @@ add_executable(test_app
 
 # GPIOReader tests
 add_executable(test_gpio_reader
-    tests/infra/test_gpio_reader.cpp
+    tests/infra/gpio_operation/gpio_reader/test_gpio_reader.cpp
     src/infra/gpio_operation/gpio_reader/gpio_reader.cpp
     tests/stubs/gpiod_stub.cpp
 )
 
 # Additional infra tests
 add_executable(test_infra_extra
-    tests/infra/test_local_message_queue.cpp
-    tests/infra/test_message_queue.cpp
-    tests/infra/test_message_sender.cpp
-    tests/infra/test_process_receiver.cpp
-    tests/infra/test_thread_message_sender.cpp
-    tests/infra/test_thread_receiver.cpp
-    tests/infra/test_thread_sender.cpp
+
+    tests/infra/process_operation/test_process_message.cpp
+    tests/infra/process_operation/test_process_receiver.cpp
+    tests/infra/thread_operation/test_thread_receiver.cpp
+    tests/infra/thread_operation/test_thread_sender.cpp
     tests/infra/thread_operation/test_thread_queue.cpp
-    tests/infra/test_thread_dispatcher.cpp
-    tests/infra/test_pir_driver.cpp
-    tests/infra/test_timer_service.cpp
-    tests/infra/test_watch_dog.cpp
-    tests/infra/test_process_dispatcher.cpp
-    tests/infra/test_gpio_setter.cpp
-    tests/infra/test_buzzer_driver.cpp
-    tests/infra/test_bluetooth_driver.cpp
-    tests/infra/test_file_loader.cpp
+    tests/infra/thread_operation/test_thread_dispatcher.cpp
+    tests/infra/thread_operation/test_thread_message.cpp
+    tests/infra/pir_driver/test_pir_driver.cpp
+    tests/infra/timer_service/test_timer_service.cpp
+    tests/infra/watch_dog/test_watch_dog.cpp
+    tests/infra/process_operation/test_process_dispatcher.cpp
+    tests/infra/gpio_operation/gpio_setter/test_gpio_setter.cpp
+    tests/infra/buzzer_driver/test_buzzer_driver.cpp
+    tests/infra/bluetooth_driver/test_bluetooth_driver.cpp
+    tests/infra/file_loader/test_file_loader.cpp
     src/infra/logger/logger.cpp
     src/infra/thread_operation/thread_queue.cpp
     src/infra/process_operation/process_message.cpp
@@ -95,18 +94,14 @@ add_executable(test_infra_extra
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
     src/infra/watch_dog/watch_dog.cpp
-    src/infra/gpio_operation/gpio_setter.cpp
+    src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
-    src/infra/io/file_loader.cpp
+    src/infra/file_loader/file_loader.cpp
     tests/stubs/posix_mq_stub.cpp
 )
 
-# Simple mock test
-add_executable(mock_sample_test
-    tests/sample/mock_sample.cpp
-)
 
 # Build application with main.cpp
 file(GLOB_RECURSE DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -135,11 +130,6 @@ target_link_libraries(test_infra_extra
     gtest_main
 )
 
-target_link_libraries(mock_sample_test
-    gtest
-    gmock
-    gtest_main
-)
 # pthreadはUNIX系でのみリンク
 if(UNIX)
     target_link_libraries(test_app pthread)
@@ -154,15 +144,11 @@ if(UNIX)
     target_link_libraries(test_infra_extra pthread rt)
 endif()
 
-if(UNIX)
-    target_link_libraries(mock_sample_test pthread)
-endif()
 
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
-add_test(NAME MockSampleTests COMMAND mock_sample_test)
 
 
 # 動的ランタイム(MDd)に統一する
