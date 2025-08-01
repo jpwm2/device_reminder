@@ -20,11 +20,12 @@ MainProcess::MainProcess(std::shared_ptr<IProcessReceiver> receiver,
     if (logger_) logger_->info("MainProcess created");
 }
 
-void MainProcess::run()
+int MainProcess::run()
 {
     if (watchdog_) watchdog_->start();
-    ProcessBase::run();
+    auto result = ProcessBase::run();
     if (watchdog_) watchdog_->stop();
+    return result;
 }
 
 void MainProcess::stop()
