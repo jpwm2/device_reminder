@@ -27,6 +27,7 @@ add_executable(process_queue_tests
     ${PROJECT_ROOT}/src/infra/logger/logger.cpp
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
 )
+target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
 
 # ProcessSender のテスト
 add_executable(process_sender_tests
@@ -38,8 +39,8 @@ add_executable(process_sender_tests
     ${PROJECT_ROOT}/src/infra/logger/logger.cpp
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
 )
-
-target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
+target_link_libraries(process_sender_tests gtest gmock gtest_main pthread)
+add_test(NAME process_sender_tests COMMAND process_sender_tests)
 
 # MessageCodec のテスト
 add_executable(message_codec_tests
@@ -62,10 +63,8 @@ add_executable(pir_driver_tests
     ${PROJECT_ROOT}/src/infra/logger/logger.cpp
 )
 target_link_libraries(pir_driver_tests gtest gmock gtest_main pthread)
-
-enable_testing()
-add_test(NAME process_queue_tests COMMAND process_queue_tests)
 add_test(NAME pir_driver_tests COMMAND pir_driver_tests)
+
 
 # BluetoothDriver のテスト
 add_executable(bluetooth_driver_tests
@@ -78,6 +77,4 @@ add_executable(bluetooth_driver_tests
 target_link_libraries(bluetooth_driver_tests gtest gmock gtest_main pthread)
 
 
-enable_testing()
-add_test(NAME process_queue_tests COMMAND process_queue_tests)
 add_test(NAME bluetooth_driver_tests COMMAND bluetooth_driver_tests)
