@@ -30,6 +30,15 @@ add_executable(process_queue_tests
 
 target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
 
+# PIRDriver テスト
+add_executable(pir_driver_tests
+    infra/pir_driver/test_pir_driver.cpp
+    ${PROJECT_ROOT}/src/infra/pir_driver/pir_driver.cpp
+    ${PROJECT_ROOT}/src/infra/logger/logger.cpp
+)
+target_link_libraries(pir_driver_tests gtest gmock gtest_main pthread)
+
 enable_testing()
 add_test(NAME process_queue_tests COMMAND process_queue_tests)
+add_test(NAME pir_driver_tests COMMAND pir_driver_tests)
 

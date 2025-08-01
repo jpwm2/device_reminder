@@ -5,6 +5,8 @@
 #include "infra/gpio_operation/gpio_reader/i_gpio_reader.hpp"
 #include "infra/logger/i_logger.hpp"
 #include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
+#include <thread>
+#include <atomic>
 
 #include <memory>
 #include <string>
