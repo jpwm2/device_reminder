@@ -70,7 +70,7 @@ TEST(HumanHandlerTest, CooldownCallsTask) {
 
     EXPECT_CALL(*task, on_cooldown(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::CoolDownTimeout, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::CooldownTimeout, std::vector<std::string>{});
     handler.handle(msg);
 }
 

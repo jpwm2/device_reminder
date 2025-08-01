@@ -14,7 +14,7 @@ enum class ThreadMessageType {
     RespondDeviceNotFound,
     StartBuzzing,
     StopBuzzing,
-    BuzzingTimeout,
+    BuzzTimeout,
     CooldownTimeout,
     ProcessingTimeout,
 

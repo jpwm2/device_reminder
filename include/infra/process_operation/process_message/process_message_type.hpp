@@ -11,7 +11,7 @@ enum class ProcessMessageType {
     StartBuzzing,
     StopBuzzing,
     BuzzTimeout,
-    CoolDownTimeout,
+    CooldownTimeout,
     ScanTimeout
 };
 
