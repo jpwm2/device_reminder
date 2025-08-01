@@ -24,10 +24,10 @@ void HumanHandler::handle(std::shared_ptr<IProcessMessage> msg) {
         if (timer_) timer_->start();
         if (logger_) logger_->info("StopHumanDetection");
         break;
-    case ProcessMessageType::CoolDownTimeout:
+    case ProcessMessageType::CooldownTimeout:
         state_ = State::Cooldown;
         if (timer_) timer_->stop();
-        if (logger_) logger_->info("CoolDownTimeout");
+        if (logger_) logger_->info("CooldownTimeout");
         break;
     default:
         break;
