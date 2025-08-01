@@ -69,6 +69,7 @@ TEST(ProcessReceiverTest, ConstructorWithoutLogger) {
 
 TEST(ProcessReceiverTest, RunWithNullQueueLogsLoopEnd) {
     NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ProcessReceiver created")).Times(1);
     EXPECT_CALL(logger, info("ProcessReceiver loop end")).Times(1);
     EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(1);
 
@@ -84,6 +85,7 @@ TEST(ProcessReceiverTest, RunWithNullQueueLogsLoopEnd) {
 
 TEST(ProcessReceiverTest, StopWithoutRunLogsStoppedTwice) {
     NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ProcessReceiver created")).Times(1);
     EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(2);
 
     {
