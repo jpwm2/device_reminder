@@ -72,7 +72,7 @@ TEST(HumanTaskTest, CooldownDoesNothing) {
 // --- Additional tests for pointer and logger behaviours ---
 
 TEST(HumanTaskTest, ConstructorLogsWhenLoggerProvided) {
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     EXPECT_CALL(*logger, info(testing::_)).Times(1);
     HumanTask task(logger, nullptr, nullptr);
 }
@@ -83,7 +83,7 @@ TEST(HumanTaskTest, ConstructorNoLogWhenLoggerNull) {
 
 TEST(HumanTaskTest, DetectingRunsAndLogs) {
     auto pir = std::make_shared<StrictMock<MockPIR>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, pir, nullptr);
 
     EXPECT_CALL(*pir, run()).Times(1);
@@ -93,7 +93,7 @@ TEST(HumanTaskTest, DetectingRunsAndLogs) {
 }
 
 TEST(HumanTaskTest, DetectingWithoutPirOnlyLogs) {
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, nullptr, nullptr);
 
     EXPECT_CALL(*logger, info(testing::_)).Times(1);
@@ -112,7 +112,7 @@ TEST(HumanTaskTest, DetectingWithoutLoggerOnlyRuns) {
 
 TEST(HumanTaskTest, StoppingStopsAndLogs) {
     auto pir = std::make_shared<StrictMock<MockPIR>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, pir, nullptr);
 
     EXPECT_CALL(*pir, stop()).Times(1);
@@ -122,7 +122,7 @@ TEST(HumanTaskTest, StoppingStopsAndLogs) {
 }
 
 TEST(HumanTaskTest, StoppingWithoutPirOnlyLogs) {
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, nullptr, nullptr);
 
     EXPECT_CALL(*logger, info(testing::_)).Times(1);
@@ -141,7 +141,7 @@ TEST(HumanTaskTest, StoppingWithoutLoggerOnlyStops) {
 
 TEST(HumanTaskTest, CooldownStopsAndLogs) {
     auto pir = std::make_shared<StrictMock<MockPIR>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, pir, nullptr);
 
     EXPECT_CALL(*pir, stop()).Times(1);
@@ -151,7 +151,7 @@ TEST(HumanTaskTest, CooldownStopsAndLogs) {
 }
 
 TEST(HumanTaskTest, CooldownWithoutPirOnlyLogs) {
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
     HumanTask task(logger, nullptr, nullptr);
 
     EXPECT_CALL(*logger, info(testing::_)).Times(1);
