@@ -28,7 +28,19 @@ add_executable(process_queue_tests
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
 )
 
+# ProcessSender のテスト
+add_executable(process_sender_tests
+    infra/process_operation/test_process_sender.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_sender.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_queue.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/message_codec.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_message.cpp
+    ${PROJECT_ROOT}/src/infra/logger/logger.cpp
+    ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
+)
+
 target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
+
 
 
 # PIRDriver テスト
@@ -52,6 +64,7 @@ add_executable(bluetooth_driver_tests
 )
 
 target_link_libraries(bluetooth_driver_tests gtest gmock gtest_main pthread)
+
 
 enable_testing()
 add_test(NAME process_queue_tests COMMAND process_queue_tests)
