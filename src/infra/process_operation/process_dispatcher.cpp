@@ -2,6 +2,8 @@
 #include "infra/logger/i_logger.hpp"
 #include "infra/process_operation/process_message/i_process_message.hpp"
 
+#include <string>
+
 namespace device_reminder {
 
 ProcessDispatcher::ProcessDispatcher(std::shared_ptr<ILogger> logger,
@@ -17,9 +19,14 @@ void ProcessDispatcher::dispatch(std::shared_ptr<IProcessMessage> msg) {
     }
     auto it = handler_map_.find(msg->type());
     if (it != handler_map_.end()) {
-        it->second(std::move(msg));
+        if (it->second) {
+            it->second(std::move(msg));
+        } else if (logger_) {
+            logger_->error("Empty process handler");
+        }
     } else if (logger_) {
-        logger_->warn("Unhandled process message");
+        logger_->warn("Unhandled process message type " +
+                      std::to_string(static_cast<int>(msg->type())));
     }
 }
 

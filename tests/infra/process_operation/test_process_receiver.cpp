@@ -9,6 +9,8 @@
 #include <thread>
 
 using namespace device_reminder;
+using ::testing::NiceMock;
+using ::testing::StrictMock;
 
 namespace {
 class MockLogger : public ILogger {
@@ -40,7 +42,8 @@ TEST(ProcessReceiverTest, DispatchesMessage) {
     EXPECT_CALL(queue, pop())
         .WillOnce(testing::Return(msg))
         .WillRepeatedly(testing::Return(nullptr));
-    EXPECT_CALL(dispatcher, dispatch(msg)).Times(1);
+    auto msg_base = std::static_pointer_cast<IProcessMessage>(msg);
+    EXPECT_CALL(dispatcher, dispatch(msg_base)).Times(1);
 
     ProcessReceiver receiver(nullptr,
                             std::shared_ptr<IProcessQueue>(&queue, [](IProcessQueue*){}),
@@ -48,4 +51,46 @@ TEST(ProcessReceiverTest, DispatchesMessage) {
     receiver.run();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     receiver.stop();
+}
+
+TEST(ProcessReceiverTest, ConstructorLogsCreationAndStop) {
+    NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ProcessReceiver created")).Times(1);
+    EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(1);
+
+    ProcessReceiver receiver(std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
+                            nullptr,
+                            nullptr);
+}
+
+TEST(ProcessReceiverTest, ConstructorWithoutLogger) {
+    ProcessReceiver receiver(nullptr, nullptr, nullptr);
+}
+
+TEST(ProcessReceiverTest, RunWithNullQueueLogsLoopEnd) {
+    NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ProcessReceiver loop end")).Times(1);
+    EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(1);
+
+    {
+        ProcessReceiver receiver(std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
+                                nullptr,
+                                nullptr);
+        receiver.run();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // destructor will call stop()
+    }
+}
+
+TEST(ProcessReceiverTest, StopWithoutRunLogsStoppedTwice) {
+    NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(2);
+
+    {
+        ProcessReceiver receiver(std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
+                                nullptr,
+                                nullptr);
+        receiver.stop();
+        // destructor will call stop() again
+    }
 }
