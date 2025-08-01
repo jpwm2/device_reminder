@@ -22,7 +22,7 @@ public:
                      std::shared_ptr<IHandler> handler,
                      std::shared_ptr<IBluetoothTask> task);
 
-    void run() override;
+    int run() override;
     void stop() override;
 
 private:

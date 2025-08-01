@@ -20,11 +20,12 @@ BuzzerProcess::BuzzerProcess(std::shared_ptr<IProcessReceiver> receiver,
     if (logger_) logger_->info("BuzzerProcess created");
 }
 
-void BuzzerProcess::run()
+int BuzzerProcess::run()
 {
     if (watch_dog_) watch_dog_->start();
-    ProcessBase::run();
+    auto result = ProcessBase::run();
     if (watch_dog_) watch_dog_->stop();
+    return result;
 }
 
 void BuzzerProcess::stop()

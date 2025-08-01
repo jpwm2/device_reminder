@@ -17,7 +17,7 @@ public:
                   std::shared_ptr<ILogger> logger,
                   std::shared_ptr<IWatchDog> watch_dog);
 
-    void run() override;
+    int run() override;
     void stop() override;
 
 private:

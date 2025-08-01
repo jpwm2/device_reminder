@@ -26,10 +26,11 @@ BluetoothProcess::BluetoothProcess(std::shared_ptr<IProcessQueue> queue,
     if (logger_) logger_->info("BluetoothProcess created");
 }
 
-void BluetoothProcess::run() {
+int BluetoothProcess::run() {
     if (watch_dog_) watch_dog_->start();
-    ProcessBase::run();
+    auto result = ProcessBase::run();
     if (watch_dog_) watch_dog_->stop();
+    return result;
 }
 
 void BluetoothProcess::stop() {

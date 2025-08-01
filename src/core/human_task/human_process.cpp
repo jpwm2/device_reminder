@@ -26,10 +26,11 @@ HumanProcess::HumanProcess(std::shared_ptr<IProcessQueue>    queue,
     if (logger_) logger_->info("HumanProcess created");
 }
 
-void HumanProcess::run() {
+int HumanProcess::run() {
     if (watch_dog_) watch_dog_->start();
-    ProcessBase::run();
+    auto result = ProcessBase::run();
     if (watch_dog_) watch_dog_->stop();
+    return result;
 }
 
 void HumanProcess::stop() {
