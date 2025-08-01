@@ -30,6 +30,17 @@ add_executable(process_queue_tests
 
 target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
 
+# BluetoothDriver のテスト
+add_executable(bluetooth_driver_tests
+    infra/bluetooth_driver/test_bluetooth_driver.cpp
+    ${PROJECT_ROOT}/src/infra/bluetooth_driver/bluetooth_driver.cpp
+    ${PROJECT_ROOT}/src/infra/logger/logger.cpp
+    ${PROJECT_ROOT}/tests/stubs/popen_stub.cpp
+)
+
+target_link_libraries(bluetooth_driver_tests gtest gmock gtest_main pthread)
+
 enable_testing()
 add_test(NAME process_queue_tests COMMAND process_queue_tests)
+add_test(NAME bluetooth_driver_tests COMMAND bluetooth_driver_tests)
 
