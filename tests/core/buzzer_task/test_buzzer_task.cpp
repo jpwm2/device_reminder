@@ -84,4 +84,78 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 
+TEST(BuzzerTaskTest, ConstructorLogsWhenLoggerPresent) {
+    auto driver = std::make_shared<NiceMock<MockDriver>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+
+    EXPECT_CALL(*logger, info("BuzzerTask created")).Times(1);
+    BuzzerTask task(logger, sender, loader, driver);
+    EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
+}
+
+TEST(BuzzerTaskTest, ConstructorAllowsNullLogger) {
+    auto driver = std::make_shared<NiceMock<MockDriver>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+
+    BuzzerTask task(nullptr, sender, loader, driver);
+    EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
+}
+
+TEST(BuzzerTaskTest, StartMessageTurnsOnDriver) {
+    auto driver = std::make_shared<StrictMock<MockDriver>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+
+    BuzzerTask task(logger, sender, loader, driver);
+
+    EXPECT_CALL(*driver, on()).Times(1);
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
+}
+
+TEST(BuzzerTaskTest, StopMessageIgnoredWhenWaiting) {
+    auto driver = std::make_shared<StrictMock<MockDriver>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+
+    BuzzerTask task(logger, sender, loader, driver);
+
+    EXPECT_CALL(*driver, off()).Times(0);
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
+    EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
+}
+
+TEST(BuzzerTaskTest, StartMessageWorksWithoutDriver) {
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+
+    BuzzerTask task(logger, sender, loader, nullptr);
+
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
+}
+
+TEST(BuzzerTaskTest, OnWaitingAndOnBuzzingCallDriver) {
+    auto driver = std::make_shared<StrictMock<MockDriver>>();
+    auto sender = std::make_shared<NiceMock<MockSender>>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+
+    BuzzerTask task(logger, sender, loader, driver);
+
+    EXPECT_CALL(*driver, on()).Times(1);
+    task.on_waiting({});
+    EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
+
+    EXPECT_CALL(*driver, off()).Times(1);
+    task.on_buzzing({});
+    EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
+}
+
 } // namespace device_reminder
