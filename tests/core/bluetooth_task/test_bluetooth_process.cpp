@@ -19,17 +19,16 @@ using ::testing::StrictMock;
 using ::testing::Return;
 using ::testing::_;
 
-using namespace device_reminder;
-class IWorkerDispatcher;  // forward declaration for ProcessBase
 #include "bluetooth_task/bluetooth_process.hpp"
+using namespace device_reminder;
 
 namespace device_reminder {
 
 class MockFileLoader : public IFileLoader {
 public:
-    MOCK_METHOD(int, load_int, (), (const, override));
-    MOCK_METHOD(std::string, load_string, (), (const, override));
-    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
+    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
+    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
 };
 
 class MockLogger : public ILogger {
@@ -90,7 +89,7 @@ TEST(BluetoothProcessTest, ConstructorLogsAndSetsPriority) {
     auto handler = std::make_shared<DummyHandler>();
     auto task = std::make_shared<DummyTask>();
 
-    EXPECT_CALL(*file_loader, load_int()).WillOnce(Return(5));
+    EXPECT_CALL(*file_loader, load_int("priority")).WillOnce(Return(5));
     EXPECT_CALL(*logger, info("BluetoothProcess created")).Times(1);
 
     BluetoothProcess proc(queue, receiver, dispatcher, sender, file_loader, logger,
@@ -101,7 +100,7 @@ TEST(BluetoothProcessTest, ConstructorLogsAndSetsPriority) {
 
 TEST(BluetoothProcessTest, ConstructorNullLoggerDoesNotThrow) {
     auto file_loader = std::make_shared<NiceMock<MockFileLoader>>();
-    EXPECT_CALL(*file_loader, load_int()).WillOnce(Return(-1));
+    EXPECT_CALL(*file_loader, load_int("priority")).WillOnce(Return(-1));
 
     EXPECT_NO_THROW({
         BluetoothProcess proc(nullptr, nullptr, nullptr, nullptr, file_loader,

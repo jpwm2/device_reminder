@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 namespace device_reminder {
-class IProcessQueue; class IProcessReceiver; class IWorkerDispatcher;
+class IProcessQueue; class IProcessReceiver;
 class IProcessSender; class IFileLoader; class ILogger; class IWatchDog;
 }
 
