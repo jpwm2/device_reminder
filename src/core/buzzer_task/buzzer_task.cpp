@@ -1,5 +1,5 @@
 #include "buzzer_task/buzzer_task.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
 
 namespace device_reminder {
 
@@ -22,10 +22,10 @@ bool BuzzerTask::send_message(const IThreadMessage& msg) {
 
 void BuzzerTask::onMessage(const IThreadMessage& msg) {
     switch (msg.type()) {
-    case ThreadMessageType::StartBuzzer:
+    case ThreadMessageType::StartBuzzing:
         if (state_ == State::WaitStart) startBuzzer();
         break;
-    case ThreadMessageType::StopBuzzer:
+    case ThreadMessageType::StopBuzzing:
         if (state_ == State::Buzzing) stopBuzzer();
         break;
     default:

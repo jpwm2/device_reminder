@@ -2,6 +2,7 @@
 #include "infra/process_operation/process_message/process_message.hpp"
 
 #include <cstring>
+#include <stdexcept>
 
 namespace device_reminder {
 

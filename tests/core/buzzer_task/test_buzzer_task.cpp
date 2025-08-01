@@ -44,11 +44,11 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -61,10 +61,10 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -77,10 +77,10 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzer, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 

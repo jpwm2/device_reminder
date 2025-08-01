@@ -1,27 +1,35 @@
-# GoogleTestを自動でダウンロード
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-)
-FetchContent_MakeAvailable(googletest)
+cmake_minimum_required(VERSION 3.10)
+project(device_reminder_tests)
 
-# テストターゲット
-add_executable(
-    test_app
-    test_main.cpp
-    test_app_builder.cpp
-    test_app.cpp
-)
-# test_app用のtarget設定の直後に追加
-set_target_properties(test_app PROPERTIES
-    MSVC_RUNTIME_LIBRARY "MultiThreadedDebugDLL"
-)
-target_link_libraries(
-    test_app
-    device_reminder
-    GTest::gtest_main
+# GoogleTest をローカルディレクトリから追加
+add_subdirectory(
+    ${CMAKE_CURRENT_LIST_DIR}/../external/googletest
+    ${CMAKE_BINARY_DIR}/googletest
 )
 
-include(GoogleTest)
-gtest_discover_tests(device_reminder_tests)
+# ルートディレクトリを取得
+set(PROJECT_ROOT ${CMAKE_CURRENT_LIST_DIR}/..)
+
+include_directories(
+    ${PROJECT_ROOT}/include
+    ${PROJECT_ROOT}/include/infra
+    ${PROJECT_ROOT}/tests/stubs
+    ${PROJECT_ROOT}/src
+    ${PROJECT_ROOT}/external/spdlog/include
+)
+
+# ProcessQueue のテスト
+add_executable(process_queue_tests
+    infra/process_operation/test_process_queue.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_queue.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/message_codec.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_message.cpp
+    ${PROJECT_ROOT}/src/infra/logger/logger.cpp
+    ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
+)
+
+target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
+
+enable_testing()
+add_test(NAME process_queue_tests COMMAND process_queue_tests)
+
