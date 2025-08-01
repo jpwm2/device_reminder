@@ -2,6 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "infra/gpio_operation/gpio_reader/gpio_reader.hpp"
+
 #include "infra/logger/i_logger.hpp"
 #include "stubs/gpiod_stub.h"
 
@@ -18,10 +19,12 @@ public:
 };
 } // namespace
 
+
 class GPIOReaderTest : public ::testing::Test {
 protected:
     void SetUp() override { gpiod_stub_reset(); }
 };
+
 
 TEST_F(GPIOReaderTest, ConstructorSuccessDefault) {
     EXPECT_NO_THROW({ GPIOReader reader(nullptr, 1); });
@@ -31,10 +34,12 @@ TEST_F(GPIOReaderTest, ConstructorSuccessCustomChip) {
     EXPECT_NO_THROW({ GPIOReader reader(nullptr, 2, "/dev/customchip"); });
 }
 
+
 TEST_F(GPIOReaderTest, ConstructorThrowsWhenChipOpenFails) {
     gpiod_stub_set_fail_chip_open(1);
     EXPECT_THROW({ GPIOReader reader(nullptr, 1); }, std::runtime_error);
 }
+
 
 TEST_F(GPIOReaderTest, ConstructorThrowsWhenGetLineFails) {
     gpiod_stub_set_fail_get_line(1);
@@ -70,6 +75,7 @@ TEST_F(GPIOReaderTest, ConstructorLogsErrorWhenRequestInputFails) {
         GPIOReader reader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), 1);
     }, std::runtime_error);
 }
+
 
 TEST_F(GPIOReaderTest, ReadReturnsTrueForHigh) {
     gpiod_stub_set_get_value_result(1);
