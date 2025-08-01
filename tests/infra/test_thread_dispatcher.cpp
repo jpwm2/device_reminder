@@ -74,3 +74,26 @@ TEST(ThreadDispatcherTest, ConstructorPropagatesLoggerException) {
     auto logger = std::make_shared<ThrowLogger>();
     EXPECT_THROW({ ThreadDispatcher disp(logger, {}); }, std::runtime_error);
 }
+
+TEST(ThreadDispatcherTest, LogsInfoWhenHandlerMapEmpty) {
+    NiceMock<MockLogger> logger;
+    {
+        testing::InSequence seq;
+        EXPECT_CALL(logger, info("ThreadDispatcher created"));
+        EXPECT_CALL(logger, info("Unhandled thread message"));
+    }
+    ThreadDispatcher disp(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), {});
+    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
+                                               std::vector<std::string>{});
+    disp.dispatch(msg);
+}
+
+TEST(ThreadDispatcherTest, BadHandlerThrows) {
+    ThreadDispatcher::HandlerMap map{
+        {ThreadMessageType::StartBuzzing,
+         std::function<void(std::shared_ptr<IThreadMessage>)>{}}};
+    ThreadDispatcher disp(nullptr, map);
+    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
+                                               std::vector<std::string>{});
+    EXPECT_THROW(disp.dispatch(msg), std::bad_function_call);
+}
