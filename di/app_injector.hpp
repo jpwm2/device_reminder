@@ -12,10 +12,12 @@
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
 #include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/process_operation/process_sender/process_sender.hpp"
 #include "infra/thread_operation/thread_queue/thread_queue.hpp"
 #include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
 
 #include <tuple>
+#include <memory>
 #include <boost/di.hpp>
 
 namespace di = boost::di;
@@ -45,7 +47,9 @@ inline auto make_app_injector() {
         di::bind<IBuzzerTask>.to<BuzzerTask>(),
         di::bind<ITimerService>.to<TimerService>(),
         di::bind<IThreadQueue>.to<ThreadQueue>(),
-        di::bind<IProcessSender>.to([] { return std::shared_ptr<IProcessSender>{}; }),
+        di::bind<IProcessSender>.to([] {
+            return std::make_shared<ProcessSender>(nullptr, nullptr);
+        }),
         di::bind<IGPIOSetter>.to<GPIOSetter>(),
         di::bind<IGPIOReader>.to<GPIOReader>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),

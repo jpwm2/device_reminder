@@ -23,6 +23,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/di
+    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/tests
     ${CMAKE_SOURCE_DIR}/tests/stubs
     ${SPDLOG_INCLUDE_DIR}
