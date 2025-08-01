@@ -40,7 +40,8 @@ TEST(ProcessReceiverTest, DispatchesMessage) {
     EXPECT_CALL(queue, pop())
         .WillOnce(testing::Return(msg))
         .WillRepeatedly(testing::Return(nullptr));
-    EXPECT_CALL(dispatcher, dispatch(msg)).Times(1);
+    std::shared_ptr<IProcessMessage> imsg = msg;
+    EXPECT_CALL(dispatcher, dispatch(imsg)).Times(1);
 
     ProcessReceiver receiver(nullptr,
                             std::shared_ptr<IProcessQueue>(&queue, [](IProcessQueue*){}),

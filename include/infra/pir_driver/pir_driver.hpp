@@ -8,6 +8,8 @@
 
 #include <memory>
 #include <string>
+#include <thread>
+#include <atomic>
 
 namespace device_reminder {
 

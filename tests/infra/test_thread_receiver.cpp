@@ -5,19 +5,20 @@
 #include "infra/thread_operation/thread_receiver/thread_receiver.hpp"
 #include "infra/thread_operation/thread_queue/thread_queue.hpp"
 #include "infra/thread_operation/thread_dispatcher/i_thread_dispatcher.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 
 using namespace device_reminder;
 
 namespace {
 class MockDispatcher : public IThreadDispatcher {
 public:
-    void dispatch(const ThreadMessage& msg) override {
+    void dispatch(std::shared_ptr<IThreadMessage> msg) override {
         std::lock_guard lk(m);
-        received = msg;
+        received = std::move(msg);
         called = true;
         cv.notify_one();
     }
-    ThreadMessage received{};
+    std::shared_ptr<IThreadMessage> received{};
     bool called{false};
     std::mutex m;
     std::condition_variable cv;
@@ -31,7 +32,7 @@ TEST(ThreadReceiverTest, DispatchesMessages) {
 
     std::thread th{[&]{ receiver.run(); }};
 
-    ThreadMessage msg{ThreadMessageType::StartBuzzer, true};
+    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing, std::vector<std::string>{"1"});
     queue->push(msg);
 
     {
@@ -43,6 +44,7 @@ TEST(ThreadReceiverTest, DispatchesMessages) {
     th.join();
 
     ASSERT_TRUE(dispatcher->called);
-    EXPECT_EQ(dispatcher->received.type_, msg.type_);
-    EXPECT_EQ(dispatcher->received.payload_, msg.payload_);
+    auto received = std::static_pointer_cast<ThreadMessage>(dispatcher->received);
+    EXPECT_EQ(received->type(), msg->type());
+    EXPECT_EQ(received->payload(), msg->payload());
 }

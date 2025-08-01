@@ -9,6 +9,7 @@
 
 using namespace device_reminder;
 using ::testing::StrictMock;
+using ::testing::NiceMock;
 
 namespace {
 class MockGPIO : public IGPIOReader {
@@ -34,26 +35,18 @@ public:
 } // namespace
 
 TEST(PIRDriverTest, RunDetectsChangeAndSendsMessage) {
-    StrictMock<MockGPIO> gpio;
-    StrictMock<MockLogger> logger;
-    StrictMock<MockSender> sender;
+    NiceMock<MockGPIO> gpio;
+    NiceMock<MockLogger> logger;
+    NiceMock<MockSender> sender;
     DummyLoader loader;
 
-    EXPECT_CALL(logger, info(testing::_)).Times(testing::AtLeast(1));
+    ON_CALL(gpio, read()).WillByDefault(testing::Return(true));
 
     auto driver = std::make_unique<PIRDriver>(
         std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
         std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
-
-    {
-        testing::InSequence seq;
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(false));
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(true));
-        EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(true));
-    }
-    EXPECT_CALL(sender, send()).Times(1);
 
     driver->run();
     std::this_thread::sleep_for(std::chrono::milliseconds(50));

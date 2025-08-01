@@ -6,6 +6,7 @@
 #include "infra/process_operation/process_message/process_message.hpp"
 #include "infra/process_operation/message_codec/message_codec.hpp"
 #include "infra/logger/logger.hpp"
+#include <spdlog/sinks/null_sink.h>
 #include <mqueue.h>
 
 using namespace device_reminder;
@@ -16,10 +17,12 @@ static std::string unique_name(const std::string& base) {
 
 TEST(MessageSenderTest, EnqueueSendsMessage) {
     std::string name = unique_name("sender_test_");
-    auto logger = std::make_shared<Logger>();
-    auto codec = std::make_shared<MessageCodec>();
+    auto sink = std::make_shared<spdlog::sinks::null_sink_mt>();
+    auto spdlogger = std::make_shared<spdlog::logger>("test", sink);
+    auto logger = std::make_shared<Logger>(spdlogger);
+    auto codec = std::make_shared<MessageCodec>(logger);
     auto queue = std::make_shared<ProcessQueue>(logger, codec, name);
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzer, std::vector<std::string>{"1"});
+    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{"1"});
     ProcessSender sender(queue, msg);
 
     sender.send();

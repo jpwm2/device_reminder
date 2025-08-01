@@ -2,8 +2,8 @@
 #include <gmock/gmock.h>
 
 #include "infra/timer_service/timer_service.hpp"
-#include "process_message_operation/i_process_message_sender.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
+#include "infra/thread_operation/thread_message/thread_message.hpp"
 #include <thread>
 #include <chrono>
 
@@ -12,10 +12,9 @@ using ::testing::StrictMock;
 using ::testing::NiceMock;
 
 namespace {
-class MockSender : public IProcessMessageSender {
+class MockSender : public IThreadSender {
 public:
-    MOCK_METHOD(bool, enqueue, (const ProcessMessage&), (override));
-    MOCK_METHOD(void, stop, (), (override));
+    MOCK_METHOD(void, send, (), (override));
 };
 class MockLogger : public ILogger {
 public:
@@ -28,13 +27,9 @@ public:
 TEST(TimerServiceTest, SendsTimeoutMessage) {
     auto sender = std::make_shared<StrictMock<MockSender>>();
     NiceMock<MockLogger> logger;
-    TimerService timer(sender, std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
-    ProcessMessage m{ThreadMessageType::Timeout, false};
-    EXPECT_CALL(*sender, enqueue(testing::Field(&ProcessMessage::type_, ThreadMessageType::Timeout))).Times(1);
-    timer.start(10, m);
+    TimerService timer(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), 10, sender);
+    EXPECT_CALL(*sender, send()).Times(1);
+    timer.start();
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
-    while (timer.active()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
     timer.stop();
 }

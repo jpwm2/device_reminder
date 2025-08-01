@@ -100,6 +100,13 @@ add_executable(test_infra_extra
     src/infra/process_operation/process_dispatcher.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/io/file_loader.cpp
+    src/infra/process_operation/message_codec.cpp
+    src/infra/process_operation/process_queue.cpp
+    src/infra/process_operation/process_sender.cpp
+    src/infra/process_operation/process_receiver.cpp
+    src/infra/thread_operation/thread_dispatcher.cpp
+    src/infra/thread_operation/thread_receiver.cpp
+    tests/stubs/gpiod_stub.cpp
     tests/stubs/posix_mq_stub.cpp
 )
 
