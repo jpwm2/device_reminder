@@ -99,6 +99,7 @@ add_executable(test_infra_extra
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
     tests/stubs/posix_mq_stub.cpp
+    tests/stubs/popen_stub.cpp
 )
 
 
