@@ -64,7 +64,7 @@ add_executable(test_app
 
 # GPIOReader tests
 add_executable(test_gpio_reader
-    tests/infra/test_gpio_reader.cpp
+    tests/infra/gpio_operation/gpio_reader/test_gpio_reader.cpp
     src/infra/gpio_operation/gpio_reader/gpio_reader.cpp
     tests/stubs/gpiod_stub.cpp
 )
