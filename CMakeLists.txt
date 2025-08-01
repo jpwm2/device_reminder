@@ -45,6 +45,7 @@ add_executable(test_app
     tests/core/buzzer_task/test_buzzer_task.cpp
     tests/core/bluetooth_task/test_bluetooth_handler.cpp
     tests/core/bluetooth_task/test_bluetooth_task.cpp
+    tests/core/bluetooth_task/test_bluetooth_process.cpp
     tests/infra/logger/test_logger.cpp
     src/infra/logger/logger.cpp
     src/core/app/app.cpp
