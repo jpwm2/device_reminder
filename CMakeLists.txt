@@ -131,6 +131,14 @@ add_executable(test_integration
 target_include_directories(test_integration BEFORE PRIVATE tests/integration)
 target_link_libraries(test_integration gtest gmock pthread)
 
+add_executable(test_integration_full
+    tests/integration/full_di/test_app_run.cpp
+    ${DEVICE_SOURCES_NO_MAIN}
+    tests/stubs/gpiod_stub.cpp
+)
+target_include_directories(test_integration_full BEFORE PRIVATE tests/integration/full_di tests/integration)
+target_link_libraries(test_integration_full gtest gmock pthread)
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
     gtest
@@ -171,6 +179,7 @@ add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
 add_test(NAME IntegrationMain COMMAND test_integration)
+add_test(NAME IntegrationAppRun COMMAND test_integration_full)
 
 
 # 動的ランタイム(MDd)に統一する
