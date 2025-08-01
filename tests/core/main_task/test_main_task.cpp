@@ -25,9 +25,9 @@ public:
 
 class MockFileLoader : public IFileLoader {
 public:
-    MOCK_METHOD(int, load_int, (), (const, override));
-    MOCK_METHOD(std::string, load_string, (), (const, override));
-    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
+    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
+    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
 };
 
 class MockLogger : public ILogger {
@@ -68,7 +68,7 @@ TEST(MainTaskTest, DeviceDetectedStopsTimerAndNotifies) {
     auto buz_stop = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    EXPECT_CALL(*file_loader, load_string_list()).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
+    EXPECT_CALL(*file_loader, load_string_list("device_list")).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
 
@@ -93,7 +93,7 @@ TEST(MainTaskTest, DeviceNotDetectedStartsCooldown) {
     auto buz_stop = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    EXPECT_CALL(*file_loader, load_string_list()).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
+    EXPECT_CALL(*file_loader, load_string_list("device_list")).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
     task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
@@ -115,7 +115,7 @@ TEST(MainTaskTest, CooldownTimeoutRestartsScan) {
     auto buz_stop = std::make_shared<NiceMock<MockSender>>();
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
-    EXPECT_CALL(*file_loader, load_string_list()).WillRepeatedly(testing::Return(std::vector<std::string>{"phone"}));
+    EXPECT_CALL(*file_loader, load_string_list("device_list")).WillRepeatedly(testing::Return(std::vector<std::string>{"phone"}));
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
     task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});

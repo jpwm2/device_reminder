@@ -10,11 +10,13 @@
 #include "infra/file_loader/i_file_loader.hpp"
 #include "infra/logger/i_logger.hpp"
 
+namespace device_reminder {
+
 std::atomic<bool> ProcessBase::g_stop_flag{false};
 
 ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
                          std::shared_ptr<IProcessReceiver> receiver,
-                         std::shared_ptr<IWorkerDispatcher>       dispatcher,
+                         std::shared_ptr<IProcessDispatcher> dispatcher,
                          std::shared_ptr<IProcessSender>   sender,
                          std::shared_ptr<IFileLoader>             file_loader,
                          std::shared_ptr<ILogger>                 logger,
@@ -36,10 +38,9 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
     if (logger_) logger_->info("ProcessBase initialized");
 }
 
-int ProcessBase::run()
+void ProcessBase::run()
 {
     if (receiver_) receiver_->run();
-    if (dispatcher_) dispatcher_->start();
 
     if (logger_) logger_->info("ProcessBase run start");
 
@@ -48,11 +49,7 @@ int ProcessBase::run()
     }
 
     if (receiver_) receiver_->stop();
-    if (dispatcher_) dispatcher_->stop();
-    if (sender_) sender_->stop();
-    if (dispatcher_) dispatcher_->join();
     if (logger_) logger_->info("ProcessBase run end");
-    return 0;
 }
 
 void ProcessBase::stop()
@@ -65,3 +62,5 @@ int ProcessBase::priority() const noexcept
 {
     return priority_;
 }
+
+} // namespace device_reminder

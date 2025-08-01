@@ -23,9 +23,9 @@ public:
 
 class MockFileLoader : public IFileLoader {
 public:
-    MOCK_METHOD(int, load_int, (), (const, override));
-    MOCK_METHOD(std::string, load_string, (), (const, override));
-    MOCK_METHOD(std::vector<std::string>, load_string_list, (), (const, override));
+    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
+    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
 };
 
 class MockLogger : public ILogger {

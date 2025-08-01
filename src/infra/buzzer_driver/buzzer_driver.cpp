@@ -12,7 +12,7 @@ BuzzerDriver::BuzzerDriver(std::shared_ptr<IFileLoader> loader,
     if (logger_) logger_->info("BuzzerDriver created");
     if (loader_) {
         try {
-            loader_->load_int(); // 設定値読み込み (エラー確認のみ)
+            loader_->load_int("buzz_duration_ms"); // 設定値読み込み (エラー確認のみ)
         } catch (...) {
             if (logger_) logger_->error("Failed to load buzzer config");
         }

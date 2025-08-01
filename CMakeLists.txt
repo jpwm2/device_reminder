@@ -38,11 +38,14 @@ add_executable(test_app
     tests/core/main_task/test_main_task.cpp
     tests/core/human_task/test_human_task.cpp
     tests/core/human_task/test_human_handler.cpp
+    tests/core/human_task/test_human_process.cpp
     tests/core/main_task/test_main_handler.cpp
+    tests/core/main_task/test_main_process.cpp
     tests/core/buzzer_task/test_buzzer_handler.cpp
     tests/core/buzzer_task/test_buzzer_task.cpp
     tests/core/bluetooth_task/test_bluetooth_handler.cpp
     tests/core/bluetooth_task/test_bluetooth_task.cpp
+    tests/core/bluetooth_task/test_bluetooth_process.cpp
     tests/infra/logger/test_logger.cpp
     src/infra/logger/logger.cpp
     src/core/app/app.cpp
@@ -52,6 +55,7 @@ add_executable(test_app
     src/core/human_task/human_task.cpp
     src/core/human_task/human_handler.cpp
     src/core/human_task/human_process.cpp
+    src/infra/process_operation/process_base.cpp
 
 
     src/core/buzzer_task/buzzer_task.cpp
@@ -60,6 +64,7 @@ add_executable(test_app
     src/core/bluetooth_task/bluetooth_task.cpp
     src/core/bluetooth_task/bluetooth_handler.cpp
     src/core/bluetooth_task/bluetooth_process.cpp
+    src/infra/process_operation/process_message.cpp
 )
 
 # GPIOReader tests
@@ -90,14 +95,19 @@ add_executable(test_infra_extra
     src/infra/thread_operation/thread_queue.cpp
     src/infra/process_operation/process_message.cpp
     src/infra/thread_operation/thread_sender.cpp
+    src/infra/thread_operation/thread_receiver.cpp
+    src/infra/thread_operation/thread_dispatcher.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
     src/infra/watch_dog/watch_dog.cpp
     src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher.cpp
+    src/infra/process_operation/process_base.cpp
+    src/infra/process_operation/process_receiver.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
+    tests/stubs/gpiod_stub.cpp
     tests/stubs/posix_mq_stub.cpp
     tests/stubs/popen_stub.cpp
 )
