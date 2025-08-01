@@ -76,7 +76,7 @@ add_executable(test_infra_extra
     tests/infra/test_message_sender.cpp
     tests/infra/test_process_receiver.cpp
     tests/infra/test_thread_message_sender.cpp
-    tests/infra/test_thread_receiver.cpp
+    tests/infra/thread_operation/thread_receiver/test_thread_receiver.cpp
     tests/infra/test_thread_sender.cpp
     tests/infra/test_thread_queue.cpp
     tests/infra/test_thread_dispatcher.cpp
