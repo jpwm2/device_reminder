@@ -22,6 +22,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/di
+    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/tests
     ${CMAKE_SOURCE_DIR}/tests/stubs
     ${CMAKE_SOURCE_DIR}/main_task
