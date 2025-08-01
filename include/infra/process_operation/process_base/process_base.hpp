@@ -12,6 +12,14 @@
 #include <memory>
 #include <string>
 
+class IWorkerDispatcher {
+public:
+    virtual ~IWorkerDispatcher() = default;
+    virtual void start() = 0;
+    virtual void stop() = 0;
+    virtual void join() = 0;
+};
+
 class ProcessBase : public IProcessBase {
 public:
     ProcessBase(std::shared_ptr<IProcessQueue>    queue,

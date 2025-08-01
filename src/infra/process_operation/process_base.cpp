@@ -26,7 +26,7 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
     , file_loader_(std::move(file_loader))
     , logger_(std::move(logger))
     , process_name_(std::move(process_name))
-    , priority_{file_loader_ ? file_loader_->load_int("priority") : 0}
+    , priority_{file_loader_ ? file_loader_->load_int() : 0}
 
 {
     // Ctrl‑C (SIGINT) を捕捉して終了フラグを立てる
