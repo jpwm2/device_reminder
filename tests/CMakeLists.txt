@@ -39,6 +39,14 @@ add_executable(process_sender_tests
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
 )
 
+# ProcessBase のテスト
+add_executable(process_base_tests
+    infra/process_operation/test_process_base.cpp
+    ${PROJECT_ROOT}/src/infra/process_operation/process_base.cpp
+)
+
+target_link_libraries(process_base_tests gtest gmock gtest_main pthread)
+
 target_link_libraries(process_queue_tests gtest gmock gtest_main pthread)
 
 # MessageCodec のテスト
@@ -53,6 +61,7 @@ target_link_libraries(message_codec_tests gtest gmock gtest_main pthread)
 enable_testing()
 add_test(NAME process_queue_tests COMMAND process_queue_tests)
 add_test(NAME message_codec_tests COMMAND message_codec_tests)
+add_test(NAME process_base_tests COMMAND process_base_tests)
 
 
 # PIRDriver テスト

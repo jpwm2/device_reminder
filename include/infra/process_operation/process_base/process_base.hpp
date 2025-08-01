@@ -12,9 +12,11 @@
 #include <memory>
 #include <string>
 
+
 namespace device_reminder {
 
 class IProcessDispatcher;
+
 
 class ProcessBase : public IProcessBase {
 public:
