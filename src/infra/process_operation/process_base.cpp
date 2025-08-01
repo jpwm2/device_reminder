@@ -40,6 +40,7 @@ ProcessBase::ProcessBase(std::shared_ptr<IProcessQueue>    queue,
 
 int ProcessBase::run()
 {
+    running_.store(true);
     if (receiver_) receiver_->run();
 
     if (logger_) logger_->info("ProcessBase run start");
@@ -50,13 +51,16 @@ int ProcessBase::run()
 
     if (receiver_) receiver_->stop();
     if (logger_) logger_->info("ProcessBase run end");
+    running_.store(false);
     return 0;
 }
 
 void ProcessBase::stop()
 {
     g_stop_flag.store(true);
-    if (logger_) logger_->info("ProcessBase stop requested");
+    if (!running_.load()) {
+        if (logger_) logger_->info("ProcessBase stop requested");
+    }
 }
 
 int ProcessBase::priority() const noexcept

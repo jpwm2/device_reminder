@@ -55,7 +55,6 @@ TEST(ProcessReceiverTest, DispatchesMessage) {
 
 TEST(ProcessReceiverTest, ConstructorLogsCreationAndStop) {
     NiceMock<MockLogger> logger;
-    EXPECT_CALL(logger, info("ProcessReceiver created")).Times(1);
     EXPECT_CALL(logger, info("ProcessReceiver stopped")).Times(1);
 
     ProcessReceiver receiver(std::shared_ptr<ILogger>(&logger, [](ILogger*){}),

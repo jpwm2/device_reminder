@@ -42,6 +42,7 @@ protected:
     std::shared_ptr<ILogger>                 logger_;
     std::string                              process_name_;
     int                                      priority_{0};
+    std::atomic<bool>                        running_{false};
 };
 
 } // namespace device_reminder
