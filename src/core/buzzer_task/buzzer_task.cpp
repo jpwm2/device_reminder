@@ -1,5 +1,5 @@
 #include "buzzer_task/buzzer_task.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
 
 namespace device_reminder {
 

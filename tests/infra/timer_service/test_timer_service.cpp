@@ -2,8 +2,8 @@
 #include <gmock/gmock.h>
 
 #include "infra/timer_service/timer_service.hpp"
-#include "process_message_operation/i_process_message_sender.hpp"
-#include "process_message_operation/process_message.hpp"
+#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
 #include <thread>
 #include <chrono>
 
