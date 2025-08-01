@@ -29,7 +29,7 @@ void MainHandler::handle(std::shared_ptr<IProcessMessage> msg) {
             task_->on_response_to_buzzer_task(msg->payload());
         }
         break;
-    case ProcessMessageType::CoolDownTimeout:
+    case ProcessMessageType::CooldownTimeout:
         task_->on_cooldown(msg->payload());
         break;
     case ProcessMessageType::ScanTimeout:
