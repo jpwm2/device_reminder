@@ -120,6 +120,17 @@ if(UNIX)
     target_link_libraries(device_reminder pthread)
 endif()
 
+# Integration test sources (exclude src/main.cpp to avoid duplicate main)
+set(DEVICE_SOURCES_NO_MAIN ${DEVICE_SOURCES})
+list(REMOVE_ITEM DEVICE_SOURCES_NO_MAIN ${CMAKE_SOURCE_DIR}/src/main.cpp)
+add_executable(test_integration
+    tests/integration/test_main.cpp
+    ${DEVICE_SOURCES_NO_MAIN}
+    tests/stubs/gpiod_stub.cpp
+)
+target_include_directories(test_integration BEFORE PRIVATE tests/integration)
+target_link_libraries(test_integration gtest gmock pthread)
+
 # GoogleTestライブラリをリンク
 target_link_libraries(test_app
     gtest
@@ -159,6 +170,7 @@ enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
 add_test(NAME InfraExtraTests COMMAND test_infra_extra)
+add_test(NAME IntegrationMain COMMAND test_integration)
 
 
 # 動的ランタイム(MDd)に統一する
