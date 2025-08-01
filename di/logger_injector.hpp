@@ -20,7 +20,7 @@ inline auto make_logger_injector() {
     // バインディングの束を返す（injectorは返さない）
     return std::tuple{
         di::bind<ILogger>.to<Logger>(),
-        di::bind<std::shared_ptr<spdlog::logger>>.to(spd_logger).in(di::singleton)
+        di::bind<spdlog::logger>.to(spd_logger).in(di::singleton)
     };
 }
 

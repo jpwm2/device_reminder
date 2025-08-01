@@ -53,8 +53,12 @@ TEST_F(GPIOSetterTest, ConstructorThrowsWhenLineRequestFails) {
 
 TEST_F(GPIOSetterTest, ConstructorWithLoggerLogsInfo) {
     auto logger = std::make_shared<StrictMock<MockLogger>>();
-    EXPECT_CALL(*logger, info("GPIOSetter initialized"));
-    GPIOSetter setter(logger, 1);
+    {
+        ::testing::InSequence seq;
+        EXPECT_CALL(*logger, info("GPIOSetter initialized"));
+        EXPECT_CALL(*logger, info("GPIOSetter destroyed"));
+        GPIOSetter setter(logger, 1);
+    }
 }
 
 TEST_F(GPIOSetterTest, ConstructorThrowsWithNullLoggerWhenGetLineFails) {
@@ -91,10 +95,15 @@ TEST_F(GPIOSetterTest, WriteFalseSuccess) {
 
 TEST_F(GPIOSetterTest, WriteWithLoggerNoError) {
     auto logger = std::make_shared<StrictMock<MockLogger>>();
-    GPIOSetter setter(logger, 1);
-    gpiod_stub_set_set_value_result(0);
-    EXPECT_CALL(*logger, error(testing::_)).Times(0);
-    EXPECT_NO_THROW(setter.write(true));
+    {
+        ::testing::InSequence seq;
+        EXPECT_CALL(*logger, info("GPIOSetter initialized"));
+        EXPECT_CALL(*logger, info("GPIOSetter destroyed"));
+        GPIOSetter setter(logger, 1);
+        gpiod_stub_set_set_value_result(0);
+        EXPECT_CALL(*logger, error(testing::_)).Times(0);
+        EXPECT_NO_THROW(setter.write(true));
+    }
 }
 
 TEST_F(GPIOSetterTest, WriteFailureWithNullLoggerThrows) {
@@ -105,10 +114,15 @@ TEST_F(GPIOSetterTest, WriteFailureWithNullLoggerThrows) {
 
 TEST_F(GPIOSetterTest, WriteFailureLogsError) {
     auto logger = std::make_shared<StrictMock<MockLogger>>();
-    GPIOSetter setter(logger, 1);
-    gpiod_stub_set_set_value_result(-1);
-    EXPECT_CALL(*logger, error("Failed to write GPIO line value"));
-    EXPECT_THROW(setter.write(true), std::runtime_error);
+    {
+        ::testing::InSequence seq;
+        EXPECT_CALL(*logger, info("GPIOSetter initialized"));
+        EXPECT_CALL(*logger, error("Failed to write GPIO line value"));
+        EXPECT_CALL(*logger, info("GPIOSetter destroyed"));
+        GPIOSetter setter(logger, 1);
+        gpiod_stub_set_set_value_result(-1);
+        EXPECT_THROW(setter.write(true), std::runtime_error);
+    }
 }
 
 // ---- Destructor Tests ----

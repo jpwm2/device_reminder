@@ -114,6 +114,7 @@ TEST(ProcessBaseTest, RunCallsReceiverAndLogs) {
         InSequence seq;
         EXPECT_CALL(*receiver, run()).Times(1);
         EXPECT_CALL(*logger, info("ProcessBase run start")).Times(1);
+        EXPECT_CALL(*logger, info("ProcessBase stop requested")).Times(1);
         EXPECT_CALL(*receiver, stop()).Times(1);
         EXPECT_CALL(*logger, info("ProcessBase run end")).Times(1);
     }
