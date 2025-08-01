@@ -17,6 +17,7 @@
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace device_reminder {
 
@@ -87,6 +88,10 @@ TEST(HumanProcessTest, ConstructLogsWhenLoggerProvided) {
     auto handler = std::make_shared<StrictMock<MockHandler>>();
     auto task = std::make_shared<StrictMock<MockTask>>();
 
+    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(0));
+
+    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(0));
+    EXPECT_CALL(*logger, info("ProcessBase initialized")).Times(1);
     EXPECT_CALL(*logger, info("HumanProcess created")).Times(1);
     HumanProcess proc(queue, receiver, dispatcher, sender, loader, logger, watchdog, handler, task);
 }
@@ -116,13 +121,13 @@ TEST(HumanProcessTest, RunStartsAndStopsWatchDog) {
     auto task = std::make_shared<NiceMock<MockTask>>();
 
     HumanProcess proc(queue, receiver, dispatcher, sender, loader, logger, watchdog, handler, task);
-    std::thread th([&]{
-        proc.run();
-    });
     EXPECT_CALL(*watchdog, start()).Times(1);
     EXPECT_CALL(*receiver, run()).Times(1);
     EXPECT_CALL(*receiver, stop()).Times(1);
     EXPECT_CALL(*watchdog, stop()).Times(1);
+    std::thread th([&]{
+        proc.run();
+    });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     proc.stop();
     th.join();
@@ -139,9 +144,9 @@ TEST(HumanProcessTest, RunWithoutWatchDog) {
     auto task = std::make_shared<NiceMock<MockTask>>();
 
     HumanProcess proc(queue, receiver, dispatcher, sender, loader, logger, nullptr, handler, task);
-    std::thread th([&]{ proc.run(); });
     EXPECT_CALL(*receiver, run()).Times(1);
     EXPECT_CALL(*receiver, stop()).Times(1);
+    std::thread th([&]{ proc.run(); });
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     proc.stop();
     th.join();

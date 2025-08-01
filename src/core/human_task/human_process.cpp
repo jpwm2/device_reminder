@@ -29,7 +29,6 @@ HumanProcess::HumanProcess(std::shared_ptr<IProcessQueue>    queue,
 int HumanProcess::run() {
     if (watch_dog_) watch_dog_->start();
     auto result = ProcessBase::run();
-    if (watch_dog_) watch_dog_->stop();
     return result;
 }
 

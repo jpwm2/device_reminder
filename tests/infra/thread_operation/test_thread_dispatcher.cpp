@@ -62,6 +62,7 @@ TEST(ThreadDispatcherTest, DispatchLogsErrorOnNullMessage) {
 
 TEST(ThreadDispatcherTest, DispatchLogsInfoOnUnhandledMessage) {
     NiceMock<MockLogger> logger;
+    EXPECT_CALL(logger, info("ThreadDispatcher created")).Times(1);
     EXPECT_CALL(logger, info("Unhandled thread message")).Times(1);
 
     ThreadDispatcher::HandlerMap map{};
