@@ -9,10 +9,6 @@
 
 namespace device_reminder {
 
-class IMainTask;
-class IHumanTask;
-class IBluetoothTask;
-class IBuzzerTask;
 
 class App {
 public:
