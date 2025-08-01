@@ -31,9 +31,9 @@ public:
 class StubLoader : public IFileLoader {
 public:
     std::vector<std::string> list;
-    int load_int() const override { return 0; }
-    std::string load_string() const override { return {}; }
-    std::vector<std::string> load_string_list() const override { return list; }
+    int load_int(const std::string&) const override { return 0; }
+    std::string load_string(const std::string&) const override { return {}; }
+    std::vector<std::string> load_string_list(const std::string&) const override { return list; }
 };
 
 class DummyLogger : public ILogger {

@@ -11,19 +11,17 @@ namespace device_reminder {
 class FileLoader : public IFileLoader {
 public:
     FileLoader(std::shared_ptr<ILogger> logger,
-               const std::string& file_path,
-               const std::string& key);
+               const std::string& file_path);
 
-    int load_int() const override;
-    std::string load_string() const override;
-    std::vector<std::string> load_string_list() const override;
+    int load_int(const std::string& key) const override;
+    std::string load_string(const std::string& key) const override;
+    std::vector<std::string> load_string_list(const std::string& key) const override;
 
 private:
-    std::string load_value() const;
+    std::string load_value(const std::string& key) const;
 
     std::shared_ptr<ILogger> logger_;
     std::string              file_path_;
-    std::string              key_;
 };
 
 } // namespace device_reminder

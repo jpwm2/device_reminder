@@ -26,9 +26,9 @@ TEST(FileLoaderTest, LoadIntSuccess) {
     ofs.close();
 
     NiceMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "buzz_duration_ms");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
 
-    EXPECT_EQ(loader.load_int(), 5000);
+    EXPECT_EQ(loader.load_int("buzz_duration_ms"), 5000);
 }
 
 TEST(FileLoaderTest, LoadIntThrowsIfMissing) {
@@ -37,9 +37,9 @@ TEST(FileLoaderTest, LoadIntThrowsIfMissing) {
     ofs.close();
 
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "b");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("key not found"))).Times(1);
-    EXPECT_THROW(loader.load_int(), std::runtime_error);
+    EXPECT_THROW(loader.load_int("b"), std::runtime_error);
 }
 
 TEST(FileLoaderTest, LoadIntThrowsIfInvalid) {
@@ -48,16 +48,16 @@ TEST(FileLoaderTest, LoadIntThrowsIfInvalid) {
     ofs.close();
 
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "buzz_duration_ms");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("invalid int value"))).Times(1);
-    EXPECT_THROW(loader.load_int(), std::invalid_argument);
+    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::invalid_argument);
 }
 
 TEST(FileLoaderTest, LoadIntThrowsIfFileMissing) {
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/does_not_exist.txt", "buzz_duration_ms");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/does_not_exist.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("failed to open file"))).Times(1);
-    EXPECT_THROW(loader.load_int(), std::runtime_error);
+    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::runtime_error);
 }
 
 TEST(FileLoaderTest, LoadIntInvalidWithoutLogger) {
@@ -65,8 +65,8 @@ TEST(FileLoaderTest, LoadIntInvalidWithoutLogger) {
     ofs << "buzz_duration_ms=bad\n";
     ofs.close();
 
-    FileLoader loader(nullptr, "/tmp/test_settings.txt", "buzz_duration_ms");
-    EXPECT_THROW(loader.load_int(), std::invalid_argument);
+    FileLoader loader(nullptr, "/tmp/test_settings.txt");
+    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::invalid_argument);
 }
 
 TEST(FileLoaderTest, LoadStringSuccess) {
@@ -75,15 +75,15 @@ TEST(FileLoaderTest, LoadStringSuccess) {
     ofs.close();
 
     NiceMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "device_name");
-    EXPECT_EQ(loader.load_string(), "reminder");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
+    EXPECT_EQ(loader.load_string("device_name"), "reminder");
 }
 
 TEST(FileLoaderTest, LoadStringFileMissing) {
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/missing.txt", "device_name");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/missing.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("failed to open file"))).Times(1);
-    EXPECT_THROW(loader.load_string(), std::runtime_error);
+    EXPECT_THROW(loader.load_string("device_name"), std::runtime_error);
 }
 
 TEST(FileLoaderTest, LoadStringKeyMissing) {
@@ -92,9 +92,9 @@ TEST(FileLoaderTest, LoadStringKeyMissing) {
     ofs.close();
 
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "device_name");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("key not found"))).Times(1);
-    EXPECT_THROW(loader.load_string(), std::runtime_error);
+    EXPECT_THROW(loader.load_string("device_name"), std::runtime_error);
 }
 
 TEST(FileLoaderTest, LoadStringListSuccess) {
@@ -103,8 +103,8 @@ TEST(FileLoaderTest, LoadStringListSuccess) {
     ofs.close();
 
     NiceMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "device_list");
-    auto list = loader.load_string_list();
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
+    auto list = loader.load_string_list("device_list");
     ASSERT_EQ(list.size(), 3);
     EXPECT_EQ(list[0], "phone");
     EXPECT_EQ(list[1], "watch");
@@ -117,7 +117,7 @@ TEST(FileLoaderTest, LoadStringListKeyMissing) {
     ofs.close();
 
     StrictMock<MockLogger> logger;
-    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt", "device_list");
+    FileLoader loader(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), "/tmp/test_settings.txt");
     EXPECT_CALL(logger, error(testing::HasSubstr("key not found"))).Times(1);
-    EXPECT_THROW(loader.load_string_list(), std::runtime_error);
+    EXPECT_THROW(loader.load_string_list("device_list"), std::runtime_error);
 }

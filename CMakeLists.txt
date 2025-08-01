@@ -38,6 +38,7 @@ add_executable(test_app
     tests/core/main_task/test_main_task.cpp
     tests/core/human_task/test_human_task.cpp
     tests/core/human_task/test_human_handler.cpp
+    tests/core/human_task/test_human_process.cpp
     tests/core/main_task/test_main_handler.cpp
     tests/core/buzzer_task/test_buzzer_handler.cpp
     tests/core/buzzer_task/test_buzzer_task.cpp
@@ -52,6 +53,7 @@ add_executable(test_app
     src/core/human_task/human_task.cpp
     src/core/human_task/human_handler.cpp
     src/core/human_task/human_process.cpp
+    src/infra/process_operation/process_base.cpp
 
 
     src/core/buzzer_task/buzzer_task.cpp
@@ -60,6 +62,7 @@ add_executable(test_app
     src/core/bluetooth_task/bluetooth_task.cpp
     src/core/bluetooth_task/bluetooth_handler.cpp
     src/core/bluetooth_task/bluetooth_process.cpp
+    src/infra/process_operation/process_message.cpp
 )
 
 # GPIOReader tests
@@ -96,6 +99,7 @@ add_executable(test_infra_extra
     src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher.cpp
+    src/infra/process_operation/process_base.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
     tests/stubs/posix_mq_stub.cpp
