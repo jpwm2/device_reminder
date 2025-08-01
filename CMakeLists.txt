@@ -71,7 +71,6 @@ add_executable(test_gpio_reader
 
 # Additional infra tests
 add_executable(test_infra_extra
-
     tests/infra/process_operation/test_process_message.cpp
     tests/infra/process_operation/test_process_receiver.cpp
     tests/infra/thread_operation/test_thread_receiver.cpp
@@ -100,6 +99,7 @@ add_executable(test_infra_extra
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
     tests/stubs/posix_mq_stub.cpp
+    tests/stubs/popen_stub.cpp
 )
 
 
