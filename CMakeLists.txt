@@ -90,14 +90,18 @@ add_executable(test_infra_extra
     src/infra/thread_operation/thread_queue.cpp
     src/infra/process_operation/process_message.cpp
     src/infra/thread_operation/thread_sender.cpp
+    src/infra/thread_operation/thread_receiver.cpp
+    src/infra/thread_operation/thread_dispatcher.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
     src/infra/watch_dog/watch_dog.cpp
     src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher.cpp
+    src/infra/process_operation/process_receiver.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
+    tests/stubs/gpiod_stub.cpp
     tests/stubs/posix_mq_stub.cpp
     tests/stubs/popen_stub.cpp
 )
