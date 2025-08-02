@@ -3,6 +3,8 @@ project(integration_tests)
 
 set(CMAKE_CXX_STANDARD 17)
 
+enable_testing()
+
 # プロジェクトルートのパスを取得
 get_filename_component(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../.. ABSOLUTE)
 
@@ -31,6 +33,7 @@ list(REMOVE_ITEM DEVICE_SOURCES ${PROJECT_ROOT}/src/core/app_builder/app_builder
 
 # テストソース
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+list(FILTER TEST_SOURCES EXCLUDE REGEX "/build/")
 
 # スタブソース
 set(STUB_SOURCES
@@ -52,3 +55,5 @@ target_link_libraries(test_integration
     pthread
     rt
 )
+
+add_test(NAME test_integration COMMAND test_integration)
