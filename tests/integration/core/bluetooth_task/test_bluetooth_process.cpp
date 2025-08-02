@@ -159,7 +159,9 @@ TEST(BluetoothProcessIntegrationTest, 異常系_BluetoothDriver例外) {
     auto req_msg = std::make_shared<ProcessMessage>(ProcessMessageType::RequestBluetoothScan, std::vector<std::string>{});
 
     EXPECT_CALL(*codec, encode(_)).Times(1).WillRepeatedly(Return(std::vector<uint8_t>{'a'}));
-    EXPECT_CALL(*codec, decode(_)).WillOnce(Return(req_msg));
+    EXPECT_CALL(*codec, decode(_))
+        .WillOnce(Return(req_msg))
+        .WillRepeatedly(Return(nullptr));
     EXPECT_CALL(*timer_service, start()).Times(1);
     EXPECT_CALL(*timer_service, stop()).Times(1);
     EXPECT_CALL(*driver, scan()).WillOnce(::testing::Throw(BluetoothDriverError("scan failed")));

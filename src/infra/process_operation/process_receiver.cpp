@@ -27,16 +27,20 @@ void ProcessReceiver::run() {
 }
 
 void ProcessReceiver::stop() {
+    bool was_running = running_;
     running_ = false;
     if (worker_.joinable()) worker_.join();
-    if (logger_) logger_->info("ProcessReceiver stopped");
+    if (was_running && logger_) logger_->info("ProcessReceiver stopped");
 }
 
 void ProcessReceiver::loop() {
     while (running_) {
         if (!queue_) break;
         auto msg = queue_->pop();
-        if (!msg) continue;
+        if (!msg) {
+            // キューが空の場合はループを終了する
+            break;
+        }
         if (!running_) break;
         if (dispatcher_) dispatcher_->dispatch(std::move(msg));
     }
