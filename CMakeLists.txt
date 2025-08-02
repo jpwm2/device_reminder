@@ -125,6 +125,7 @@ set(DEVICE_SOURCES_NO_MAIN ${DEVICE_SOURCES})
 list(REMOVE_ITEM DEVICE_SOURCES_NO_MAIN ${CMAKE_SOURCE_DIR}/src/main.cpp)
 add_executable(test_integration
     tests/integration/test_main.cpp
+    tests/integration/infra/thread_operation/thread_sender/test_sender.cpp
     ${DEVICE_SOURCES_NO_MAIN}
     tests/stubs/gpiod_stub.cpp
 )
