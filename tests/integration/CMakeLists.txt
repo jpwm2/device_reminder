@@ -31,14 +31,17 @@ file(GLOB_RECURSE DEVICE_SOURCES CONFIGURE_DEPENDS ${PROJECT_ROOT}/src/*.cpp)
 list(REMOVE_ITEM DEVICE_SOURCES ${PROJECT_ROOT}/src/main.cpp)
 list(REMOVE_ITEM DEVICE_SOURCES ${PROJECT_ROOT}/src/core/app_builder/app_builder.cpp)
 
-# テストソース
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-list(FILTER TEST_SOURCES EXCLUDE REGEX "/build/")
+# テストソース (core 配下のみ)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp
+)
 
 # スタブソース（gpiod は各テストでモック化）
 set(STUB_SOURCES
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
     ${PROJECT_ROOT}/tests/stubs/popen_stub.cpp
+    ${PROJECT_ROOT}/tests/stubs/gpiod_stub.cpp
 )
 
 add_executable(test_integration
