@@ -69,6 +69,15 @@ TEST(HumanTaskIntegrationTest, NormalDetectionCallsSendOnce) {
     StrictMock<MockProcessQueue> process_queue;
     StrictMock<MockProcessMessage> process_message;
 
+    EXPECT_CALL(pir_logger, info(testing::_)).Times(testing::AnyNumber());
+    {
+        testing::InSequence seq;
+        EXPECT_CALL(gpio, read()).WillOnce(Return(false));
+        EXPECT_CALL(gpio, read()).WillOnce(Return(false));
+        EXPECT_CALL(gpio, read()).WillOnce(Return(true));
+        EXPECT_CALL(gpio, read()).WillRepeatedly(Return(true));
+    }
+
     auto spd = spdlog::default_logger()->clone("human_task_normal");
     auto logger = std::make_shared<Logger>(spd);
     auto process_sender = std::make_shared<ProcessSender>(
@@ -80,13 +89,6 @@ TEST(HumanTaskIntegrationTest, NormalDetectionCallsSendOnce) {
         std::shared_ptr<IThreadSender>(&thread_sender, [](IThreadSender*){}),
         std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
 
-    EXPECT_CALL(pir_logger, info(testing::_)).Times(testing::AnyNumber());
-    {
-        testing::InSequence seq;
-        EXPECT_CALL(gpio, read()).WillOnce(Return(false));
-        EXPECT_CALL(gpio, read()).WillOnce(Return(true));
-        EXPECT_CALL(gpio, read()).WillRepeatedly(Return(true));
-    }
     EXPECT_CALL(thread_sender, send()).Times(1);
 
     HumanTask task(logger, pir, process_sender);
@@ -104,6 +106,15 @@ TEST(HumanTaskIntegrationTest, AbnormalDetectionLogsErrorAndNoSend) {
     StrictMock<MockProcessQueue> process_queue;
     StrictMock<MockProcessMessage> process_message;
 
+    EXPECT_CALL(pir_logger, info(testing::_)).Times(testing::AnyNumber());
+    EXPECT_CALL(pir_logger, error(testing::_)).Times(1);
+    {
+        testing::InSequence seq;
+        EXPECT_CALL(gpio, read()).WillOnce(Return(false));
+        EXPECT_CALL(gpio, read()).WillOnce(testing::Throw(std::runtime_error("read fail")));
+        EXPECT_CALL(gpio, read()).WillRepeatedly(Return(false));
+    }
+
     auto spd = spdlog::default_logger()->clone("human_task_abnormal");
     auto logger = std::make_shared<Logger>(spd);
     auto process_sender = std::make_shared<ProcessSender>(
@@ -115,9 +126,6 @@ TEST(HumanTaskIntegrationTest, AbnormalDetectionLogsErrorAndNoSend) {
         std::shared_ptr<IThreadSender>(&thread_sender, [](IThreadSender*){}),
         std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
 
-    EXPECT_CALL(pir_logger, info(testing::_)).Times(testing::AnyNumber());
-    EXPECT_CALL(pir_logger, error(testing::_)).Times(1);
-    EXPECT_CALL(gpio, read()).WillOnce(testing::Throw(std::runtime_error("read fail")));
     EXPECT_CALL(thread_sender, send()).Times(0);
 
     HumanTask task(logger, pir, process_sender);
