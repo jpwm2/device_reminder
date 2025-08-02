@@ -115,11 +115,14 @@ TEST(HumanProcessIntegrationTest, RunWithStartHumanDetection) {
         std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
 
     EXPECT_CALL(*codec, encode(start_msg)).WillOnce(Return(std::vector<uint8_t>{1}));
-    EXPECT_CALL(*codec, decode(testing::_)).WillOnce(Return(start_msg));
+    EXPECT_CALL(*codec, decode(testing::_))
+        .WillOnce(Return(start_msg))
+        .WillRepeatedly(Return(nullptr));
 
     EXPECT_CALL(*timer, start()).Times(1);
     EXPECT_CALL(*timer, stop()).Times(2);
     EXPECT_CALL(*pir, run()).Times(1);
+    EXPECT_CALL(*receiver_logger, info(HasSubstr("ProcessReceiver loop end"))).Times(1);
     EXPECT_CALL(*receiver_logger, info(HasSubstr("ProcessReceiver stopped"))).Times(1);
 
     auto sender = std::make_shared<ProcessSender>(queue, start_msg);
@@ -183,6 +186,7 @@ TEST(HumanProcessIntegrationTest, RunWithDecodeFailure) {
     EXPECT_CALL(*timer, start()).Times(1);
     EXPECT_CALL(*timer, stop()).Times(1);
     EXPECT_CALL(*pir, run()).Times(0);
+    EXPECT_CALL(*receiver_logger, info(HasSubstr("ProcessReceiver loop end"))).Times(1);
     EXPECT_CALL(*receiver_logger, info(HasSubstr("ProcessReceiver stopped"))).Times(1);
 
     auto sender = std::make_shared<ProcessSender>(queue, start_msg);
