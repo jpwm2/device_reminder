@@ -45,6 +45,8 @@ public:
 
 class MockBluetoothDriver : public IBluetoothDriver {
 public:
+    MOCK_METHOD(void, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
     MOCK_METHOD(std::vector<std::string>, scan, (), (override));
 };
 
