@@ -54,16 +54,16 @@ TEST(ProcessQueueIntegrationTest, PushFailureLogged) {
     auto spd = std::make_shared<spdlog::logger>("test", sink);
     auto logger = std::make_shared<Logger>(spd);
     auto codec  = std::make_shared<MessageCodec>(logger);
-    ProcessQueue q(logger, codec, unique_name("fail"));
-
-    auto msg = std::make_shared<ProcessMessage>(
-        ProcessMessageType::StartBuzzing, std::vector<std::string>{"1"});
 
     std::vector<std::string> logs;
     ON_CALL(*sink, log(testing::_))
         .WillByDefault([&logs](const spdlog::details::log_msg& m) {
             logs.emplace_back(m.payload.begin(), m.payload.end());
         });
+
+    ProcessQueue q(logger, codec, unique_name("fail"));
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing, std::vector<std::string>{"1"});
 
     EXPECT_THROW(q.push(msg), std::system_error);
 
