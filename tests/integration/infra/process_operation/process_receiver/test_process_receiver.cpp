@@ -52,7 +52,10 @@ TEST(ProcessReceiverIntegrationTest, DispatchesMessage) {
 
   EXPECT_CALL(*codec, encode(_))
       .WillOnce(Return(std::vector<uint8_t>{0x01, 0x02}));
-  EXPECT_CALL(*codec, decode(_)).WillOnce(Return(msg));
+  EXPECT_CALL(*codec, decode(_))
+      .Times(testing::AtLeast(1))
+      .WillOnce(Return(msg))
+      .WillRepeatedly(Return(std::shared_ptr<IProcessMessage>{}));
 
   testing::MockFunction<void(std::shared_ptr<IProcessMessage>)> handler;
 
@@ -100,11 +103,14 @@ TEST(ProcessReceiverIntegrationTest, DecodeFailure) {
   std::promise<void> decode_called;
   std::promise<void> decode_release;
 
-  EXPECT_CALL(*codec, decode(_)).WillOnce([&](const std::vector<uint8_t> &) {
-    decode_called.set_value();
-    decode_release.get_future().wait();
-    return std::shared_ptr<IProcessMessage>{};
-  });
+  EXPECT_CALL(*codec, decode(_))
+      .Times(testing::AtLeast(1))
+      .WillOnce([&](const std::vector<uint8_t> &) {
+        decode_called.set_value();
+        decode_release.get_future().wait();
+        return std::shared_ptr<IProcessMessage>{};
+      })
+      .WillRepeatedly(Return(std::shared_ptr<IProcessMessage>{}));
 
   ProcessDispatcher::HandlerMap map{
       {ProcessMessageType::StartBuzzing, handler.AsStdFunction()}};
