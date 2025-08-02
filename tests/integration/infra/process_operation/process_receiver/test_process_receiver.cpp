@@ -79,9 +79,8 @@ TEST(ProcessReceiverIntegrationTest, DispatchesMessage) {
   receiver.run();
 
   handler_called.get_future().wait();
-  std::thread stopper([&] { receiver.stop(); });
   handler_release.set_value();
-  stopper.join();
+  receiver.stop();
 }
 
 // 異常系: デコード失敗時にハンドラが呼ばれないことを確認
@@ -122,7 +121,6 @@ TEST(ProcessReceiverIntegrationTest, DecodeFailure) {
   receiver.run();
 
   decode_called.get_future().wait();
-  std::thread stopper([&] { receiver.stop(); });
   decode_release.set_value();
-  stopper.join();
+  receiver.stop();
 }
