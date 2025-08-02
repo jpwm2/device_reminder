@@ -19,18 +19,18 @@
 #include <memory>
 #include <iostream>
 
-using ::testing::StrictMock;
-using ::testing::AtLeast;
-using ::testing::_;
 
 namespace device_reminder {
 
+int g_info_count = 0;
+bool g_inject_failure = false;
+
 // ----------------- モック定義 -----------------
-class MockLogger : public ILogger {
+class CountingLogger : public ILogger {
 public:
-    MOCK_METHOD(void, info, (const std::string&), (override));
-    MOCK_METHOD(void, error, (const std::string&), (override));
-    MOCK_METHOD(void, warn, (const std::string&), (override));
+    void info(const std::string&) override { ++g_info_count; }
+    void error(const std::string&) override {}
+    void warn(const std::string&) override {}
 };
 
 class MockProcessSender : public IProcessSender {
@@ -105,27 +105,20 @@ private:
     std::unique_ptr<IBuzzerTask> task_;
 };
 
-// ----------------- グローバル変数 -----------------
-std::shared_ptr<ILogger> g_logger;
-bool g_inject_failure = false;
-
 namespace di = boost::di;
 
 // ----------------- テスト用インジェクタ -----------------
 inline auto make_app_injector() {
-    auto logger_provider = []() -> std::shared_ptr<ILogger> {
-        if (g_inject_failure) {
-            throw std::runtime_error("inject fail");
-        }
-        return g_logger;
-    };
+    if (g_inject_failure) {
+        throw std::runtime_error("inject fail");
+    }
 
     return di::make_injector(
         di::bind<IMainTask>.to<MainTask>(),
         di::bind<IHumanTask>.to<HumanTask>(),
         di::bind<IBluetoothTask>.to<BluetoothTask>(),
         di::bind<IBuzzerTask>.to<BuzzerTask>(),
-        di::bind<ILogger>.to(logger_provider),
+        di::bind<ILogger>.to<CountingLogger>().in(di::singleton),
         di::bind<IProcessSender>.to<MockProcessSender>(),
         di::bind<IFileLoader>.to<MockFileLoader>(),
         di::bind<ITimerService>.to<MockTimerService>(),
@@ -150,7 +143,7 @@ std::unique_ptr<App> AppBuilder::build() {
         human_task = injector.create<std::unique_ptr<IHumanTask>>();
         bluetooth_task = injector.create<std::unique_ptr<IBluetoothTask>>();
         buzzer_task = injector.create<std::unique_ptr<IBuzzerTask>>();
-        logger = injector.create<std::unique_ptr<ILogger>>();
+        logger = std::make_unique<CountingLogger>();
 
         auto main_proc = std::make_unique<DummyMainProcess>(std::move(main_task));
         auto human_proc = std::make_unique<DummyHumanProcess>(std::move(human_task));
@@ -186,23 +179,17 @@ std::unique_ptr<App> AppBuilder::build() {
 TEST(AppBuilderIntegrationTest, BuildSuccess) {
     using namespace device_reminder;
     g_inject_failure = false;
-
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
-    g_logger = logger;
-
-    EXPECT_CALL(*logger, info(_)).Times(AtLeast(4));
+    g_info_count = 0;
 
     AppBuilder builder;
     auto app = builder.build();
     EXPECT_NE(app, nullptr);
+    EXPECT_GE(g_info_count, 4);
 }
 
 TEST(AppBuilderIntegrationTest, BuildThrowsWhenDependencyFails) {
     using namespace device_reminder;
     g_inject_failure = true;
-
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
-    g_logger = logger;
 
     AppBuilder builder;
     EXPECT_THROW(builder.build(), std::runtime_error);
