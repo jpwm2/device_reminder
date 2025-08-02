@@ -16,6 +16,8 @@ public:
     vector<string> names{};
     bool fail = false;
     int call_count = 0;
+    void run() override {}
+    void stop() override {}
     std::vector<std::string> scan() override {
         ++call_count;
         if (fail) throw BluetoothDriverError("fail");

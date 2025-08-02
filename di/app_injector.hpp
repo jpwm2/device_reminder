@@ -54,7 +54,9 @@ inline auto make_app_injector() {
         di::bind<IGPIOReader>.to<GPIOReader>(),
         di::bind<IBuzzerDriver>.to<BuzzerDriver>(),
         di::bind<IPIRDriver>.to<PIRDriver>(),
-        di::bind<IBluetoothDriver>.to<BluetoothDriver>()
+        di::bind<IBluetoothDriver>.to([] {
+            return std::make_shared<BluetoothDriver>(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        })
     };
 
     return detail::merge_injectors(
