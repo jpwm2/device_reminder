@@ -34,7 +34,10 @@ int mq_send(mqd_t, const char* msg_ptr, size_t msg_len, unsigned int) {
     return 0;
 }
 ssize_t mq_receive(mqd_t, char* msg_ptr, size_t msg_len, unsigned int*) {
-    if(fail_receive || g_mq.q.empty()) { errno = EAGAIN; return -1; }
+    if (fail_receive) { errno = EAGAIN; return -1; }
+    if (g_mq.q.empty()) {
+        return 0; // no data available
+    }
     auto& s = g_mq.q.front();
     size_t n = std::min(msg_len, s.size());
     std::memcpy(msg_ptr, s.data(), n);
