@@ -10,6 +10,7 @@ static int request_input_result = 0;
 static int get_value_result = 0;
 static int request_output_result = 0;
 static int set_value_result = 0;
+static int last_set_value = 0;
 static int request_rising_result = 0;
 static int request_falling_result = 0;
 static int request_both_result = 0;
@@ -24,6 +25,7 @@ void gpiod_stub_reset(void) {
     get_value_result = 0;
     request_output_result = 0;
     set_value_result = 0;
+    last_set_value = 0;
     request_rising_result = 0;
     request_falling_result = 0;
     request_both_result = 0;
@@ -36,6 +38,7 @@ void gpiod_stub_set_request_input_result(int val) { request_input_result = val; 
 void gpiod_stub_set_get_value_result(int val) { get_value_result = val; }
 void gpiod_stub_set_request_output_result(int val) { request_output_result = val; }
 void gpiod_stub_set_set_value_result(int val) { set_value_result = val; }
+int gpiod_stub_get_last_set_value(void) { return last_set_value; }
 void gpiod_stub_set_request_rising_result(int val) { request_rising_result = val; }
 void gpiod_stub_set_request_falling_result(int val) { request_falling_result = val; }
 void gpiod_stub_set_request_both_result(int val) { request_both_result = val; }
@@ -71,7 +74,8 @@ int gpiod_line_request_output(struct gpiod_line* line, const char* consumer, int
 }
 
 int gpiod_line_set_value(struct gpiod_line* line, int value) {
-    (void)line; (void)value;
+    (void)line;
+    last_set_value = value;
     return set_value_result;
 }
 
