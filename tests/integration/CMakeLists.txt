@@ -32,9 +32,8 @@ list(REMOVE_ITEM DEVICE_SOURCES ${PROJECT_ROOT}/src/core/app_builder/app_builder
 # テストソース
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-# スタブソース
+# スタブソース（gpiod は各テストでモック化）
 set(STUB_SOURCES
-    ${PROJECT_ROOT}/tests/stubs/gpiod_stub.cpp
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
     ${PROJECT_ROOT}/tests/stubs/popen_stub.cpp
 )
