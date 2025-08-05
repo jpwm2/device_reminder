@@ -64,6 +64,7 @@ add_executable(test_app
     src/core/bluetooth_task/bluetooth_handler.cpp
     src/core/bluetooth_task/bluetooth_process.cpp
     src/infra/process_operation/process_message.cpp
+    src/infra/message/message.cpp
 )
 
 # GPIOReader tests
@@ -97,6 +98,7 @@ add_executable(test_infra_extra
     src/infra/thread_operation/thread_sender.cpp
     src/infra/thread_operation/thread_receiver.cpp
     src/infra/thread_operation/thread_dispatcher.cpp
+    src/infra/message/message.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
     src/infra/watch_dog/watch_dog.cpp
