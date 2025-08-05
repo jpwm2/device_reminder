@@ -63,7 +63,7 @@ add_executable(test_app
     src/core/bluetooth_task/bluetooth_task.cpp
     src/core/bluetooth_task/bluetooth_handler.cpp
     src/core/bluetooth_task/bluetooth_process.cpp
-    src/infra/process_operation/process_message.cpp
+    src/infra/message/message.cpp
 )
 
 # GPIOReader tests
@@ -75,13 +75,11 @@ add_executable(test_gpio_reader
 
 # Additional infra tests
 add_executable(test_infra_extra
-    tests/infra/process_operation/test_process_message.cpp
     tests/infra/process_operation/test_process_receiver.cpp
     tests/infra/thread_operation/test_thread_receiver.cpp
     tests/infra/thread_operation/test_thread_sender.cpp
     tests/infra/thread_operation/test_thread_queue.cpp
     tests/infra/thread_operation/test_thread_dispatcher.cpp
-    tests/infra/thread_operation/test_thread_message.cpp
     tests/infra/pir_driver/test_pir_driver.cpp
     tests/infra/timer_service/test_timer_service.cpp
     tests/infra/watch_dog/test_watch_dog.cpp
@@ -93,10 +91,10 @@ add_executable(test_infra_extra
     tests/infra/file_loader/test_file_loader.cpp
     src/infra/logger/logger.cpp
     src/infra/thread_operation/thread_queue.cpp
-    src/infra/process_operation/process_message.cpp
     src/infra/thread_operation/thread_sender.cpp
     src/infra/thread_operation/thread_receiver.cpp
     src/infra/thread_operation/thread_dispatcher.cpp
+    src/infra/message/message.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
     src/infra/watch_dog/watch_dog.cpp
