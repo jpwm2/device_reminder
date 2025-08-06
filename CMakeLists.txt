@@ -91,7 +91,7 @@ add_executable(test_infra_extra
     tests/infra/file_loader/test_file_loader.cpp
     src/infra/logger/logger.cpp
     src/infra/thread_operation/thread_queue.cpp
-    src/infra/thread_operation/thread_sender.cpp
+    src/infra/thread_operation/thread_sender/thread_sender.cpp
     src/infra/thread_operation/thread_receiver.cpp
     src/infra/thread_operation/thread_dispatcher.cpp
     src/infra/message/message.cpp
