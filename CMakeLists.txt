@@ -32,20 +32,20 @@ include_directories(
 
 # テストコードと対象ソース
 add_executable(test_app
-    tests/core/app/test_app.cpp
-    tests/core/main_task/test_main_task.cpp
-    tests/core/human_task/test_human_task.cpp
-    tests/core/human_task/test_human_handler.cpp
-    tests/core/human_task/test_human_process.cpp
-    tests/core/main_task/test_main_handler.cpp
-    tests/core/main_task/test_main_process.cpp
-    tests/core/buzzer_task/test_buzzer_handler.cpp
-    tests/core/buzzer_task/test_buzzer_task.cpp
-    tests/core/buzzer_task/test_buzzer_process.cpp
-    tests/core/bluetooth_task/test_bluetooth_handler.cpp
-    tests/core/bluetooth_task/test_bluetooth_task.cpp
-    tests/core/bluetooth_task/test_bluetooth_process.cpp
-    tests/infra/logger/test_logger.cpp
+    tests/unit/core/app/test_app.cpp
+    tests/unit/core/main_task/test_main_task.cpp
+    tests/unit/core/human_task/test_human_task.cpp
+    tests/unit/core/human_task/test_human_handler.cpp
+    tests/unit/core/human_task/test_human_process.cpp
+    tests/unit/core/main_task/test_main_handler.cpp
+    tests/unit/core/main_task/test_main_process.cpp
+    tests/unit/core/buzzer_task/test_buzzer_handler.cpp
+    tests/unit/core/buzzer_task/test_buzzer_task.cpp
+    tests/unit/core/buzzer_task/test_buzzer_process.cpp
+    tests/unit/core/bluetooth_task/test_bluetooth_handler.cpp
+    tests/unit/core/bluetooth_task/test_bluetooth_task.cpp
+    tests/unit/core/bluetooth_task/test_bluetooth_process.cpp
+    tests/unit/infra/logger/test_logger.cpp
     src/infra/logger/logger.cpp
     src/core/app/app.cpp
     src/core/main_task/main_task.cpp
@@ -68,32 +68,44 @@ add_executable(test_app
 
 # GPIOReader tests
 add_executable(test_gpio_reader
-    tests/infra/gpio_operation/gpio_reader/test_gpio_reader.cpp
+    tests/unit/infra/gpio_operation/gpio_reader/test_gpio_reader.cpp
     src/infra/gpio_operation/gpio_reader/gpio_reader.cpp
     tests/stubs/gpiod_stub.cpp
 )
 
+# Minimal thread dispatcher tests
+add_executable(test_thread_dispatcher_only
+    tests/infra/thread_operation/test_thread_dispatcher.cpp
+    src/infra/thread_operation/thread_dispatcher/thread_dispatcher.cpp
+    src/infra/message/message.cpp
+    src/infra/logger/logger.cpp
+)
+target_link_libraries(test_thread_dispatcher_only gtest gmock gtest_main)
+if(UNIX)
+    target_link_libraries(test_thread_dispatcher_only pthread)
+endif()
+
 # Additional infra tests
 add_executable(test_infra_extra
-    tests/infra/process_operation/test_process_receiver.cpp
-    tests/infra/thread_operation/test_thread_receiver.cpp
-    tests/infra/thread_operation/test_thread_sender.cpp
-    tests/infra/thread_operation/test_thread_queue.cpp
+    tests/unit/infra/process_operation/test_process_receiver.cpp
+    tests/unit/infra/thread_operation/test_thread_receiver.cpp
+    tests/unit/infra/thread_operation/test_thread_sender.cpp
+    tests/unit/infra/thread_operation/test_thread_queue.cpp
     tests/infra/thread_operation/test_thread_dispatcher.cpp
-    tests/infra/pir_driver/test_pir_driver.cpp
-    tests/infra/timer_service/test_timer_service.cpp
-    tests/infra/watch_dog/test_watch_dog.cpp
-    tests/infra/process_operation/test_process_dispatcher.cpp
-    tests/infra/process_operation/test_process_base.cpp
-    tests/infra/gpio_operation/gpio_setter/test_gpio_setter.cpp
-    tests/infra/buzzer_driver/test_buzzer_driver.cpp
-    tests/infra/bluetooth_driver/test_bluetooth_driver.cpp
-    tests/infra/file_loader/test_file_loader.cpp
+    tests/unit/infra/pir_driver/test_pir_driver.cpp
+    tests/unit/infra/timer_service/test_timer_service.cpp
+    tests/unit/infra/watch_dog/test_watch_dog.cpp
+    tests/unit/infra/process_operation/test_process_dispatcher.cpp
+    tests/unit/infra/process_operation/test_process_base.cpp
+    tests/unit/infra/gpio_operation/gpio_setter/test_gpio_setter.cpp
+    tests/unit/infra/buzzer_driver/test_buzzer_driver.cpp
+    tests/unit/infra/bluetooth_driver/test_bluetooth_driver.cpp
+    tests/unit/infra/file_loader/test_file_loader.cpp
     src/infra/logger/logger.cpp
     src/infra/thread_operation/thread_queue.cpp
     src/infra/thread_operation/thread_sender/thread_sender.cpp
     src/infra/thread_operation/thread_receiver.cpp
-    src/infra/thread_operation/thread_dispatcher.cpp
+    src/infra/thread_operation/thread_dispatcher/thread_dispatcher.cpp
     src/infra/message/message.cpp
     src/infra/pir_driver/pir_driver.cpp
     src/infra/timer_service/timer_service.cpp
@@ -176,7 +188,7 @@ endif()
 enable_testing()
 add_test(NAME AllTests COMMAND test_app)
 add_test(NAME GPIOReaderTests COMMAND test_gpio_reader)
-add_test(NAME InfraExtraTests COMMAND test_infra_extra)
+add_test(NAME ThreadDispatcherTests COMMAND test_thread_dispatcher_only)
 add_test(NAME IntegrationMain COMMAND test_integration)
 add_test(NAME IntegrationAppRun COMMAND test_integration_full)
 
