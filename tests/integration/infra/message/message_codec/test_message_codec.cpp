@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/process_operation/message_codec/message_codec.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
+#include "infra/message/message_codec/message_codec.hpp"
+#include "infra/message/message.hpp"
 #include "infra/logger/logger.hpp"
 
 #include <spdlog/sinks/sink.h>
@@ -30,9 +30,10 @@ TEST(MessageCodecIntegrationTest, EncodeDecodeSuccess) {
     auto logger = std::make_shared<Logger>(spd_logger);
     MessageCodec codec(logger);
 
-    auto msg = std::make_shared<ProcessMessage>(
-        ProcessMessageType::HumanDetected,
-        std::vector<std::string>{"hello", "world"});
+    auto msg = std::make_shared<Message>(
+        MessageType::HumanFound,
+        std::vector<std::string>{"hello", "world"},
+        logger);
 
     EXPECT_CALL(*sink, log).Times(0);
     EXPECT_CALL(*sink, flush).Times(0);
@@ -58,10 +59,7 @@ TEST(MessageCodecIntegrationTest, DecodeFailureLogsError) {
         return payload.find("data too short") != std::string::npos;
     }))).Times(1);
 
-    auto decoded = codec.decode({});
-
-    EXPECT_EQ(decoded, nullptr);
+    EXPECT_THROW(codec.decode({}), std::invalid_argument);
 }
 
 } // namespace device_reminder
-
