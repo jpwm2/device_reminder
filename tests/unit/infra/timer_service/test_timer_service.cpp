@@ -50,7 +50,7 @@ TEST(TimerServiceTest, StartTriggersSendAndTimeoutLog) {
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
         EXPECT_CALL(sender, send()).Times(1);
-        EXPECT_CALL(logger, info("TimerService timeout"));
+        EXPECT_CALL(logger, info("TimerService send succeeded"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
     }
@@ -70,7 +70,8 @@ TEST(TimerServiceTest, StartWithNullSenderDoesNotSend) {
         EXPECT_CALL(logger, info("TimerService created"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
-        EXPECT_CALL(logger, info("TimerService timeout")).Times(0);
+        EXPECT_CALL(logger, info("TimerService send succeeded")).Times(0);
+        EXPECT_CALL(logger, error("TimerService send failed"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
     }
@@ -103,6 +104,8 @@ TEST(TimerServiceTest, StopBeforeTimeoutPreventsSend) {
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
         EXPECT_CALL(sender, send()).Times(0);
+        EXPECT_CALL(logger, info("TimerService send succeeded")).Times(0);
+        EXPECT_CALL(logger, error("TimerService send failed")).Times(0);
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
@@ -127,7 +130,7 @@ TEST(TimerServiceTest, ZeroDurationTimeoutTriggersImmediately) {
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
         EXPECT_CALL(sender, send()).Times(1);
-        EXPECT_CALL(logger, info("TimerService timeout"));
+        EXPECT_CALL(logger, info("TimerService send succeeded"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
     }

@@ -27,7 +27,7 @@ private:
     int duration_ms_{0};
     std::shared_ptr<IThreadSender> sender_;
     std::thread thread_;
-    std::atomic<bool> running_{false};
+    std::atomic<bool> cancel_flag_{false};
 };
 
 } // namespace device_reminder
