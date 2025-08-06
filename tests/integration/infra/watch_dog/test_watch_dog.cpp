@@ -37,9 +37,10 @@ TEST(WatchDogIntegrationTest, StartTriggersTimeoutAndSend) {
     {
         InSequence seq;
         EXPECT_CALL(logger, info("TimerService created"));
+        EXPECT_CALL(logger, info("WDT監視開始"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
-        EXPECT_CALL(logger, info("TimerService timeout"));
+        EXPECT_CALL(logger, info("TimerService send succeeded"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
     }
@@ -51,7 +52,7 @@ TEST(WatchDogIntegrationTest, StartTriggersTimeoutAndSend) {
     auto timer = std::make_shared<TimerService>(logger_ptr, 10, sender_ptr);
 
     {
-        WatchDog wd(timer);
+        WatchDog wd(timer, logger_ptr);
         wd.start();
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
@@ -67,13 +68,14 @@ TEST(WatchDogIntegrationTest, StopBeforeTimeoutDoesNotSend) {
     {
         InSequence seq;
         EXPECT_CALL(logger, info("TimerService created"));
+        EXPECT_CALL(logger, info("WDT監視開始"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService started"));
+        EXPECT_CALL(logger, info("WDT監視停止"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService stopped"));
         EXPECT_CALL(logger, info("TimerService destroyed"));
     }
-    EXPECT_CALL(logger, info("TimerService timeout")).Times(0);
     EXPECT_CALL(sender, send()).Times(0);
 
     auto logger_ptr = std::shared_ptr<ILogger>(&logger, [](ILogger*){});
@@ -82,7 +84,7 @@ TEST(WatchDogIntegrationTest, StopBeforeTimeoutDoesNotSend) {
     auto timer = std::make_shared<TimerService>(logger_ptr, 50, sender_ptr);
 
     {
-        WatchDog wd(timer);
+        WatchDog wd(timer, logger_ptr);
         wd.start();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         wd.stop();
