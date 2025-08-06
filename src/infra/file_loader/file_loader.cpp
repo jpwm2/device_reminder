@@ -8,30 +8,32 @@
 namespace device_reminder {
 
 FileLoader::FileLoader(std::shared_ptr<ILogger> logger,
-                       const std::string& file_path)
+                       const std::string& file_path,
+                       const std::string& key)
     : logger_(std::move(logger))
     , file_path_(file_path)
+    , key_(key)
 {}
 
-int FileLoader::load_int(const std::string& key) const
+int FileLoader::load_int() const
 {
-    std::string value = load_value(key);
+    std::string value = load_value();
     try {
         return std::stoi(value);
     } catch (const std::exception&) {
-        if (logger_) logger_->error(std::string("invalid int value for ") + key);
+        if (logger_) logger_->error(std::string("invalid int value for ") + key_);
         throw;
     }
 }
 
-std::string FileLoader::load_string(const std::string& key) const
+std::string FileLoader::load_string() const
 {
-    return load_value(key);
+    return load_value();
 }
 
-std::vector<std::string> FileLoader::load_string_list(const std::string& key) const
+std::vector<std::string> FileLoader::load_string_list() const
 {
-    std::string value = load_value(key);
+    std::string value = load_value();
     std::vector<std::string> result;
     std::istringstream iss(value);
     std::string item;
@@ -44,7 +46,7 @@ std::vector<std::string> FileLoader::load_string_list(const std::string& key) co
     return result;
 }
 
-std::string FileLoader::load_value(const std::string& key) const
+std::string FileLoader::load_value() const
 {
     std::ifstream ifs(file_path_);
     if (!ifs) {
@@ -76,12 +78,12 @@ std::string FileLoader::load_value(const std::string& key) const
         auto value_start = value.find_first_not_of(" \t");
         if (value_start != std::string::npos) value = value.substr(value_start);
 
-        if (k == key) {
+        if (k == key_) {
             return value;
         }
     }
-    if (logger_) logger_->error("key not found: " + key);
-    throw std::runtime_error("key not found: " + key);
+    if (logger_) logger_->error("key not found: " + key_);
+    throw std::runtime_error("key not found: " + key_);
 }
 
 } // namespace device_reminder

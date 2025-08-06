@@ -56,8 +56,8 @@ TEST(FileLoaderIntegrationTest, LoadIntReturnsValueWithoutErrorLog)
         ofs << "buzz_duration_ms=5000\n";
     }
 
-    device_reminder::FileLoader loader(logger, path.string());
-    int value = loader.load_int("buzz_duration_ms");
+    device_reminder::FileLoader loader(logger, path.string(), "buzz_duration_ms");
+    int value = loader.load_int();
     EXPECT_EQ(value, 5000);
 
     fs::remove(path);
@@ -84,8 +84,8 @@ TEST(FileLoaderIntegrationTest, LoadIntInvalidValueThrows)
         ofs << "buzz_duration_ms=abc\n";
     }
 
-    device_reminder::FileLoader loader(logger, path.string());
-    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::invalid_argument);
+    device_reminder::FileLoader loader(logger, path.string(), "buzz_duration_ms");
+    EXPECT_THROW(loader.load_int(), std::invalid_argument);
 
     fs::remove(path);
 }
@@ -111,8 +111,8 @@ TEST(FileLoaderIntegrationTest, LoadIntKeyNotFoundThrows)
         ofs << "other_key=1\n";
     }
 
-    device_reminder::FileLoader loader(logger, path.string());
-    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::runtime_error);
+    device_reminder::FileLoader loader(logger, path.string(), "buzz_duration_ms");
+    EXPECT_THROW(loader.load_int(), std::runtime_error);
 
     fs::remove(path);
 }
@@ -134,7 +134,7 @@ TEST(FileLoaderIntegrationTest, LoadIntFileNotFoundThrows)
 
     fs::path path = fs::temp_directory_path() / "file_loader_notfound.cfg";
 
-    device_reminder::FileLoader loader(logger, path.string());
-    EXPECT_THROW(loader.load_int("buzz_duration_ms"), std::runtime_error);
+    device_reminder::FileLoader loader(logger, path.string(), "buzz_duration_ms");
+    EXPECT_THROW(loader.load_int(), std::runtime_error);
 }
 
