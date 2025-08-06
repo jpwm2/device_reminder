@@ -104,7 +104,7 @@ add_executable(test_infra_extra
     src/infra/logger/logger.cpp
     src/infra/thread_operation/thread_queue.cpp
     src/infra/thread_operation/thread_sender/thread_sender.cpp
-    src/infra/thread_operation/thread_receiver.cpp
+    src/infra/thread_operation/thread_receiver/thread_receiver.cpp
     src/infra/thread_operation/thread_dispatcher/thread_dispatcher.cpp
     src/infra/message/message.cpp
     src/infra/pir_driver/pir_driver.cpp
