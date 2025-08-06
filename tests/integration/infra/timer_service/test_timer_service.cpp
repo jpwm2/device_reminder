@@ -70,7 +70,7 @@ TEST(統合テストTimerService, 正常系_タイムアウトで送信) {
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService stopped")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService started")));
         EXPECT_CALL(*queue, push(msg_base));
-        EXPECT_CALL(*sink, log(InfoMsgEq("TimerService timeout")));
+        EXPECT_CALL(*sink, log(InfoMsgEq("TimerService send succeeded")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService stopped")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService destroyed")));
     }
@@ -99,7 +99,7 @@ TEST(統合テストTimerService, 異常系_メッセージ未設定) {
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService stopped")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService started")));
         EXPECT_CALL(*sink, log(ErrorMsgEq("ThreadSender send failed: null queue or message")));
-        EXPECT_CALL(*sink, log(InfoMsgEq("TimerService timeout")));
+        EXPECT_CALL(*sink, log(ErrorMsgEq("TimerService send failed")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService stopped")));
         EXPECT_CALL(*sink, log(InfoMsgEq("TimerService destroyed")));
     }

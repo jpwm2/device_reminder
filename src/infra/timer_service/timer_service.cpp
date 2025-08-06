@@ -1,4 +1,4 @@
-#include "timer_service/timer_service.hpp"
+#include "infra/timer_service/timer_service.hpp"
 #include "infra/logger/i_logger.hpp"
 
 #include <chrono>
@@ -22,24 +22,27 @@ TimerService::~TimerService() {
 
 void TimerService::start() {
     stop();
-    running_ = true;
+    cancel_flag_ = false;
     thread_ = std::thread(&TimerService::worker, this);
     if (logger_) logger_->info("TimerService started");
 }
 
 void TimerService::stop() {
-    running_ = false;
+    cancel_flag_ = true;
     if (thread_.joinable()) thread_.join();
     if (logger_) logger_->info("TimerService stopped");
 }
 
 void TimerService::worker() {
     std::this_thread::sleep_for(std::chrono::milliseconds(duration_ms_));
-    if (running_ && sender_) {
+    if (cancel_flag_) return;
+
+    if (sender_) {
         sender_->send();
-        if (logger_) logger_->info("TimerService timeout");
+        if (logger_) logger_->info("TimerService send succeeded");
+    } else {
+        if (logger_) logger_->error("TimerService send failed");
     }
-    running_ = false;
 }
 
 } // namespace device_reminder
