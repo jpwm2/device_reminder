@@ -1,14 +1,17 @@
 #pragma once
-#include <memory>
 
 namespace device_reminder {
 
-class IThreadMessage; // forward declaration
-class IThreadQueue;
-
+/**
+ * @brief スレッドキューへメッセージを送信するインタフェース
+ */
 class IThreadSender {
 public:
     virtual ~IThreadSender() = default;
+
+    /**
+     * @brief 保持されたメッセージを送信する
+     */
     virtual void send() = 0;
 };
 
