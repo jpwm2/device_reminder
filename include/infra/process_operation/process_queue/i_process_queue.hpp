@@ -9,7 +9,6 @@ public:
     virtual ~IProcessQueue() = default;
     virtual void push(std::shared_ptr<IProcessMessage> msg) = 0;
     virtual std::shared_ptr<IProcessMessage> pop() = 0;
-    virtual std::size_t size() const = 0;
 };
 
 } // namespace device_reminder
