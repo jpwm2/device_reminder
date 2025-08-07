@@ -5,7 +5,8 @@
 namespace device_reminder {
 
 class IProcessQueue;
-class IProcessMessage;
+class IMessage;
+class ILogger;
 
 class IProcessSender {
 public:
