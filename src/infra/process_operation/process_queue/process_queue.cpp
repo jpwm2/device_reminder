@@ -10,7 +10,7 @@ ProcessQueue::ProcessQueue(std::shared_ptr<ILogger> logger,
                            std::shared_ptr<IMessageCodec> codec)
     : codec_{std::move(codec)}, logger_{std::move(logger)} {}
 
-void ProcessQueue::push(std::shared_ptr<IProcessMessage> msg) {
+void ProcessQueue::push(std::shared_ptr<IMessage> msg) {
     if (!msg) {
         if (logger_) logger_->warn("push called with nullptr message");
         return;
@@ -28,7 +28,7 @@ void ProcessQueue::push(std::shared_ptr<IProcessMessage> msg) {
     }
 }
 
-std::shared_ptr<IProcessMessage> ProcessQueue::pop() {
+std::shared_ptr<IMessage> ProcessQueue::pop() {
     std::vector<uint8_t> data;
     {
         std::lock_guard<std::mutex> lock{mtx_};
