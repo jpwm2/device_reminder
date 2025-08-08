@@ -56,10 +56,10 @@ TEST(BluetoothDriverTest, RunFiltersPairsAndNotifies) {
     EXPECT_CALL(*dev_loader, load_string_list("device_list"))
         .WillOnce(Return(std::vector<std::string>{"AA", "CC"}));
     EXPECT_CALL(*dist_loader, load_int("distance_threshold"))
-        .WillOnce(Return(-50));
+        .WillOnce(Return(50));
     EXPECT_CALL(*scanner, scan())
         .WillOnce(Return(std::vector<BluetoothDevice>{
-            {"AA", -40}, {"BB", -30}, {"CC", -60}
+            {"AA", 40}, {"BB", 30}, {"CC", 60}
         }));
     EXPECT_CALL(*pairer, pair("AA")).WillOnce(Return(true));
     EXPECT_CALL(*pairer, pair("CC")).Times(0);
@@ -84,9 +84,9 @@ TEST(BluetoothDriverTest, RunNoSuccessNoNotify) {
     EXPECT_CALL(*dev_loader, load_string_list("device_list"))
         .WillOnce(Return(std::vector<std::string>{"AA"}));
     EXPECT_CALL(*dist_loader, load_int("distance_threshold"))
-        .WillOnce(Return(-50));
+        .WillOnce(Return(50));
     EXPECT_CALL(*scanner, scan())
-        .WillOnce(Return(std::vector<BluetoothDevice>{{"AA", -80}}));
+        .WillOnce(Return(std::vector<BluetoothDevice>{{"AA", 80}}));
     EXPECT_CALL(*pairer, pair(_)).Times(0);
     EXPECT_CALL(*sender, send()).Times(0);
 

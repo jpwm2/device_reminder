@@ -7,7 +7,7 @@ namespace device_reminder {
 
 struct BluetoothDevice {
     std::string mac;
-    int rssi;
+    int distance;
 };
 
 class IBluetoothScanner {
