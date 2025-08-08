@@ -21,8 +21,8 @@ public:
                     std::shared_ptr<IProcessDispatcher> dispatcher);
     ~ProcessReceiver();
 
-    void run() override;  ///< 受信スレッド開始
-    void stop() override; ///< スレッド停止要求
+    void run() override;  ///< 受信スレッドを開始
+    void stop() override; ///< 受信スレッドを停止
 
 private:
     void loop();
