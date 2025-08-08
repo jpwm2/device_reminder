@@ -112,7 +112,7 @@ add_executable(test_infra_extra
     src/infra/watch_dog/watch_dog.cpp
     src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
-    src/infra/process_operation/process_dispatcher.cpp
+    src/infra/process_operation/process_dispatcher/process_dispatcher.cpp
     src/infra/process_operation/process_base.cpp
     src/infra/process_operation/process_receiver.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
