@@ -54,7 +54,7 @@ add_executable(test_app
     src/core/human_task/human_task.cpp
     src/core/human_task/human_handler.cpp
     src/core/human_task/human_process.cpp
-    src/infra/process_operation/process_base.cpp
+    src/infra/process_operation/process_base/process_base.cpp
 
 
     src/core/buzzer_task/buzzer_task.cpp
@@ -113,7 +113,7 @@ add_executable(test_infra_extra
     src/infra/gpio_operation/gpio_setter/gpio_setter.cpp
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher/process_dispatcher.cpp
-    src/infra/process_operation/process_base.cpp
+    src/infra/process_operation/process_base/process_base.cpp
     src/infra/process_operation/process_receiver/process_receiver.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp

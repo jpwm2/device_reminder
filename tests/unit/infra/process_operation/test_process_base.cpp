@@ -4,22 +4,20 @@
 #include "infra/process_operation/process_base/process_base.hpp"
 #include "infra/process_operation/process_queue/i_process_queue.hpp"
 #include "infra/process_operation/process_receiver/i_process_receiver.hpp"
-#include "infra/process_operation/process_dispatcher/i_process_dispatcher.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
 #include "infra/file_loader/i_file_loader.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/watch_dog/i_watch_dog.hpp"
 
-#include <thread>
 #include <memory>
+#include <stdexcept>
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::InSequence;
+using ::testing::Throw;
 
 using namespace device_reminder;
-
-namespace device_reminder {
 
 class MockReceiver : public IProcessReceiver {
 public:
@@ -41,6 +39,13 @@ public:
     MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
 };
 
+class MockWatchDog : public IWatchDog {
+public:
+    MOCK_METHOD(void, start, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
+    MOCK_METHOD(void, kick, (), (override));
+};
+
 class DummyQueue : public IProcessQueue {
 public:
     void push(std::shared_ptr<IProcessMessage>) override {}
@@ -48,100 +53,61 @@ public:
     std::size_t size() const override { return 0; }
 };
 
-class DummyDispatcher : public IProcessDispatcher {
-public:
-    void dispatch(std::shared_ptr<IProcessMessage>) override {}
-};
-
-class DummySender : public IProcessSender {
-public:
-    void send() override {}
-};
-
-class TestProcessBase : public ProcessBase {
-public:
-    using ProcessBase::g_stop_flag;
-    TestProcessBase(std::shared_ptr<IProcessQueue> queue,
-                    std::shared_ptr<IProcessReceiver> receiver,
-                    std::shared_ptr<IProcessDispatcher> dispatcher,
-                    std::shared_ptr<IProcessSender> sender,
-                    std::shared_ptr<IFileLoader> file_loader,
-                    std::shared_ptr<ILogger> logger)
-        : ProcessBase(std::move(queue), std::move(receiver), std::move(dispatcher),
-                      std::move(sender), std::move(file_loader), std::move(logger),
-                      "TestProcess") {}
-};
-
-} // namespace device_reminder
-
-TEST(ProcessBaseTest, ConstructorLogsAndSetsPriority) {
+TEST(ProcessBaseTest, RunStartsComponents)
+{
+    auto receiver = std::make_shared<StrictMock<MockReceiver>>();
     auto queue = std::make_shared<DummyQueue>();
-    auto receiver = std::make_shared<MockReceiver>();
-    auto dispatcher = std::make_shared<DummyDispatcher>();
-    auto sender = std::make_shared<DummySender>();
     auto loader = std::make_shared<StrictMock<MockFileLoader>>();
     auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto watchdog = std::make_shared<StrictMock<MockWatchDog>>();
 
-    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(3));
-    EXPECT_CALL(*logger, info("ProcessBase initialized")).Times(1);
-
-    TestProcessBase::g_stop_flag.store(false);
-    TestProcessBase proc(queue, receiver, dispatcher, sender, loader, logger);
-
-    EXPECT_EQ(proc.priority(), 3);
-}
-
-TEST(ProcessBaseTest, ConstructorNullLoggerDoesNotThrow) {
-    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
-    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(-1));
-
-    TestProcessBase::g_stop_flag.store(false);
-    EXPECT_NO_THROW({
-        TestProcessBase proc(nullptr, nullptr, nullptr, nullptr, loader, nullptr);
-        EXPECT_EQ(proc.priority(), -1);
-    });
-}
-
-TEST(ProcessBaseTest, RunCallsReceiverAndLogs) {
-    auto queue = std::make_shared<DummyQueue>();
-    auto receiver = std::make_shared<StrictMock<MockReceiver>>();
-    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
-
-    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(1));
-    EXPECT_CALL(*logger, info("ProcessBase initialized")).Times(1);
-    {
-        InSequence seq;
-        EXPECT_CALL(*receiver, run()).Times(1);
-        EXPECT_CALL(*logger, info("ProcessBase run start")).Times(1);
-        EXPECT_CALL(*logger, info("ProcessBase stop requested")).Times(1);
-        EXPECT_CALL(*receiver, stop()).Times(1);
-        EXPECT_CALL(*logger, info("ProcessBase run end")).Times(1);
-    }
-
-    TestProcessBase::g_stop_flag.store(false);
-    TestProcessBase proc(queue, receiver, nullptr, nullptr, loader, logger);
-
-    std::thread th([&] { proc.run(); });
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    proc.stop();
-    th.join();
-}
-
-TEST(ProcessBaseTest, StopSetsFlagAndLogs) {
-    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
-    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(0));
     {
         InSequence s;
-        EXPECT_CALL(*logger, info("ProcessBase initialized")).Times(1);
-        EXPECT_CALL(*logger, info("ProcessBase stop requested")).Times(1);
+        EXPECT_CALL(*logger, info("ProcessBase run start"));
+        EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(5));
+        EXPECT_CALL(*watchdog, start());
+        EXPECT_CALL(*receiver, run());
+        EXPECT_CALL(*logger, info("ProcessBase run success"));
     }
 
-    TestProcessBase::g_stop_flag.store(false);
-    TestProcessBase proc(nullptr, nullptr, nullptr, nullptr, loader, logger);
+    ProcessBase base(receiver, queue, loader, logger, watchdog);
+    base.run();
+}
 
-    proc.stop();
-    EXPECT_TRUE(TestProcessBase::g_stop_flag.load());
+TEST(ProcessBaseTest, StopStopsComponents)
+{
+    auto receiver = std::make_shared<StrictMock<MockReceiver>>();
+    auto queue = std::make_shared<DummyQueue>();
+    auto loader = std::make_shared<NiceMock<MockFileLoader>>();
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto watchdog = std::make_shared<StrictMock<MockWatchDog>>();
+
+    {
+        InSequence s;
+        EXPECT_CALL(*logger, info("ProcessBase stop start"));
+        EXPECT_CALL(*receiver, stop());
+        EXPECT_CALL(*watchdog, stop());
+        EXPECT_CALL(*logger, info("ProcessBase stop complete"));
+    }
+
+    ProcessBase base(receiver, queue, loader, logger, watchdog);
+    base.stop();
+}
+
+TEST(ProcessBaseTest, RunErrorLogsAndThrows)
+{
+    auto receiver = std::make_shared<NiceMock<MockReceiver>>();
+    auto queue = std::make_shared<DummyQueue>();
+    auto loader = std::make_shared<StrictMock<MockFileLoader>>();
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto watchdog = std::make_shared<StrictMock<MockWatchDog>>();
+
+    EXPECT_CALL(*logger, info("ProcessBase run start"));
+    EXPECT_CALL(*loader, load_int("priority")).WillOnce(Return(1));
+    EXPECT_CALL(*watchdog, start()).WillOnce(Throw(std::runtime_error("wd error")));
+    EXPECT_CALL(*logger, error(testing::HasSubstr("wd error")));
+
+    ProcessBase base(receiver, queue, loader, logger, watchdog);
+    EXPECT_THROW(base.run(), std::runtime_error);
 }
 
