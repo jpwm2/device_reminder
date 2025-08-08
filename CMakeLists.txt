@@ -85,6 +85,19 @@ if(UNIX)
     target_link_libraries(test_thread_dispatcher_only pthread)
 endif()
 
+# ThreadQueue tests
+add_executable(test_thread_queue
+    tests/unit/infra/thread_operation/test_thread_queue.cpp
+    tests/integration/infra/thread_operation/thread_queue/test_thread_queue.cpp
+    src/infra/thread_operation/thread_queue/thread_queue.cpp
+    src/infra/message/message.cpp
+    src/infra/logger/logger.cpp
+)
+target_link_libraries(test_thread_queue gtest gmock gtest_main)
+if(UNIX)
+    target_link_libraries(test_thread_queue pthread)
+endif()
+
 # Additional infra tests
 add_executable(test_infra_extra
     tests/unit/infra/process_operation/test_process_receiver.cpp
@@ -102,7 +115,7 @@ add_executable(test_infra_extra
     tests/unit/infra/bluetooth_driver/test_bluetooth_driver.cpp
     tests/unit/infra/file_loader/test_file_loader.cpp
     src/infra/logger/logger.cpp
-    src/infra/thread_operation/thread_queue.cpp
+    src/infra/thread_operation/thread_queue/thread_queue.cpp
     src/infra/thread_operation/thread_sender/thread_sender.cpp
     src/infra/thread_operation/thread_receiver/thread_receiver.cpp
     src/infra/thread_operation/thread_dispatcher/thread_dispatcher.cpp

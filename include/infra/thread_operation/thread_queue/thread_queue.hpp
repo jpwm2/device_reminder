@@ -10,14 +10,14 @@ class ThreadQueue : public IThreadQueue {
 public:
   explicit ThreadQueue(std::shared_ptr<ILogger> logger);
 
-  void push(std::shared_ptr<IThreadMessage> msg) override;
-  std::shared_ptr<IThreadMessage> pop() override;
+  void push(std::shared_ptr<IMessage> msg) override;
+  std::shared_ptr<IMessage> pop() override;
   size_t size() const override;
 
 private:
   std::shared_ptr<ILogger> logger_;
   mutable std::mutex mtx_;
-  std::queue<std::shared_ptr<IThreadMessage>> q_;
+  std::queue<std::shared_ptr<IMessage>> q_;
 };
 
 } // namespace device_reminder
