@@ -1,65 +1,58 @@
 #include "pir_driver/pir_driver.hpp"
-#include <chrono>
-#include <thread>
+
+#include <utility>
 
 namespace device_reminder {
 
-PIRDriver::PIRDriver(std::shared_ptr<IFileLoader> loader,
+PIRDriver::PIRDriver(std::shared_ptr<IFileLoader> gpiochip_loader,
                      std::shared_ptr<ILogger> logger,
                      std::shared_ptr<IThreadSender> sender,
-                     std::shared_ptr<IGPIOReader> gpio)
-    : loader_(std::move(loader)),
-      logger_(std::move(logger)),
-      sender_(std::move(sender)),
-      gpio_(std::move(gpio))
-{
-    if (logger_) {
-        logger_->info("PIRDriver initialized");
-    }
-    if (gpio_) {
-        try {
-            last_state_ = gpio_->read();
-        } catch (...) {
-            last_state_ = false;
-        }
-    }
-}
+                     std::shared_ptr<IGPIOReader> reader,
+                     IFileLoader& pin_loader)
+    : gpiochip_loader_(std::move(gpiochip_loader))
+    , logger_(std::move(logger))
+    , sender_(std::move(sender))
+    , reader_(std::move(reader))
+    , pin_loader_(pin_loader) {}
 
-PIRDriver::~PIRDriver() {
-    stop();
-    if (logger_) {
-        logger_->info("PIRDriver shutting down");
-    }
-}
+PIRDriver::~PIRDriver() { stop(); }
 
 void PIRDriver::run() {
-    if (running_ || !gpio_) return;
+    if (running_ || !reader_) { return; }
+
+    try {
+        gpiochip_loader_->load_string();
+        pin_loader_.load_int();
+    } catch (const std::exception& e) {
+        if (logger_) { logger_->error("PIRDriver run failed: " + std::string(e.what())); }
+        throw;
+    }
+
     running_ = true;
+    thread_exception_ = nullptr;
     thread_ = std::thread([this]() {
-        bool prev = last_state_;
-        while (running_) {
-            bool val = false;
-            try {
-                val = gpio_->read();
-            } catch (...) {
-                if (logger_) logger_->error("PIRDriver read error");
+        try {
+            reader_->poll_edge(true);
+            if (running_) {
+                if (logger_) { logger_->info("人感センサ検出"); }
+                if (sender_) { sender_->send(); }
             }
-            if (val != prev) {
-                prev = val;
-                last_state_ = val;
-                if (sender_) sender_->send();
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        } catch (const std::exception& e) {
+            if (logger_) { logger_->error("PIRDriver poll_edge error: " + std::string(e.what())); }
+            thread_exception_ = std::current_exception();
         }
+        running_ = false;
     });
-    if (logger_) logger_->info("PIRDriver started");
+
+    if (logger_) { logger_->info("PIRDriver開始"); }
 }
 
 void PIRDriver::stop() {
     running_ = false;
-    if (thread_.joinable()) thread_.join();
-    if (logger_) logger_->info("PIRDriver stopped");
+    if (thread_.joinable()) { thread_.join(); }
+    if (logger_) { logger_->info("PIRDriver停止"); }
+    if (thread_exception_) { std::rethrow_exception(thread_exception_); }
 }
 
-
 } // namespace device_reminder
+
