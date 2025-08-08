@@ -1,8 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 #include "infra/logger/logger.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/message/message.hpp"
 #include "infra/thread_operation/thread_queue/thread_queue.hpp"
 
 #include <spdlog/logger.h>
@@ -29,12 +30,15 @@ TEST(ThreadQueueIntegrationTest, PushAndPop) {
   auto logger = std::make_shared<Logger>(spdlogger);
   ThreadQueue queue(logger);
 
-  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                             std::vector<std::string>{"1"});
+  auto msg = std::make_shared<Message>(MessageType::StartBuzzer,
+                                       std::vector<std::string>{"1"}, logger);
 
   EXPECT_CALL(*sink, log(Truly([](const spdlog::details::log_msg &m) {
-    return m.level == spdlog::level::info && m.payload == "ThreadQueue push";
-  })));
+                return m.level == spdlog::level::info &&
+                       m.payload == "キューへメッセージ追加成功"; }))).Times(1);
+  EXPECT_CALL(*sink, log(Truly([](const spdlog::details::log_msg &m) {
+                return m.level == spdlog::level::info &&
+                       m.payload == "キューからメッセージ取得成功"; }))).Times(1);
 
   queue.push(msg);
   auto popped = queue.pop();
@@ -43,20 +47,16 @@ TEST(ThreadQueueIntegrationTest, PushAndPop) {
   EXPECT_EQ(queue.size(), 0u);
 }
 
-TEST(ThreadQueueIntegrationTest, PushNullMessage) {
+TEST(ThreadQueueIntegrationTest, PushNullptrThrows) {
   auto sink = std::make_shared<StrictMock<MockSink>>();
   auto spdlogger = std::make_shared<spdlog::logger>("test", sink);
   auto logger = std::make_shared<Logger>(spdlogger);
   ThreadQueue queue(logger);
 
   EXPECT_CALL(*sink, log(Truly([](const spdlog::details::log_msg &m) {
-    return m.level == spdlog::level::info && m.payload == "ThreadQueue push";
-  })));
+                return m.level == spdlog::level::err; }))).Times(1);
 
-  queue.push(nullptr);
-  auto popped = queue.pop();
-
-  EXPECT_EQ(popped, nullptr);
+  EXPECT_THROW(queue.push(nullptr), std::invalid_argument);
   EXPECT_EQ(queue.size(), 0u);
 }
 

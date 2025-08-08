@@ -1,8 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <stdexcept>
 
 #include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/message/message.hpp"
 #include "infra/thread_operation/thread_queue/thread_queue.hpp"
 
 using namespace device_reminder;
@@ -20,8 +21,8 @@ public:
 TEST(ThreadQueueTest, PushPopWorks) {
   auto logger = std::make_shared<NiceMock<MockLogger>>();
   ThreadQueue q(logger);
-  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                             std::vector<std::string>{"1"});
+  auto msg = std::make_shared<Message>(MessageType::StartBuzzer,
+                                       std::vector<std::string>{"1"}, logger);
   q.push(msg);
   auto res = q.pop();
   ASSERT_NE(res, nullptr);
@@ -38,8 +39,9 @@ TEST(ThreadQueueTest, PopOnEmptyReturnsNullptr) {
 TEST(ThreadQueueTest, SizeReflectsQueueState) {
   ThreadQueue q(nullptr);
   EXPECT_EQ(q.size(), 0u);
-  q.push(std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                         std::vector<std::string>{}));
+  auto msg_logger = std::make_shared<NiceMock<MockLogger>>();
+  q.push(std::make_shared<Message>(MessageType::StartBuzzer,
+                                   std::vector<std::string>{}, msg_logger));
   EXPECT_EQ(q.size(), 1u);
 }
 
@@ -51,10 +53,11 @@ TEST(ThreadQueueTest, ConstructorAcceptsNullLogger) {
 
 TEST(ThreadQueueTest, PushLogsWhenLoggerProvided) {
   auto logger = std::make_shared<NiceMock<MockLogger>>();
-  EXPECT_CALL(*logger, info("ThreadQueue push"));
+  EXPECT_CALL(*logger, info("キューへメッセージ追加成功"));
+  EXPECT_CALL(*logger, info("キューからメッセージ取得成功"));
   ThreadQueue q(logger);
-  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                             std::vector<std::string>{"2"});
+  auto msg = std::make_shared<Message>(MessageType::StartBuzzer,
+                                       std::vector<std::string>{"2"}, logger);
   q.push(msg);
   auto res = q.pop();
   ASSERT_NE(res, nullptr);
@@ -64,10 +67,11 @@ TEST(ThreadQueueTest, PushLogsWhenLoggerProvided) {
 
 TEST(ThreadQueueTest, PushMultipleMaintainsFIFO) {
   ThreadQueue q(nullptr);
-  auto msg1 = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                              std::vector<std::string>{"a"});
-  auto msg2 = std::make_shared<ThreadMessage>(ThreadMessageType::StopBuzzing,
-                                              std::vector<std::string>{"b"});
+  auto msg_logger = std::make_shared<NiceMock<MockLogger>>();
+  auto msg1 = std::make_shared<Message>(MessageType::StartBuzzer,
+                                        std::vector<std::string>{"a"}, msg_logger);
+  auto msg2 = std::make_shared<Message>(MessageType::StopBuzzer,
+                                        std::vector<std::string>{"b"}, msg_logger);
   q.push(msg1);
   q.push(msg2);
   auto first = q.pop();
@@ -78,20 +82,11 @@ TEST(ThreadQueueTest, PushMultipleMaintainsFIFO) {
   EXPECT_EQ(second->type(), msg2->type());
 }
 
-TEST(ThreadQueueTest, PushNullMessageHandled) {
-  ThreadQueue q(nullptr);
-  q.push(nullptr);
-  EXPECT_EQ(q.size(), 1u);
-  auto res = q.pop();
-  EXPECT_EQ(res, nullptr);
-}
-
-TEST(ThreadQueueTest, PushNullMessageWithMockLogger) {
+TEST(ThreadQueueTest, PushNullptrThrowsAndLogsError) {
   auto logger = std::make_shared<NiceMock<MockLogger>>();
-  EXPECT_CALL(*logger, info("ThreadQueue push"));
+  EXPECT_CALL(*logger, error(testing::_));
   ThreadQueue q(logger);
-  q.push(nullptr);
-  auto res = q.pop();
-  EXPECT_EQ(res, nullptr);
+  EXPECT_THROW(q.push(nullptr), std::invalid_argument);
+  EXPECT_EQ(q.size(), 0u);
 }
 
