@@ -48,7 +48,7 @@ inline auto make_app_injector() {
         di::bind<ITimerService>.to<TimerService>(),
         di::bind<IThreadQueue>.to<ThreadQueue>(),
         di::bind<IProcessSender>.to([] {
-            return std::make_shared<ProcessSender>(nullptr, nullptr);
+            return std::make_shared<ProcessSender>(nullptr, nullptr, nullptr);
         }),
         di::bind<IGPIOSetter>.to<GPIOSetter>(),
         di::bind<IGPIOReader>.to<GPIOReader>(),
