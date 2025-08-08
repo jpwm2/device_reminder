@@ -34,7 +34,7 @@ void BluetoothDriver::run() {
     std::vector<std::string> targets;
     for (const auto& dev : scanned) {
         if (std::find(registered.begin(), registered.end(), dev.mac) != registered.end() &&
-            dev.rssi >= threshold) {
+            dev.distance <= threshold) {
             targets.push_back(dev.mac);
         }
     }
