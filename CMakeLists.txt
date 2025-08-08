@@ -114,7 +114,7 @@ add_executable(test_infra_extra
     src/infra/buzzer_driver/buzzer_driver.cpp
     src/infra/process_operation/process_dispatcher/process_dispatcher.cpp
     src/infra/process_operation/process_base.cpp
-    src/infra/process_operation/process_receiver.cpp
+    src/infra/process_operation/process_receiver/process_receiver.cpp
     src/infra/bluetooth_driver/bluetooth_driver.cpp
     src/infra/file_loader/file_loader.cpp
     tests/stubs/gpiod_stub.cpp
