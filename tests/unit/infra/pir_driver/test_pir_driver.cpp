@@ -16,6 +16,7 @@ namespace {
 class MockGPIO : public IGPIOReader {
 public:
     MOCK_METHOD(bool, read, (), (override));
+    MOCK_METHOD(void, poll_edge, (bool), (override));
 };
 class MockLogger : public ILogger {
 public:
@@ -29,9 +30,13 @@ public:
 };
 class DummyLoader : public IFileLoader {
 public:
-    int load_int(const std::string&) const override { return 0; }
-    std::string load_string(const std::string&) const override { return ""; }
-    std::vector<std::string> load_string_list(const std::string&) const override { return {}; }
+    DummyLoader(int i = 0, std::string s = "") : i_(i), s_(std::move(s)) {}
+    int load_int() const override { return i_; }
+    std::string load_string() const override { return s_; }
+    std::vector<std::string> load_string_list() const override { return {}; }
+private:
+    int i_;
+    std::string s_;
 };
 } // namespace
 
@@ -39,26 +44,22 @@ TEST(PIRDriverTest, RunDetectsChangeAndSendsMessage) {
     NiceMock<MockGPIO> gpio;
     NiceMock<MockLogger> logger;
     NiceMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
-    EXPECT_CALL(logger, info(testing::_)).Times(testing::AnyNumber());
-
-    auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
-        std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
-        std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
-
-    {
-        testing::InSequence seq;
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(false));
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(true));
-        EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(true));
-    }
+    EXPECT_CALL(logger, info(testing::_)).Times(testing::AtLeast(1));
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Return());
     EXPECT_CALL(sender, send()).Times(1);
 
+    auto driver = std::make_unique<PIRDriver>(
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
+        std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
+        std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
+
     driver->run();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
     driver->stop();
 }
 
@@ -66,16 +67,18 @@ TEST(PIRDriverTest, RunAlreadyRunningDoesNothing) {
     NiceMock<MockGPIO> gpio;
     NiceMock<MockLogger> logger;
     StrictMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
     EXPECT_CALL(sender, send()).Times(0);
-    EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Return());
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
 
     driver->run();
     driver->run();
@@ -86,13 +89,15 @@ TEST(PIRDriverTest, RunAlreadyRunningDoesNothing) {
 TEST(PIRDriverTest, RunWithoutGPIODoesNotStart) {
     NiceMock<MockLogger> logger;
     StrictMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        nullptr);
+        nullptr,
+        pin_loader);
 
     driver->run();
     driver->stop();
@@ -101,23 +106,20 @@ TEST(PIRDriverTest, RunWithoutGPIODoesNotStart) {
 TEST(PIRDriverTest, RunWithoutSenderStartsButNoSend) {
     NiceMock<MockGPIO> gpio;
     NiceMock<MockLogger> logger;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
-    {
-        testing::InSequence seq;
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(false));
-        EXPECT_CALL(gpio, read()).WillOnce(testing::Return(true));
-        EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(true));
-    }
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Return());
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         nullptr,
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
 
     driver->run();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
     driver->stop();
 }
 
@@ -125,35 +127,38 @@ TEST(PIRDriverTest, RunLogsErrorWhenReadThrows) {
     NiceMock<MockGPIO> gpio;
     NiceMock<MockLogger> logger;
     NiceMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
-    EXPECT_CALL(gpio, read()).WillOnce(testing::Throw(std::runtime_error("err")))
-                             .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Throw(std::runtime_error("err")));
+    EXPECT_CALL(logger, error(testing::_)).Times(testing::AtLeast(1));
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
 
     driver->run();
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    driver->stop();
+    EXPECT_THROW(driver->stop(), std::runtime_error);
 }
 
 TEST(PIRDriverTest, StopLogsMessage) {
     NiceMock<MockGPIO> gpio;
     NiceMock<MockLogger> logger;
     NiceMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
-    EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Return());
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         std::shared_ptr<ILogger>(&logger, [](ILogger*){}),
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
 
     driver->run();
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -163,15 +168,17 @@ TEST(PIRDriverTest, StopLogsMessage) {
 TEST(PIRDriverTest, StopWithoutLogger) {
     StrictMock<MockGPIO> gpio;
     StrictMock<MockSender> sender;
-    DummyLoader loader;
+    DummyLoader chip_loader(0, "chip");
+    DummyLoader pin_loader(1);
 
-    EXPECT_CALL(gpio, read()).WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(gpio, poll_edge(true)).WillOnce(testing::Return());
 
     auto driver = std::make_unique<PIRDriver>(
-        std::shared_ptr<IFileLoader>(&loader, [](IFileLoader*){}),
+        std::shared_ptr<IFileLoader>(&chip_loader, [](IFileLoader*){}),
         nullptr,
         std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){}),
-        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}));
+        std::shared_ptr<IGPIOReader>(&gpio, [](IGPIOReader*){}),
+        pin_loader);
 
     driver->run();
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
