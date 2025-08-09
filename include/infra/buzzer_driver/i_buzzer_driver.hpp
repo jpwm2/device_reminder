@@ -1,4 +1,4 @@
-// buzzer_driver.hpp
+// i_buzzer_driver.hpp
 #pragma once
 
 namespace device_reminder {
