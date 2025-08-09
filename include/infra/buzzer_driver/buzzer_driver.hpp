@@ -4,6 +4,7 @@
 #include "infra/gpio_operation/gpio_setter/i_gpio_setter.hpp"
 #include "infra/file_loader/i_file_loader.hpp"
 #include <memory>
+#include <mutex>
 #include <string>
 
 namespace device_reminder {
@@ -19,9 +20,12 @@ public:
     void off() override;
 
 private:
-    std::shared_ptr<IFileLoader> loader_;
+    int pin_{};
+    bool active_high_{true};
     std::shared_ptr<ILogger>     logger_;
     std::shared_ptr<IGPIOSetter> gpio_;
-}; 
+    std::mutex mutex_;
+    bool is_on_{false};
+};
 
 } // namespace device_reminder
