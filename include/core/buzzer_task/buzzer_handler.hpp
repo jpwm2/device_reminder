@@ -1,25 +1,44 @@
 #pragma once
 
-#include "core/interfaces/i_handler.hpp"
+#include "infra/thread_operation/thread_message/i_thread_message.hpp"
+#include "buzzer_task/i_buzzer_task.hpp"
+#include "infra/buzzer_driver/i_buzzer_driver.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "core/buzzer_task/i_buzzer_task.hpp"
-#include "infra/timer_service/i_timer_service.hpp"
-#include "infra/process_operation/process_message/i_process_message.hpp"
+#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
+
 #include <memory>
+#include <cstdint>
 
 namespace device_reminder {
 
-class BuzzerHandler : public IHandler {
+class BuzzerTask : public IBuzzerTask {
 public:
-    BuzzerHandler(std::shared_ptr<ILogger> logger,
-                 std::shared_ptr<IBuzzerTask> task,
-                 std::shared_ptr<ITimerService> timer);
-    void handle(std::shared_ptr<IProcessMessage> msg) override;
+    enum class State { WaitStart, Buzzing };
+
+    BuzzerTask(std::shared_ptr<ILogger> logger,
+               std::shared_ptr<IProcessSender> sender,
+               std::shared_ptr<IFileLoader> file_loader,
+               std::shared_ptr<IBuzzerDriver> driver);
+
+    void run() override {}
+    bool send_message(const IThreadMessage& msg) override;
+
+    void onMessage(const IThreadMessage& msg);
+    void on_waiting(const std::vector<std::string>& payload) override;
+    void on_buzzing(const std::vector<std::string>& payload) override;
+
+    State state() const noexcept { return state_; }
 
 private:
-    std::shared_ptr<ILogger>       logger_;
-    std::shared_ptr<IBuzzerTask>   task_;
-    std::shared_ptr<ITimerService> timer_;
+    void startBuzzer();
+    void stopBuzzer();
+
+    std::shared_ptr<ILogger>        logger_;
+    std::shared_ptr<IProcessSender> sender_;
+    std::shared_ptr<IFileLoader>    file_loader_;
+    std::shared_ptr<IBuzzerDriver>  driver_;
+    State                           state_{State::WaitStart};
 };
 
 } // namespace device_reminder

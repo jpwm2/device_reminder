@@ -1,36 +1,54 @@
-#include "buzzer_task/buzzer_handler.hpp"
-#include "infra/process_operation/process_message/process_message_type.hpp"
+#include "buzzer_task/buzzer_task.hpp"
+#include "infra/process_operation/process_message/process_message.hpp"
 
 namespace device_reminder {
 
-BuzzerHandler::BuzzerHandler(std::shared_ptr<ILogger> logger,
-                             std::shared_ptr<IBuzzerTask> task,
-                             std::shared_ptr<ITimerService> timer)
-    : logger_(std::move(logger)), task_(std::move(task)), timer_(std::move(timer)) {
-    if (logger_) logger_->info("BuzzerHandler created");
+BuzzerTask::BuzzerTask(std::shared_ptr<ILogger> logger,
+                       std::shared_ptr<IProcessSender> sender,
+                       std::shared_ptr<IFileLoader> file_loader,
+                       std::shared_ptr<IBuzzerDriver> driver)
+    : logger_(std::move(logger))
+    , sender_(std::move(sender))
+    , file_loader_(std::move(file_loader))
+    , driver_(std::move(driver))
+{
+    if (logger_) logger_->info("BuzzerTask created");
 }
 
-void BuzzerHandler::handle(std::shared_ptr<IProcessMessage> msg) {
-    if (!msg || !task_) return;
+bool BuzzerTask::send_message(const IThreadMessage& msg) {
+    onMessage(msg);
+    return true;
+}
 
-    switch (msg->type()) {
-    case ProcessMessageType::StartBuzzing:
-        if (timer_) timer_->start();
-        task_->on_buzzing(msg->payload());
-        if (logger_) logger_->info("StartBuzzing");
+void BuzzerTask::onMessage(const IThreadMessage& msg) {
+    switch (msg.type()) {
+    case ThreadMessageType::StartBuzzing:
+        if (state_ == State::WaitStart) startBuzzer();
         break;
-    case ProcessMessageType::StopBuzzing:
-    case ProcessMessageType::BuzzTimeout:
-        if (timer_) timer_->stop();
-        task_->on_waiting(msg->payload());
-        if (logger_) {
-            logger_->info(msg->type() == ProcessMessageType::StopBuzzing ?
-                          "StopBuzzing" : "BuzzTimeout");
-        }
+    case ThreadMessageType::StopBuzzing:
+        if (state_ == State::Buzzing) stopBuzzer();
         break;
     default:
         break;
     }
+}
+
+void BuzzerTask::startBuzzer() {
+    if (driver_) driver_->on();
+    state_ = State::Buzzing;
+}
+
+void BuzzerTask::stopBuzzer() {
+    if (driver_) driver_->off();
+    state_ = State::WaitStart;
+}
+
+void BuzzerTask::on_waiting(const std::vector<std::string>&) {
+    startBuzzer();
+}
+
+void BuzzerTask::on_buzzing(const std::vector<std::string>&) {
+    stopBuzzer();
 }
 
 } // namespace device_reminder

@@ -1,49 +1,33 @@
-#include "human_task/human_handler.hpp"
-#include "infra/process_operation/process_message/process_message_type.hpp"
+#include "human_task/human_task.hpp"
 
 namespace device_reminder {
 
-HumanHandler::HumanHandler(std::shared_ptr<ILogger> logger,
-                           std::shared_ptr<IHumanTask> task,
-                           std::shared_ptr<ITimerService> timer)
-    : logger_(std::move(logger)), task_(std::move(task)), timer_(std::move(timer)) {
-    if (logger_) logger_->info("HumanHandler created");
+HumanTask::HumanTask(std::shared_ptr<ILogger> logger,
+                     std::shared_ptr<IPIRDriver> pir,
+                     std::shared_ptr<IProcessSender> sender)
+    : logger_(std::move(logger)), pir_(std::move(pir)), sender_(std::move(sender)) {
+    if (logger_) logger_->info("HumanTask created");
 }
 
-void HumanHandler::handle(std::shared_ptr<IProcessMessage> msg) {
-    if (!msg || !task_) return;
-
-    switch (msg->type()) {
-    case ProcessMessageType::StartHumanDetection:
-        state_ = State::Detecting;
-        if (timer_) timer_->stop();
-        if (logger_) logger_->info("StartHumanDetection");
-        break;
-    case ProcessMessageType::StopHumanDetection:
-        state_ = State::Stopping;
-        if (timer_) timer_->start();
-        if (logger_) logger_->info("StopHumanDetection");
-        break;
-    case ProcessMessageType::CooldownTimeout:
-        state_ = State::Cooldown;
-        if (timer_) timer_->stop();
-        if (logger_) logger_->info("CooldownTimeout");
-        break;
-    default:
-        break;
+void HumanTask::on_detecting(const std::vector<std::string>&) {
+    if (pir_) {
+        pir_->run();
     }
+    if (logger_) logger_->info("Human detection started");
+}
 
-    switch (state_) {
-    case State::Detecting:
-        task_->on_detecting(msg->payload());
-        break;
-    case State::Stopping:
-        task_->on_stopping(msg->payload());
-        break;
-    case State::Cooldown:
-        task_->on_cooldown(msg->payload());
-        break;
+void HumanTask::on_stopping(const std::vector<std::string>&) {
+    if (pir_) {
+        pir_->stop();
     }
+    if (logger_) logger_->info("Human detection stopped");
+}
+
+void HumanTask::on_cooldown(const std::vector<std::string>&) {
+    if (pir_) {
+        pir_->stop();
+    }
+    if (logger_) logger_->info("Human detection cooldown");
 }
 
 } // namespace device_reminder
