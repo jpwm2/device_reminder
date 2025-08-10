@@ -1,22 +1,33 @@
 #pragma once
 
-#include "infra/process_operation/process_message/i_process_message.hpp"
-#include "infra/process_operation/process_queue/i_process_queue.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/logger/i_logger.hpp"
+#include "infra/message/message.hpp"
+#include "infra/message/message_codec.hpp"
+#include "infra/message/message_queue.hpp"
+
 #include <memory>
 
 namespace device_reminder {
 
+class IProcessSender {
+public:
+    virtual ~IProcessSender() = default;
+    virtual void send(std::shared_ptr<IMessageQueue> queue,
+                      std::shared_ptr<IMessage> msg) = 0;
+};
+
 class ProcessSender : public IProcessSender {
 public:
-  ProcessSender(std::shared_ptr<IProcessQueue> queue,
-                std::shared_ptr<IProcessMessage> msg);
+    ProcessSender(std::shared_ptr<ILogger> logger,
+                  std::shared_ptr<IMessageCodec> codec);
 
-  void send() override;
+    void send(std::shared_ptr<IMessageQueue> queue,
+              std::shared_ptr<IMessage> msg) override;
 
 private:
-  std::shared_ptr<IProcessQueue> queue_;
-  std::shared_ptr<IProcessMessage> msg_;
+    std::shared_ptr<ILogger> logger_{};
+    std::shared_ptr<IMessageCodec> codec_{};
 };
 
 } // namespace device_reminder
+
