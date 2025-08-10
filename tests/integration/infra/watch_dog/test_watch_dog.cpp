@@ -2,91 +2,93 @@
 #include <gmock/gmock.h>
 
 #include "infra/watch_dog/watch_dog.hpp"
-#include "infra/timer_service/timer_service.hpp"
-#include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
-
-#include <chrono>
-#include <thread>
 
 using ::testing::StrictMock;
-using ::testing::InSequence;
 
 namespace device_reminder {
 
-class MockLogger : public ILogger {
+class MockTimer : public ITimerService {
 public:
-    MOCK_METHOD(void, info, (const std::string& msg), (override));
-    MOCK_METHOD(void, error, (const std::string& msg), (override));
-    MOCK_METHOD(void, warn, (const std::string& msg), (override));
+    MOCK_METHOD(void, start, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
-class MockThreadSender : public IThreadSender {
-public:
-    MOCK_METHOD(void, send, (), (override));
-};
+TEST(WatchDogTest, ConstructWithValidTimer) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, start()).Times(1);
+    wd.start();
+}
+
+TEST(WatchDogTest, ConstructWithNullptr) {
+    WatchDog wd(nullptr);
+    EXPECT_NO_THROW(wd.start());
+}
+
+TEST(WatchDogTest, StartStartsTimerOnce) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, start()).Times(1);
+    wd.start();
+}
+
+TEST(WatchDogTest, StartWhenRunningDoesNothing) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, start()).Times(1);
+    wd.start();
+    wd.start();
+}
+
+TEST(WatchDogTest, StartWithNullTimerDoesNothing) {
+    WatchDog wd(nullptr);
+    EXPECT_NO_THROW(wd.start());
+}
+
+TEST(WatchDogTest, StopStopsTimer) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, start()).Times(1);
+    EXPECT_CALL(*timer, stop()).Times(1);
+    wd.start();
+    wd.stop();
+}
+
+TEST(WatchDogTest, StopWithNullTimerDoesNothing) {
+    WatchDog wd(nullptr);
+    EXPECT_NO_THROW(wd.stop());
+}
+
+TEST(WatchDogTest, StopWhenNotRunningDoesNothing) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    EXPECT_CALL(*timer, stop()).Times(0);
+    wd.stop();
+}
+
+TEST(WatchDogTest, KickRestartsTimer) {
+    auto timer = std::make_shared<StrictMock<MockTimer>>();
+    WatchDog wd(timer);
+
+    {
+        ::testing::InSequence s;
+        EXPECT_CALL(*timer, start()).Times(1); // from start
+        EXPECT_CALL(*timer, stop()).Times(1);  // from kick
+        EXPECT_CALL(*timer, start()).Times(1); // from kick
+    }
+
+    wd.start();
+    wd.kick();
+}
+
+TEST(WatchDogTest, KickWithNullTimerDoesNothing) {
+    WatchDog wd(nullptr);
+    EXPECT_NO_THROW(wd.kick());
+}
 
 } // namespace device_reminder
-
-TEST(WatchDogIntegrationTest, StartTriggersTimeoutAndSend) {
-    using namespace device_reminder;
-
-    StrictMock<MockLogger> logger;
-    StrictMock<MockThreadSender> sender;
-
-    {
-        InSequence seq;
-        EXPECT_CALL(logger, info("TimerService created"));
-        EXPECT_CALL(logger, info("TimerService stopped"));
-        EXPECT_CALL(logger, info("TimerService started"));
-        EXPECT_CALL(logger, info("TimerService timeout"));
-        EXPECT_CALL(logger, info("TimerService stopped"));
-        EXPECT_CALL(logger, info("TimerService destroyed"));
-    }
-    EXPECT_CALL(sender, send()).Times(1);
-
-    auto logger_ptr = std::shared_ptr<ILogger>(&logger, [](ILogger*){});
-    auto sender_ptr = std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){});
-
-    auto timer = std::make_shared<TimerService>(logger_ptr, 10, sender_ptr);
-
-    {
-        WatchDog wd(timer);
-        wd.start();
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    }
-    timer.reset();
-}
-
-TEST(WatchDogIntegrationTest, StopBeforeTimeoutDoesNotSend) {
-    using namespace device_reminder;
-
-    StrictMock<MockLogger> logger;
-    StrictMock<MockThreadSender> sender;
-
-    {
-        InSequence seq;
-        EXPECT_CALL(logger, info("TimerService created"));
-        EXPECT_CALL(logger, info("TimerService stopped"));
-        EXPECT_CALL(logger, info("TimerService started"));
-        EXPECT_CALL(logger, info("TimerService stopped"));
-        EXPECT_CALL(logger, info("TimerService stopped"));
-        EXPECT_CALL(logger, info("TimerService destroyed"));
-    }
-    EXPECT_CALL(logger, info("TimerService timeout")).Times(0);
-    EXPECT_CALL(sender, send()).Times(0);
-
-    auto logger_ptr = std::shared_ptr<ILogger>(&logger, [](ILogger*){});
-    auto sender_ptr = std::shared_ptr<IThreadSender>(&sender, [](IThreadSender*){});
-
-    auto timer = std::make_shared<TimerService>(logger_ptr, 50, sender_ptr);
-
-    {
-        WatchDog wd(timer);
-        wd.start();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        wd.stop();
-    }
-    timer.reset();
-}
-

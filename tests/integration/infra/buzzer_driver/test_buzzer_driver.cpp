@@ -1,71 +1,178 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <spdlog/sinks/ringbuffer_sink.h>
-
-#include <filesystem>
-#include <fstream>
-#include <memory>
 
 #include "infra/buzzer_driver/buzzer_driver.hpp"
-#include "infra/file_loader/file_loader.hpp"
-#include "infra/logger/logger.hpp"
-#include "infra/gpio_operation/gpio_setter/gpio_setter.hpp"
-
-#include "tests/stubs/gpiod_stub.h"
+#include "infra/file_loader/i_file_loader.hpp"
+#include "infra/gpio_operation/gpio_setter/i_gpio_setter.hpp"
 
 using namespace device_reminder;
-using ::testing::Contains;
-using ::testing::Not;
+using ::testing::NiceMock;
+using ::testing::StrictMock;
+using ::testing::Return;
+using ::testing::Throw;
 
-class BuzzerDriverIntegration : public ::testing::Test {
-protected:
-    void SetUp() override {
-        gpiod_stub_reset();
+namespace {
 
-        config_path = std::filesystem::temp_directory_path() / "buzzer.cfg";
-        std::ofstream ofs(config_path);
-        ofs << "buzz_duration_ms=100\n";
-
-        sink = std::make_shared<spdlog::sinks::ringbuffer_sink_mt>(32);
-        spd_logger = std::make_shared<spdlog::logger>("test", sink);
-        spd_logger->set_pattern("%v");
-        spd_logger->set_level(spdlog::level::info);
-        logger = std::make_shared<Logger>(spd_logger);
-        loader = std::make_shared<FileLoader>(logger, config_path.string());
-        gpio = std::make_shared<GPIOSetter>(logger, 4);
-    }
-
-    void TearDown() override {
-        std::filesystem::remove(config_path);
-    }
-
-    std::filesystem::path                                config_path;
-    std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt>   sink;
-    std::shared_ptr<spdlog::logger>                      spd_logger;
-    std::shared_ptr<Logger>                              logger;
-    std::shared_ptr<FileLoader>                          loader;
-    std::shared_ptr<GPIOSetter>                          gpio;
+class MockLogger : public ILogger {
+public:
+    MOCK_METHOD(void, info, (const std::string&), (override));
+    MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
-TEST_F(BuzzerDriverIntegration, OnOff正常系) {
+class MockGPIO : public IGPIOSetter {
+public:
+    MOCK_METHOD(void, write, (bool), (override));
+};
+
+class MockLoader : public IFileLoader {
+public:
+    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
+    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
+    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
+};
+
+} // namespace
+
+TEST(BuzzerDriverTest, ConstructorAllValid) {
+    auto loader = std::make_shared<StrictMock<MockLoader>>();
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).Times(1);
+
     BuzzerDriver driver(loader, logger, gpio);
-
-    EXPECT_NO_THROW(driver.on());
-    EXPECT_NO_THROW(driver.off());
-
-    auto logs = sink->last_formatted();
-    EXPECT_THAT(logs, Contains(testing::HasSubstr("buzzer on")));
-    EXPECT_THAT(logs, Contains(testing::HasSubstr("buzzer off")));
 }
 
-TEST_F(BuzzerDriverIntegration, On異常系_gpiod書き込み失敗) {
-    BuzzerDriver driver(loader, logger, gpio);
+TEST(BuzzerDriverTest, ConstructorLoaderNull) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
 
-    gpiod_stub_set_set_value_result(-1);
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
 
+    BuzzerDriver driver(nullptr, logger, gpio);
+}
+
+TEST(BuzzerDriverTest, ConstructorLoggerNull) {
+    auto loader = std::make_shared<StrictMock<MockLoader>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).Times(1);
+
+    BuzzerDriver driver(loader, nullptr, gpio);
+}
+
+TEST(BuzzerDriverTest, ConstructorAllNull) {
+    EXPECT_NO_THROW({ BuzzerDriver driver(nullptr, nullptr, nullptr); });
+}
+
+TEST(BuzzerDriverTest, ConstructorLoadIntThrowsLogsError) {
+    auto loader = std::make_shared<StrictMock<MockLoader>>();
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    EXPECT_CALL(*loader, load_int("buzz_duration_ms")).WillOnce(Throw(std::runtime_error("err")));
+    EXPECT_CALL(*logger, error("Failed to load buzzer config")).Times(1);
+
+    BuzzerDriver driver(loader, logger, nullptr);
+}
+
+TEST(BuzzerDriverTest, OnCallsGPIOAndLogger) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, gpio);
+
+    EXPECT_CALL(*gpio, write(true)).Times(1);
+    EXPECT_CALL(*logger, info("buzzer on")).Times(1);
+    driver.on();
+}
+
+TEST(BuzzerDriverTest, OnWithNullGPIO) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, nullptr);
+
+    EXPECT_CALL(*logger, info("buzzer on")).Times(1);
+    driver.on();
+}
+
+TEST(BuzzerDriverTest, OnWithNullLogger) {
+    auto loader = std::make_shared<NiceMock<MockLoader>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    BuzzerDriver driver(loader, nullptr, gpio);
+
+    EXPECT_CALL(*gpio, write(true)).Times(1);
+    driver.on();
+}
+
+TEST(BuzzerDriverTest, OnWithAllNull) {
+    BuzzerDriver driver(nullptr, nullptr, nullptr);
+    EXPECT_NO_THROW(driver.on());
+}
+
+TEST(BuzzerDriverTest, OnWriteThrowsPropagates) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, gpio);
+
+    EXPECT_CALL(*gpio, write(true)).WillOnce(Throw(std::runtime_error("gpio")));
+    EXPECT_CALL(*logger, info("buzzer on")).Times(0);
     EXPECT_THROW(driver.on(), std::runtime_error);
+}
 
-    auto logs = sink->last_formatted();
-    EXPECT_THAT(logs, Not(Contains(testing::HasSubstr("buzzer on"))));
+TEST(BuzzerDriverTest, OffCallsGPIOAndLogger) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, gpio);
+
+    EXPECT_CALL(*gpio, write(false)).Times(1);
+    EXPECT_CALL(*logger, info("buzzer off")).Times(1);
+    driver.off();
+}
+
+TEST(BuzzerDriverTest, OffWithNullGPIO) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, nullptr);
+
+    EXPECT_CALL(*logger, info("buzzer off")).Times(1);
+    driver.off();
+}
+
+TEST(BuzzerDriverTest, OffWithNullLogger) {
+    auto loader = std::make_shared<NiceMock<MockLoader>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    BuzzerDriver driver(loader, nullptr, gpio);
+
+    EXPECT_CALL(*gpio, write(false)).Times(1);
+    driver.off();
+}
+
+TEST(BuzzerDriverTest, OffWithAllNull) {
+    BuzzerDriver driver(nullptr, nullptr, nullptr);
+    EXPECT_NO_THROW(driver.off());
+}
+
+TEST(BuzzerDriverTest, OffWriteThrowsPropagates) {
+    auto logger = std::make_shared<StrictMock<MockLogger>>();
+    auto gpio   = std::make_shared<StrictMock<MockGPIO>>();
+
+    EXPECT_CALL(*logger, info("BuzzerDriver created")).Times(1);
+    BuzzerDriver driver(nullptr, logger, gpio);
+
+    EXPECT_CALL(*gpio, write(false)).WillOnce(Throw(std::runtime_error("gpio")));
+    EXPECT_CALL(*logger, info("buzzer off")).Times(0);
+    EXPECT_THROW(driver.off(), std::runtime_error);
 }
 

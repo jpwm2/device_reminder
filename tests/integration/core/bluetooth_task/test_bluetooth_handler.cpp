@@ -1,37 +1,42 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <vector>
 
-#include "core/bluetooth_task/bluetooth_handler.hpp"
-#include "core/bluetooth_task/bluetooth_task.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
+#include "bluetooth_task/bluetooth_task.hpp"
 #include "infra/bluetooth_driver/i_bluetooth_driver.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
 #include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/file_loader/i_file_loader.hpp"
 
-using ::testing::StrictMock;
-using ::testing::Return;
-using ::testing::_;
-using ::testing::InSequence;
+using namespace std;
 
 namespace device_reminder {
 
-class MockProcessSender : public IProcessSender {
+class StubDriver : public IBluetoothDriver {
 public:
-    MOCK_METHOD(void, send, (), (override));
+    vector<string> names{};
+    bool fail = false;
+    int call_count = 0;
+    void run() override {}
+    void stop() override {}
+    std::vector<std::string> scan() override {
+        ++call_count;
+        if (fail) throw BluetoothDriverError("fail");
+        return names;
+    }
 };
 
-class MockFileLoader : public IFileLoader {
+class StubSender : public IProcessSender {
 public:
-    MOCK_METHOD(int, load_int, (const std::string&), (const, override));
-    MOCK_METHOD(std::string, load_string, (const std::string&), (const, override));
-    MOCK_METHOD(std::vector<std::string>, load_string_list, (const std::string&), (const, override));
+    int call_count = 0;
+    void send() override { ++call_count; }
 };
 
-class MockBluetoothDriver : public IBluetoothDriver {
+class StubLoader : public IFileLoader {
 public:
-    MOCK_METHOD(void, run, (), (override));
-    MOCK_METHOD(void, stop, (), (override));
-    MOCK_METHOD(std::vector<std::string>, scan, (), (override));
+    std::vector<std::string> list;
+    int load_int(const std::string&) const override { return 0; }
+    std::string load_string(const std::string&) const override { return {}; }
+    std::vector<std::string> load_string_list(const std::string&) const override { return list; }
 };
 
 class DummyLogger : public ILogger {
@@ -41,50 +46,142 @@ public:
     void warn(const std::string&) override {}
 };
 
-TEST(BluetoothHandlerIntegrationTest, RequestBluetoothScanTriggersSendWhenDeviceMatches) {
-    auto sender = std::make_shared<StrictMock<MockProcessSender>>();
-    auto loader = std::make_shared<StrictMock<MockFileLoader>>();
-    auto driver = std::make_shared<StrictMock<MockBluetoothDriver>>();
+class MockLogger : public ILogger {
+public:
+    MOCK_METHOD(void, info, (const std::string&), (override));
+    MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
+};
+
+TEST(BluetoothTaskTest, SendsDetectedTrueWhenDeviceFound) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
     auto logger = std::make_shared<DummyLogger>();
-    auto task = std::make_shared<BluetoothTask>(logger, sender, loader, driver);
-    BluetoothHandler handler(logger, task);
+    BluetoothTask task(logger, sender, loader, driver);
 
-    {
-        InSequence seq;
-        EXPECT_CALL(*driver, scan())
-            .WillOnce(Return(std::vector<std::string>{"RegisteredDevice"}));
-        EXPECT_CALL(*loader, load_string_list("device_list"))
-            .WillOnce(Return(std::vector<std::string>{"RegisteredDevice"}));
-        EXPECT_CALL(*sender, send()).Times(1);
-    }
-    EXPECT_CALL(*loader, load_int(_)).Times(0);
-    EXPECT_CALL(*loader, load_string(_)).Times(0);
+    driver->names = {"phone"};
+    loader->list = {"phone"};
 
-    auto msg = std::make_shared<ProcessMessage>(
-        ProcessMessageType::RequestBluetoothScan, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_waiting({});
 
-    EXPECT_EQ(task->state(), BluetoothTask::State::WaitRequest);
+    EXPECT_EQ(sender->call_count, 1);
+    EXPECT_EQ(task.state(), BluetoothTask::State::WaitRequest);
 }
 
-TEST(BluetoothHandlerIntegrationTest, NullMessageDoesNothing) {
-    auto sender = std::make_shared<StrictMock<MockProcessSender>>();
-    auto loader = std::make_shared<StrictMock<MockFileLoader>>();
-    auto driver = std::make_shared<StrictMock<MockBluetoothDriver>>();
+TEST(BluetoothTaskTest, SendsDetectedFalseWhenNoDevice) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
     auto logger = std::make_shared<DummyLogger>();
-    auto task = std::make_shared<BluetoothTask>(logger, sender, loader, driver);
-    BluetoothHandler handler(logger, task);
+    BluetoothTask task(logger, sender, loader, driver);
 
-    EXPECT_CALL(*driver, scan()).Times(0);
-    EXPECT_CALL(*loader, load_string_list(_)).Times(0);
-    EXPECT_CALL(*loader, load_int(_)).Times(0);
-    EXPECT_CALL(*loader, load_string(_)).Times(0);
-    EXPECT_CALL(*sender, send()).Times(0);
+    driver->names = {};
+    loader->list = {"phone"};
+    task.on_waiting({});
 
-    handler.handle(nullptr);
+    EXPECT_EQ(sender->call_count, 0);
+    EXPECT_EQ(task.state(), BluetoothTask::State::WaitRequest);
+}
 
-    EXPECT_EQ(task->state(), BluetoothTask::State::WaitRequest);
+TEST(BluetoothTaskTest, DriverErrorLogsAndSendsFalse) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<DummyLogger>();
+    BluetoothTask task(logger, sender, loader, driver);
+
+    driver->fail = true;
+    task.on_waiting({});
+
+    EXPECT_EQ(sender->call_count, 0);
+}
+
+TEST(BluetoothTaskTest, ConstructorLogsWhenLoggerGiven) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<testing::StrictMock<MockLogger>>();
+
+    EXPECT_CALL(*logger, info("BluetoothTask created")).Times(1);
+    BluetoothTask task(logger, sender, loader, driver);
+}
+
+TEST(BluetoothTaskTest, DestructorLogsWhenLoggerGiven) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<testing::StrictMock<MockLogger>>();
+
+    {
+        EXPECT_CALL(*logger, info("BluetoothTask created")).Times(1);
+        EXPECT_CALL(*logger, info("BluetoothTask destroyed")).Times(1);
+        BluetoothTask task(logger, sender, loader, driver);
+    }
+}
+
+TEST(BluetoothTaskTest, OnWaitingSendsWhenLoaderNull) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    std::shared_ptr<StubLoader> loader = nullptr;
+    auto logger = std::make_shared<DummyLogger>();
+
+    BluetoothTask task(logger, sender, loader, driver);
+    driver->names = {"phone"};
+
+    task.on_waiting({});
+
+    EXPECT_EQ(sender->call_count, 1);
+}
+
+TEST(BluetoothTaskTest, OnWaitingNoSendWhenDriverNull) {
+    std::shared_ptr<StubDriver> driver = nullptr;
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<DummyLogger>();
+
+    BluetoothTask task(logger, sender, loader, driver);
+    task.on_waiting({});
+
+    EXPECT_EQ(sender->call_count, 0);
+}
+
+TEST(BluetoothTaskTest, OnWaitingNoSendWhenSenderNull) {
+    auto driver = std::make_shared<StubDriver>();
+    std::shared_ptr<StubSender> sender = nullptr;
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<DummyLogger>();
+
+    BluetoothTask task(logger, sender, loader, driver);
+    driver->names = {"phone"};
+    loader->list = {"phone"};
+
+    EXPECT_NO_THROW(task.on_waiting({}));
+}
+
+TEST(BluetoothTaskTest, DriverExceptionLogsError) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    auto logger = std::make_shared<testing::StrictMock<MockLogger>>();
+    BluetoothTask task(logger, sender, loader, driver);
+
+    driver->fail = true;
+    EXPECT_CALL(*logger, error("fail"));
+    task.on_waiting({});
+
+    EXPECT_EQ(sender->call_count, 0);
+}
+
+TEST(BluetoothTaskTest, DriverExceptionWithoutLogger) {
+    auto driver = std::make_shared<StubDriver>();
+    auto sender = std::make_shared<StubSender>();
+    auto loader = std::make_shared<StubLoader>();
+    std::shared_ptr<ILogger> logger = nullptr;
+    BluetoothTask task(logger, sender, loader, driver);
+
+    driver->fail = true;
+    EXPECT_NO_THROW(task.on_waiting({}));
 }
 
 } // namespace device_reminder
-

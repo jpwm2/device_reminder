@@ -1,25 +1,22 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "human_task/human_handler.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
+#include "human_task/human_task.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;
 
 namespace device_reminder {
 
-class MockHumanTask : public IHumanTask {
+class MockPIR : public IPIRDriver {
 public:
-    MOCK_METHOD(void, on_detecting, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_stopping, (const std::vector<std::string>&), (override));
-    MOCK_METHOD(void, on_cooldown, (const std::vector<std::string>&), (override));
+    MOCK_METHOD(void, run, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
 };
 
-class MockTimer : public ITimerService {
+class MockSender : public IProcessSender {
 public:
-    MOCK_METHOD(void, start, (), (override));
-    MOCK_METHOD(void, stop, (), (override));
+    MOCK_METHOD(void, send, (), (override));
 };
 
 class DummyLogger : public ILogger {
@@ -36,120 +33,139 @@ public:
     MOCK_METHOD(void, warn, (const std::string&), (override));
 };
 
-TEST(HumanHandlerTest, StopDetectionStartsTimer) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
+TEST(HumanTaskTest, DetectingStartsDriver) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto sender = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, timer);
+    HumanTask task(logger, pir, sender);
 
-    EXPECT_CALL(*task, on_stopping(testing::_)).Times(1);
-    EXPECT_CALL(*timer, start()).Times(1);
+    EXPECT_CALL(*pir, run()).Times(1);
+    EXPECT_CALL(*sender, send()).Times(0);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StopHumanDetection, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_detecting({});
 }
 
-TEST(HumanHandlerTest, StartDetectionStopsTimer) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
+TEST(HumanTaskTest, StoppingDoesNotSend) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto sender = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, timer);
+    HumanTask task(logger, pir, sender);
 
-    EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
-    EXPECT_CALL(*timer, stop()).Times(1);
+    EXPECT_CALL(*sender, send()).Times(0);
+    EXPECT_CALL(*pir, stop()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_stopping({});
 }
 
-TEST(HumanHandlerTest, CooldownCallsTask) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<NiceMock<MockTimer>>();
+TEST(HumanTaskTest, CooldownDoesNothing) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto sender = std::make_shared<StrictMock<MockSender>>();
     auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, timer);
+    HumanTask task(logger, pir, sender);
 
-    EXPECT_CALL(*task, on_cooldown(testing::_)).Times(1);
+    EXPECT_CALL(*sender, send()).Times(0);
+    EXPECT_CALL(*pir, stop()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::CooldownTimeout, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_cooldown({});
 }
 
-TEST(HumanHandlerTest, ConstructorLogsCreation) {
-    auto task = std::make_shared<NiceMock<MockHumanTask>>();
-    auto timer = std::make_shared<NiceMock<MockTimer>>();
-    auto logger = std::make_shared<StrictMock<MockLogger>>();
+// --- Additional tests for pointer and logger behaviours ---
 
-    EXPECT_CALL(*logger, info("HumanHandler created")).Times(1);
-
-    HumanHandler handler(logger, task, timer);
+TEST(HumanTaskTest, ConstructorLogsWhenLoggerProvided) {
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
+    HumanTask task(logger, nullptr, nullptr);
 }
 
-TEST(HumanHandlerTest, ConstructorNullLoggerDoesNotThrow) {
-    auto task = std::make_shared<NiceMock<MockHumanTask>>();
-    auto timer = std::make_shared<NiceMock<MockTimer>>();
-
-    EXPECT_NO_THROW({ HumanHandler handler(nullptr, task, timer); });
+TEST(HumanTaskTest, ConstructorNoLogWhenLoggerNull) {
+    EXPECT_NO_THROW(HumanTask(nullptr, nullptr, nullptr));
 }
 
-TEST(HumanHandlerTest, HandleNullMessageDoesNothing) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, timer);
+TEST(HumanTaskTest, DetectingRunsAndLogs) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, pir, nullptr);
 
-    EXPECT_CALL(*timer, start()).Times(0);
-    EXPECT_CALL(*timer, stop()).Times(0);
+    EXPECT_CALL(*pir, run()).Times(1);
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
 
-    handler.handle(nullptr);
+    task.on_detecting({"a"});
 }
 
-TEST(HumanHandlerTest, HandleWithNullTaskDoesNothing) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, nullptr, timer);
+TEST(HumanTaskTest, DetectingWithoutPirOnlyLogs) {
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, nullptr, nullptr);
 
-    EXPECT_CALL(*timer, start()).Times(0);
-    EXPECT_CALL(*timer, stop()).Times(0);
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_detecting({});
 }
 
-TEST(HumanHandlerTest, StartDetectionWithNullTimerOnlyCallsTask) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, nullptr);
+TEST(HumanTaskTest, DetectingWithoutLoggerOnlyRuns) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    HumanTask task(nullptr, pir, nullptr);
 
-    EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
+    EXPECT_CALL(*pir, run()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_detecting({});
 }
 
-TEST(HumanHandlerTest, StopDetectionWithNullLoggerWorks) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    HumanHandler handler(nullptr, task, timer);
+TEST(HumanTaskTest, StoppingStopsAndLogs) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, pir, nullptr);
 
-    EXPECT_CALL(*timer, start()).Times(1);
-    EXPECT_CALL(*task, on_stopping(testing::_)).Times(1);
+    EXPECT_CALL(*pir, stop()).Times(1);
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StopHumanDetection, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_stopping({"b"});
 }
 
-TEST(HumanHandlerTest, UnknownMessageKeepsDetectingState) {
-    auto task = std::make_shared<StrictMock<MockHumanTask>>();
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    auto logger = std::make_shared<DummyLogger>();
-    HumanHandler handler(logger, task, timer);
+TEST(HumanTaskTest, StoppingWithoutPirOnlyLogs) {
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, nullptr, nullptr);
 
-    EXPECT_CALL(*timer, start()).Times(0);
-    EXPECT_CALL(*timer, stop()).Times(0);
-    EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
-    handler.handle(msg);
+    task.on_stopping({});
+}
+
+TEST(HumanTaskTest, StoppingWithoutLoggerOnlyStops) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    HumanTask task(nullptr, pir, nullptr);
+
+    EXPECT_CALL(*pir, stop()).Times(1);
+
+    task.on_stopping({});
+}
+
+TEST(HumanTaskTest, CooldownStopsAndLogs) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, pir, nullptr);
+
+    EXPECT_CALL(*pir, stop()).Times(1);
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
+
+    task.on_cooldown({});
+}
+
+TEST(HumanTaskTest, CooldownWithoutPirOnlyLogs) {
+    auto logger = std::make_shared<NiceMock<MockLogger>>();
+    HumanTask task(logger, nullptr, nullptr);
+
+    EXPECT_CALL(*logger, info(testing::_)).Times(1);
+
+    task.on_cooldown({});
+}
+
+TEST(HumanTaskTest, CooldownWithoutLoggerOnlyStops) {
+    auto pir = std::make_shared<StrictMock<MockPIR>>();
+    HumanTask task(nullptr, pir, nullptr);
+
+    EXPECT_CALL(*pir, stop()).Times(1);
+
+    task.on_cooldown({});
 }
 
 } // namespace device_reminder
