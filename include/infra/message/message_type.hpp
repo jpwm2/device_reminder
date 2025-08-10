@@ -1,31 +1,38 @@
 #pragma once
 
-namespace device_reminder {
+namespace infra {
 
-// スレッド間で送受信されるメッセージ種別を表す
-enum class ThreadMessageType {
-    None = 0,
-    Unknown = None,
-    HumanDetected,
-    StartHumanDetection,
-    StopHumanDetection,
-    RequestBluetoothScan,
-    RespondDeviceFound,
-    RespondDeviceNotFound,
-    StartBuzzing,
-    StopBuzzing,
-    BuzzTimeout,
-    CooldownTimeout,
-    ProcessingTimeout,
+// プロセス／スレッド間で送受信されるメッセージの種別
+enum class MessageType {
+    None,
+    HumanFound,
+    StartHumanTask,
+    StopHumanTask,
+    StartBluetoothTask,
+    DeviceFound,
+    DeviceNotFound,
+    StartBuzzer,
+    StopBuzzer,
+    Timeout,
 
     // 既存実装との互換用エイリアス
-    StartBuzzer = StartBuzzing,
-    StopBuzzer = StopBuzzing,
-    BluetoothScanRequested = RequestBluetoothScan,
-    BluetoothScanResponse = RespondDeviceFound,
-    HumanDetectStart = StartHumanDetection,
-    HumanDetectStop = StopHumanDetection,
-    Timeout = ProcessingTimeout
+    Unknown = None,
+    HumanDetected = HumanFound,
+    StartHumanDetection = StartHumanTask,
+    StopHumanDetection = StopHumanTask,
+    RequestBluetoothScan = StartBluetoothTask,
+    RespondDeviceFound = DeviceFound,
+    RespondDeviceNotFound = DeviceNotFound,
+    StartBuzzing = StartBuzzer,
+    StopBuzzing = StopBuzzer,
+    BuzzTimeout = Timeout,
+    CooldownTimeout = Timeout,
+    ProcessingTimeout = Timeout
 };
 
+} // namespace infra
+
+namespace device_reminder {
+using MessageType = infra::MessageType;
+using ThreadMessageType = MessageType;
 } // namespace device_reminder
