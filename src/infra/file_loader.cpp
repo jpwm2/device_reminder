@@ -1,4 +1,4 @@
-#include "infra/file_loader/file_loader.hpp"
+#include "infra/file_loader.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -7,31 +7,36 @@
 
 namespace device_reminder {
 
-FileLoader::FileLoader(std::shared_ptr<ILogger> logger,
-                       const std::string& file_path)
+FileLoader::FileLoader(std::shared_ptr<ILogger> logger)
     : logger_(std::move(logger))
-    , file_path_(file_path)
 {}
 
-int FileLoader::load_int(const std::string& key) const
+int FileLoader::load_int(const std::string& file_path, const std::string& key) const
 {
-    std::string value = load_value(key);
+    if (logger_) logger_->info("load_int: key=" + key);
+    std::string value = load_value(file_path, key);
     try {
-        return std::stoi(value);
+        int result = std::stoi(value);
+        if (logger_) logger_->info("load_int success: key=" + key + ", value=" + std::to_string(result));
+        return result;
     } catch (const std::exception&) {
         if (logger_) logger_->error(std::string("invalid int value for ") + key);
         throw;
     }
 }
 
-std::string FileLoader::load_string(const std::string& key) const
+std::string FileLoader::load_string(const std::string& file_path, const std::string& key) const
 {
-    return load_value(key);
+    if (logger_) logger_->info("load_string: key=" + key);
+    std::string value = load_value(file_path, key);
+    if (logger_) logger_->info("load_string success: key=" + key + ", value=" + value);
+    return value;
 }
 
-std::vector<std::string> FileLoader::load_string_list(const std::string& key) const
+std::vector<std::string> FileLoader::load_string_list(const std::string& file_path, const std::string& key) const
 {
-    std::string value = load_value(key);
+    if (logger_) logger_->info("load_string_list: key=" + key);
+    std::string value = load_value(file_path, key);
     std::vector<std::string> result;
     std::istringstream iss(value);
     std::string item;
@@ -41,15 +46,26 @@ std::vector<std::string> FileLoader::load_string_list(const std::string& key) co
         auto end = item.find_last_not_of(" \t\r\n");
         result.push_back(item.substr(start, end - start + 1));
     }
+    if (logger_) logger_->info("load_string_list success: key=" + key + ", count=" + std::to_string(result.size()));
     return result;
 }
 
-std::string FileLoader::load_value(const std::string& key) const
+std::string FileLoader::load_value(const std::string& file_path, const std::string& key) const
 {
-    std::ifstream ifs(file_path_);
+    if (file_path.empty()) {
+        if (logger_) logger_->error("file path is empty");
+        throw std::invalid_argument("file path is empty");
+    }
+    if (key.empty()) {
+        if (logger_) logger_->error("key is empty");
+        throw std::invalid_argument("key is empty");
+    }
+    if (logger_) logger_->info("opening file: " + file_path);
+
+    std::ifstream ifs(file_path);
     if (!ifs) {
-        if (logger_) logger_->error("failed to open file: " + file_path_);
-        throw std::runtime_error("failed to open file: " + file_path_);
+        if (logger_) logger_->error("failed to open file: " + file_path);
+        throw std::runtime_error("failed to open file: " + file_path);
     }
 
     std::string line;
@@ -77,6 +93,7 @@ std::string FileLoader::load_value(const std::string& key) const
         if (value_start != std::string::npos) value = value.substr(value_start);
 
         if (k == key) {
+            if (logger_) logger_->info("key found: " + key);
             return value;
         }
     }
@@ -85,4 +102,3 @@ std::string FileLoader::load_value(const std::string& key) const
 }
 
 } // namespace device_reminder
-
