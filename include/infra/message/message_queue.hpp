@@ -1,23 +1,35 @@
 #pragma once
+
 #include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
+#include "infra/message/message.hpp"
+
+#include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <queue>
 
 namespace device_reminder {
 
-class ThreadQueue : public IThreadQueue {
+class IMessageQueue {
 public:
-  explicit ThreadQueue(std::shared_ptr<ILogger> logger);
+    virtual ~IMessageQueue() = default;
+    virtual void push(std::shared_ptr<IMessage> msg) = 0;
+    virtual std::shared_ptr<IMessage> pop() = 0;
+};
 
-  void push(std::shared_ptr<IThreadMessage> msg) override;
-  std::shared_ptr<IThreadMessage> pop() override;
-  size_t size() const override;
+class MessageQueue : public IMessageQueue {
+public:
+    explicit MessageQueue(std::shared_ptr<ILogger> logger);
+
+    void push(std::shared_ptr<IMessage> msg) override;
+    std::shared_ptr<IMessage> pop() override;
 
 private:
-  std::shared_ptr<ILogger> logger_;
-  mutable std::mutex mtx_;
-  std::queue<std::shared_ptr<IThreadMessage>> q_;
+    std::shared_ptr<ILogger> logger_{};
+    std::mutex mtx_{};
+    std::condition_variable cv_{};
+    std::queue<std::shared_ptr<IMessage>> queue_{};
 };
 
 } // namespace device_reminder
+
