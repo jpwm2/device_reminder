@@ -1,22 +1,30 @@
 #pragma once
-#include "infra/thread_operation/thread_dispatcher/i_thread_dispatcher.hpp"
+
 #include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_message/thread_message_type.hpp"
-#include <unordered_map>
+#include "infra/message/message.hpp"
+
 #include <functional>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace device_reminder {
 
-class ThreadDispatcher : public IThreadDispatcher {
+class IMessageDispatcher {
 public:
-    using HandlerMap =
-        std::unordered_map<ThreadMessageType,
-                           std::function<void(std::shared_ptr<IThreadMessage>)>>;
+    virtual ~IMessageDispatcher() = default;
+    virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+};
 
-    ThreadDispatcher(std::shared_ptr<ILogger> logger, HandlerMap handler_map);
+class MessageDispatcher : public IMessageDispatcher {
+public:
+    using Handler = std::function<void(std::vector<std::string>)>;
+    using HandlerMap = std::unordered_map<MessageType, Handler>;
 
-    void dispatch(std::shared_ptr<IThreadMessage> msg) override;
+    MessageDispatcher(std::shared_ptr<ILogger> logger,
+                      HandlerMap handler_map);
+
+    void dispatch(std::shared_ptr<IMessage> msg) override;
 
 private:
     std::shared_ptr<ILogger> logger_;
@@ -24,3 +32,4 @@ private:
 };
 
 } // namespace device_reminder
+
