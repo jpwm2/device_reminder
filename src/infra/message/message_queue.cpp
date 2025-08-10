@@ -1,35 +1,37 @@
-#include "infra/thread_operation/thread_queue/thread_queue.hpp"
-#include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_message/i_thread_message.hpp"
+#include "infra/message/message_queue.hpp"
+
+#include <stdexcept>
 #include <utility>
 
 namespace device_reminder {
 
-ThreadQueue::ThreadQueue(std::shared_ptr<ILogger> logger)
-    : logger_(std::move(logger)) {}
-
-void ThreadQueue::push(std::shared_ptr<IThreadMessage> msg) {
-  {
-    std::lock_guard<std::mutex> lock(mtx_);
-    q_.push(std::move(msg));
-  }
-  if (logger_) {
-    logger_->info("ThreadQueue push");
-  }
+MessageQueue::MessageQueue(std::shared_ptr<ILogger> logger)
+    : logger_(std::move(logger)) {
+    if (logger_) logger_->info("MessageQueue created");
 }
 
-std::shared_ptr<IThreadMessage> ThreadQueue::pop() {
-  std::lock_guard<std::mutex> lock(mtx_);
-  if (q_.empty())
-    return nullptr;
-  auto msg = q_.front();
-  q_.pop();
-  return msg;
+void MessageQueue::push(std::shared_ptr<IMessage> msg) {
+    if (!msg) {
+        if (logger_) logger_->error("MessageQueue push: null message");
+        throw std::invalid_argument("msg is null");
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        queue_.push(std::move(msg));
+    }
+    cv_.notify_one();
+    if (logger_) logger_->info("MessageQueue push success");
 }
 
-size_t ThreadQueue::size() const {
-  std::lock_guard<std::mutex> lock(mtx_);
-  return q_.size();
+std::shared_ptr<IMessage> MessageQueue::pop() {
+    std::unique_lock<std::mutex> lock(mtx_);
+    cv_.wait(lock, [this] { return !queue_.empty(); });
+    auto msg = queue_.front();
+    queue_.pop();
+    if (logger_) logger_->info("MessageQueue pop success");
+    return msg;
 }
 
 } // namespace device_reminder
+
