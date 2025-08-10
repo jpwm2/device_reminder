@@ -14,6 +14,7 @@ set(SPDLOG_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/spdlog/include)
 add_subdirectory(external/di)
 set(BOOST_DI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/di/include)
 
+#hi
 # ヘッダーファイルのパス
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
