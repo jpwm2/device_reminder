@@ -1,23 +1,29 @@
 #pragma once
-#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
-#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
-#include "infra/thread_operation/thread_message/i_thread_message.hpp"
+
 #include "infra/logger/i_logger.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message.hpp"
+
 #include <memory>
 
 namespace device_reminder {
 
+class IThreadSender {
+public:
+    virtual ~IThreadSender() = default;
+    virtual void send(std::shared_ptr<IMessageQueue> queue,
+                      std::shared_ptr<IMessage> message) = 0;
+};
+
 class ThreadSender : public IThreadSender {
 public:
-    ThreadSender(std::shared_ptr<ILogger> logger,
-                 std::shared_ptr<IThreadQueue> queue,
-                 std::shared_ptr<IThreadMessage> message);
-    void send() override;
+    explicit ThreadSender(std::shared_ptr<ILogger> logger);
+    void send(std::shared_ptr<IMessageQueue> queue,
+              std::shared_ptr<IMessage> message) override;
 
 private:
-    std::shared_ptr<ILogger> logger_;
-    std::shared_ptr<IThreadQueue> queue_;
-    std::shared_ptr<IThreadMessage> message_;
+    std::shared_ptr<ILogger> logger_{};
 };
 
 } // namespace device_reminder
+
