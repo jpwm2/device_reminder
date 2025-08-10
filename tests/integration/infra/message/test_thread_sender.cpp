@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/thread_operation/thread_sender/thread_sender.hpp"
-#include "infra/thread_operation/thread_queue/thread_queue.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
 #include "infra/logger/i_logger.hpp"
+#include "infra/message/message.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message_type.hpp"
+#include "infra/message/thread_sender.hpp"
 
 using namespace device_reminder;
 using ::testing::NiceMock;
@@ -19,13 +20,13 @@ public:
 } // namespace
 
 TEST(ThreadSenderTest, SendPushesMessageToQueue) {
-    auto queue = std::make_shared<ThreadQueue>(nullptr);
     NiceMock<MockLogger> logger;
-    auto message = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing, std::vector<std::string>{"1"});
+    auto queue = std::make_shared<MessageQueue>(std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
+    auto message = std::make_shared<Message>(MessageType::StartBuzzing, std::vector<std::string>{"1"});
 
-    ThreadSender sender(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), queue, message);
+    ThreadSender sender(std::shared_ptr<ILogger>(&logger, [](ILogger*){}));
 
-    sender.send();
+    sender.send(queue, message);
 
     auto res = queue->pop();
     ASSERT_NE(res, nullptr);
