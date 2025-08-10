@@ -8,9 +8,6 @@ enable_testing()
 # プロジェクトルートのパスを取得
 get_filename_component(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../.. ABSOLUTE)
 
-# GoogleTest を取得
-add_subdirectory(${PROJECT_ROOT}/external/googletest ${CMAKE_BINARY_DIR}/googletest)
-
 # インクルードパス
 include_directories(
     ${PROJECT_ROOT}/include
@@ -40,7 +37,7 @@ file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
 )
 
 # gpiod を独自にモック化するテストは別ターゲットでビルド
-list(FILTER TEST_SOURCES EXCLUDE REGEX "infra/gpio_operation/gpio_reader/test_gpio_reader.cpp")
+list(FILTER TEST_SOURCES EXCLUDE REGEX "infra/gpio_operation/test_gpio_reader.cpp")
 list(FILTER TEST_SOURCES EXCLUDE REGEX "full_di/test_app_run.cpp")
 
 # スタブソース（gpiod は各テストでモック化）
@@ -71,10 +68,11 @@ add_test(NAME test_integration COMMAND test_integration)
 # -----------------------------------------------------------------------------
 add_executable(test_integration_gpio_reader
     ${CMAKE_CURRENT_SOURCE_DIR}/test_main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/infra/gpio_operation/gpio_reader/test_gpio_reader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/infra/gpio_operation/test_gpio_reader.cpp
     ${DEVICE_SOURCES}
     ${PROJECT_ROOT}/tests/stubs/posix_mq_stub.cpp
     ${PROJECT_ROOT}/tests/stubs/popen_stub.cpp
+    ${PROJECT_ROOT}/tests/stubs/gpiod_stub.cpp
 )
 
 target_link_libraries(test_integration_gpio_reader
