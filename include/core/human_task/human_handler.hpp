@@ -1,27 +1,48 @@
 #pragma once
 
-#include "human_task/i_human_task.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "infra/pir_driver/i_pir_driver.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/pir_driver/pir_driver.hpp"
+#include "infra/timer_service/timer_service.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/message/process_sender.hpp"
+#include "infra/message/message.hpp"
+#include "infra/message/message_queue.hpp"
+
 #include <memory>
 
 namespace device_reminder {
 
-class HumanTask : public IHumanTask {
+class IHumanHandler {
 public:
-    HumanTask(std::shared_ptr<ILogger> logger,
-              std::shared_ptr<IPIRDriver> pir,
-              std::shared_ptr<IProcessSender> sender);
+    virtual ~IHumanHandler() = default;
+    virtual void get_detect() = 0;
+    virtual void start_detect() = 0;
+};
 
-    void on_detecting(const std::vector<std::string>& payload) override;
-    void on_stopping(const std::vector<std::string>& payload) override;
-    void on_cooldown(const std::vector<std::string>& payload) override;
+class HumanHandler : public IHumanHandler {
+public:
+    HumanHandler(std::shared_ptr<ILogger> logger,
+                 std::shared_ptr<IPIRDriver> pir,
+                 std::shared_ptr<ITimerService> timer,
+                 std::shared_ptr<IProcessSender> sender,
+                 std::shared_ptr<IFileLoader> loader,
+                 std::shared_ptr<IMessage> cooldown_msg,
+                 std::shared_ptr<IMessageQueue> main_queue,
+                 std::shared_ptr<IMessage> success_msg);
+
+    void get_detect() override;
+    void start_detect() override;
 
 private:
     std::shared_ptr<ILogger> logger_;
     std::shared_ptr<IPIRDriver> pir_;
+    std::shared_ptr<ITimerService> timer_;
     std::shared_ptr<IProcessSender> sender_;
+    std::shared_ptr<IFileLoader> loader_;
+    std::shared_ptr<IMessage> cooldown_msg_;
+    std::shared_ptr<IMessageQueue> main_queue_;
+    std::shared_ptr<IMessage> success_msg_;
 };
 
 } // namespace device_reminder
+
