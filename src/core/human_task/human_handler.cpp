@@ -1,33 +1,57 @@
-#include "human_task/human_task.hpp"
+#include "human_task/human_handler.hpp"
+#include "infra/message/thread_sender.hpp"
 
 namespace device_reminder {
 
-HumanTask::HumanTask(std::shared_ptr<ILogger> logger,
-                     std::shared_ptr<IPIRDriver> pir,
-                     std::shared_ptr<IProcessSender> sender)
-    : logger_(std::move(logger)), pir_(std::move(pir)), sender_(std::move(sender)) {
-    if (logger_) logger_->info("HumanTask created");
+HumanHandler::HumanHandler(std::shared_ptr<ILogger> logger,
+                           std::shared_ptr<IPIRDriver> pir,
+                           std::shared_ptr<ITimerService> timer,
+                           std::shared_ptr<IProcessSender> sender,
+                           std::shared_ptr<IFileLoader> loader,
+                           std::shared_ptr<IMessage> cooldown_msg,
+                           std::shared_ptr<IMessageQueue> main_queue,
+                           std::shared_ptr<IMessage> success_msg)
+    : logger_(std::move(logger))
+    , pir_(std::move(pir))
+    , timer_(std::move(timer))
+    , sender_(std::move(sender))
+    , loader_(std::move(loader))
+    , cooldown_msg_(std::move(cooldown_msg))
+    , main_queue_(std::move(main_queue))
+    , success_msg_(std::move(success_msg)) {}
+
+void HumanHandler::get_detect() {
+    if (logger_) logger_->info("[HumanHandler::get_detect] start");
+    try {
+        if (sender_ && main_queue_ && success_msg_) {
+            sender_->send(main_queue_, success_msg_);
+        }
+
+        if (timer_ && main_queue_ && cooldown_msg_) {
+            auto thread_sender = std::make_shared<ThreadSender>(logger_);
+            timer_->start(0, thread_sender);
+            thread_sender->send(main_queue_, cooldown_msg_);
+        }
+
+        if (logger_) logger_->info("[HumanHandler::get_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[HumanHandler::get_detect] failed: ") + e.what());
+        throw;
+    }
 }
 
-void HumanTask::on_detecting(const std::vector<std::string>&) {
-    if (pir_) {
-        pir_->run();
+void HumanHandler::start_detect() {
+    if (logger_) logger_->info("[HumanHandler::start_detect] start");
+    try {
+        if (pir_) {
+            pir_->run();
+        }
+        if (logger_) logger_->info("[HumanHandler::start_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[HumanHandler::start_detect] failed: ") + e.what());
+        throw;
     }
-    if (logger_) logger_->info("Human detection started");
-}
-
-void HumanTask::on_stopping(const std::vector<std::string>&) {
-    if (pir_) {
-        pir_->stop();
-    }
-    if (logger_) logger_->info("Human detection stopped");
-}
-
-void HumanTask::on_cooldown(const std::vector<std::string>&) {
-    if (pir_) {
-        pir_->stop();
-    }
-    if (logger_) logger_->info("Human detection cooldown");
 }
 
 } // namespace device_reminder
+
