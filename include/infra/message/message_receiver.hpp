@@ -1,28 +1,37 @@
 #pragma once
-#include "infra/thread_operation/thread_receiver/i_thread_receiver.hpp"
-#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
-#include "infra/thread_operation/thread_message/i_thread_message.hpp"
-#include "infra/thread_operation/thread_dispatcher/i_thread_dispatcher.hpp"
+
 #include "infra/logger/i_logger.hpp"
-#include <memory>
+#include "infra/message/message_dispatcher.hpp"
+#include "infra/message/message_queue.hpp"
+
 #include <atomic>
+#include <memory>
+#include <thread>
 
 namespace device_reminder {
 
-class ThreadReceiver : public IThreadReceiver {
+class IMessageReceiver {
 public:
-    ThreadReceiver(std::shared_ptr<IThreadQueue> queue,
-                   std::shared_ptr<IThreadDispatcher> dispatcher,
-                   std::shared_ptr<ILogger> logger = nullptr);
+    virtual ~IMessageReceiver() = default;
+    virtual void run() = 0;
+    virtual void stop() = 0;
+};
+
+class MessageReceiver : public IMessageReceiver {
+public:
+    MessageReceiver(std::shared_ptr<ILogger> logger,
+                    std::shared_ptr<IMessageQueue> queue,
+                    std::shared_ptr<IMessageDispatcher> dispatcher);
 
     void run() override;
     void stop() override;
 
 private:
-    std::shared_ptr<IThreadQueue> queue_;
-    std::shared_ptr<IThreadDispatcher> dispatcher_;
-    std::atomic<bool> running_{true};
     std::shared_ptr<ILogger> logger_;
+    std::shared_ptr<IMessageQueue> queue_;
+    std::shared_ptr<IMessageDispatcher> dispatcher_;
+    std::atomic<bool> running_{false};
+    std::thread thread_;
 };
 
 } // namespace device_reminder
