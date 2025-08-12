@@ -3,32 +3,25 @@
 #include "infra/logger/i_logger.hpp"
 #include "infra/message/message.hpp"
 
-#include <functional>
 #include <memory>
-#include <unordered_map>
-#include <vector>
 
 namespace device_reminder {
 
 class IMessageDispatcher {
 public:
+    explicit IMessageDispatcher(std::shared_ptr<ILogger> logger);
     virtual ~IMessageDispatcher() = default;
     virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+
+protected:
+    std::shared_ptr<ILogger> logger_{};
 };
 
 class MessageDispatcher : public IMessageDispatcher {
 public:
-    MessageDispatcher(
-        std::shared_ptr<ILogger> logger,
-        std::unordered_map<MessageType, std::function<void(std::vector<std::string>)>>
-            handler_map);
+    explicit MessageDispatcher(std::shared_ptr<ILogger> logger);
 
     void dispatch(std::shared_ptr<IMessage> msg) override;
-
-private:
-    std::shared_ptr<ILogger> logger_;
-    std::unordered_map<MessageType, std::function<void(std::vector<std::string>)>>
-        handler_map_;
 };
 
 } // namespace device_reminder
