@@ -1,30 +1,42 @@
 #pragma once
 
-#include "interfaces/i_handler.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "human_task/i_human_task.hpp"
-#include "infra/timer_service/i_timer_service.hpp"
-#include "infra/process_operation/process_message/i_process_message.hpp"
+#include "human_task/human_handler.hpp"
+#include "infra/message/message.hpp"
 
 #include <memory>
 
 namespace device_reminder {
 
-class HumanHandler : public IHandler {
+class IHumanDispatcher {
 public:
-    HumanHandler(std::shared_ptr<ILogger> logger,
-                 std::shared_ptr<IHumanTask> task,
-                 std::shared_ptr<ITimerService> timer);
+    IHumanDispatcher(std::shared_ptr<ILogger> logger,
+                     std::shared_ptr<IHumanHandler> handler,
+                     MessageType message_type);
+    virtual ~IHumanDispatcher() = default;
 
-    void handle(std::shared_ptr<IProcessMessage> msg) override;
+    virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+
+protected:
+    std::shared_ptr<ILogger>       logger_;
+    std::shared_ptr<IHumanHandler> handler_;
+    MessageType                    message_type_;
+};
+
+class HumanDispatcher : public IHumanDispatcher {
+public:
+    HumanDispatcher(std::shared_ptr<ILogger> logger,
+                    std::shared_ptr<IHumanHandler> handler,
+                    MessageType message_type);
+
+    void dispatch(std::shared_ptr<IMessage> msg) override;
 
 private:
-    enum class State { Detecting, Stopping, Cooldown };
+    enum class State { Detecting, Stopped };
+    State state_{State::Detecting};
 
-    std::shared_ptr<ILogger>       logger_;
-    std::shared_ptr<IHumanTask>    task_;
-    std::shared_ptr<ITimerService> timer_;
-    State                          state_{State::Detecting};
+    const char* state_to_string(State state) const;
 };
 
 } // namespace device_reminder
+
