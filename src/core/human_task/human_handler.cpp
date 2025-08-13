@@ -29,8 +29,7 @@ void HumanHandler::get_detect() {
 
         if (timer_ && main_queue_ && cooldown_msg_) {
             auto thread_sender = std::make_shared<ThreadSender>(logger_);
-            timer_->start(0, thread_sender);
-            thread_sender->send(main_queue_, cooldown_msg_);
+            timer_->start(0, thread_sender, main_queue_, cooldown_msg_);
         }
 
         if (logger_) logger_->info("[HumanHandler::get_detect] success");
