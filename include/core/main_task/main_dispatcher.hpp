@@ -1,29 +1,43 @@
 #pragma once
 
-#include "core/interfaces/i_handler.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "core/main_task/i_main_task.hpp"
-#include "infra/timer_service/i_timer_service.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
+#include "core/main_task/main_handler.hpp"
+#include "infra/message/message.hpp"
 
 #include <memory>
+#include <string>
 
 namespace device_reminder {
 
-class MainHandler : public IHandler {
-public:
-    MainHandler(std::shared_ptr<ILogger> logger,
-                std::shared_ptr<IMainTask> task,
-                std::shared_ptr<ITimerService> timer_service,
-                std::shared_ptr<IFileLoader> file_loader);
+// 状態定義
+enum class State {
+    WaitingHumanDetection,
+    WaitingDevicePresenceResponse,
+    WaitingDevicePresenceRetryResponse,
+    BluetoothScanRequestCooldown,
+};
 
-    void handle(std::shared_ptr<IProcessMessage> msg) override;
+using IMessageType = State;
+
+class IMainDispatcher {
+public:
+    virtual ~IMainDispatcher() = default;
+    virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+};
+
+class MainDispatcher : public IMainDispatcher {
+public:
+    MainDispatcher(std::shared_ptr<ILogger> logger,
+                   std::shared_ptr<IMainHandler> handler,
+                   IMessageType initial_state);
+
+    void dispatch(std::shared_ptr<IMessage> msg) override;
 
 private:
-    std::shared_ptr<ILogger>       logger_;
-    std::shared_ptr<IMainTask>     task_;
-    std::shared_ptr<ITimerService> timer_service_;
-    std::shared_ptr<IFileLoader>   file_loader_;
+    std::shared_ptr<ILogger> logger_;
+    std::shared_ptr<IMainHandler> handler_;
+    IMessageType                state_;
 };
 
 } // namespace device_reminder
+
