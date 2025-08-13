@@ -1,25 +1,35 @@
 #pragma once
 
-#include "core/interfaces/i_handler.hpp"
+#include "buzzer_task/buzzer_handler.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "core/buzzer_task/i_buzzer_task.hpp"
-#include "infra/timer_service/i_timer_service.hpp"
-#include "infra/process_operation/process_message/i_process_message.hpp"
+#include "infra/message/message.hpp"
+
 #include <memory>
 
 namespace device_reminder {
 
-class BuzzerHandler : public IHandler {
+class IBuzzerDispatcher {
 public:
-    BuzzerHandler(std::shared_ptr<ILogger> logger,
-                 std::shared_ptr<IBuzzerTask> task,
-                 std::shared_ptr<ITimerService> timer);
-    void handle(std::shared_ptr<IProcessMessage> msg) override;
+  IBuzzerDispatcher(std::shared_ptr<ILogger> logger,
+                    std::shared_ptr<IBuzzerHandler> handler,
+                    MessageType message_type);
+  virtual ~IBuzzerDispatcher() = default;
 
-private:
-    std::shared_ptr<ILogger>       logger_;
-    std::shared_ptr<IBuzzerTask>   task_;
-    std::shared_ptr<ITimerService> timer_;
+  virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+
+protected:
+  std::shared_ptr<ILogger> logger_;
+  std::shared_ptr<IBuzzerHandler> handler_;
+  MessageType message_type_;
+};
+
+class BuzzerDispatcher : public IBuzzerDispatcher {
+public:
+  BuzzerDispatcher(std::shared_ptr<ILogger> logger,
+                   std::shared_ptr<IBuzzerHandler> handler,
+                   MessageType message_type);
+
+  void dispatch(std::shared_ptr<IMessage> msg) override;
 };
 
 } // namespace device_reminder

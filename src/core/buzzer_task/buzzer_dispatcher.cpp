@@ -1,36 +1,61 @@
-#include "buzzer_task/buzzer_handler.hpp"
-#include "infra/process_operation/process_message/process_message_type.hpp"
+#include "buzzer_task/buzzer_dispatcher.hpp"
+
+#include <stdexcept>
+#include <string>
 
 namespace device_reminder {
 
-BuzzerHandler::BuzzerHandler(std::shared_ptr<ILogger> logger,
-                             std::shared_ptr<IBuzzerTask> task,
-                             std::shared_ptr<ITimerService> timer)
-    : logger_(std::move(logger)), task_(std::move(task)), timer_(std::move(timer)) {
-    if (logger_) logger_->info("BuzzerHandler created");
-}
+IBuzzerDispatcher::IBuzzerDispatcher(std::shared_ptr<ILogger> logger,
+                                     std::shared_ptr<IBuzzerHandler> handler,
+                                     MessageType message_type)
+    : logger_(std::move(logger)), handler_(std::move(handler)),
+      message_type_(message_type) {}
 
-void BuzzerHandler::handle(std::shared_ptr<IProcessMessage> msg) {
-    if (!msg || !task_) return;
+BuzzerDispatcher::BuzzerDispatcher(std::shared_ptr<ILogger> logger,
+                                   std::shared_ptr<IBuzzerHandler> handler,
+                                   MessageType message_type)
+    : IBuzzerDispatcher(std::move(logger), std::move(handler), message_type) {}
 
-    switch (msg->type()) {
-    case ProcessMessageType::StartBuzzing:
-        if (timer_) timer_->start();
-        task_->on_buzzing(msg->payload());
-        if (logger_) logger_->info("StartBuzzing");
-        break;
-    case ProcessMessageType::StopBuzzing:
-    case ProcessMessageType::BuzzTimeout:
-        if (timer_) timer_->stop();
-        task_->on_waiting(msg->payload());
-        if (logger_) {
-            logger_->info(msg->type() == ProcessMessageType::StopBuzzing ?
-                          "StopBuzzing" : "BuzzTimeout");
-        }
-        break;
-    default:
-        break;
+void BuzzerDispatcher::dispatch(std::shared_ptr<IMessage> msg) {
+  if (logger_)
+    logger_->info("[BuzzerDispatcher::dispatch] start");
+  try {
+    if (!msg) {
+      if (logger_)
+        logger_->error("[BuzzerDispatcher::dispatch] failed: null message");
+      throw std::invalid_argument("msg is null");
     }
+
+    auto type = msg->type();
+
+    switch (type) {
+    case MessageType::StartBuzzing:
+      if (handler_)
+        handler_->start_buzzing_and_start_timer();
+      if (logger_)
+        logger_->info("[BuzzerDispatcher::dispatch] success: StartBuzzing");
+      break;
+    case MessageType::StopBuzzing:
+    case MessageType::BuzzTimeout:
+      if (handler_)
+        handler_->stop_buzzing_and_stop_timer();
+      if (logger_)
+        logger_->info(
+            type == MessageType::StopBuzzing
+                ? "[BuzzerDispatcher::dispatch] success: StopBuzzing"
+                : "[BuzzerDispatcher::dispatch] success: BuzzTimeout");
+      break;
+    default:
+      if (logger_)
+        logger_->warn("[BuzzerDispatcher::dispatch] unsupported message type");
+      break;
+    }
+  } catch (const std::exception &e) {
+    if (logger_)
+      logger_->error(std::string("[BuzzerDispatcher::dispatch] failed: ") +
+                     e.what());
+    throw;
+  }
 }
 
 } // namespace device_reminder
