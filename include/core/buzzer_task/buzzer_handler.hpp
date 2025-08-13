@@ -1,44 +1,45 @@
 #pragma once
 
-#include "infra/thread_operation/thread_message/i_thread_message.hpp"
-#include "buzzer_task/i_buzzer_task.hpp"
-#include "infra/buzzer_driver/i_buzzer_driver.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
 #include "infra/file_loader/i_file_loader.hpp"
+#include "infra/buzzer_driver/buzzer_driver.hpp"
+#include "infra/timer_service/timer_service.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message.hpp"
 
 #include <memory>
-#include <cstdint>
 
 namespace device_reminder {
 
-class BuzzerTask : public IBuzzerTask {
+class IBuzzerHandler {
 public:
-    enum class State { WaitStart, Buzzing };
+    virtual ~IBuzzerHandler() = default;
+    virtual void start_buzzing_and_start_timer() = 0;
+    virtual void stop_buzzing_and_stop_timer() = 0;
+    virtual void stop_buzzing() = 0;
+};
 
-    BuzzerTask(std::shared_ptr<ILogger> logger,
-               std::shared_ptr<IProcessSender> sender,
-               std::shared_ptr<IFileLoader> file_loader,
-               std::shared_ptr<IBuzzerDriver> driver);
+class BuzzerHandler : public IBuzzerHandler {
+public:
+    BuzzerHandler(std::shared_ptr<ILogger> logger,
+                  std::shared_ptr<IFileLoader> file_loader,
+                  std::shared_ptr<IBuzzerDriver> driver,
+                  std::shared_ptr<ITimerService> timer_service,
+                  std::shared_ptr<IMessageQueue> buzzer_queue,
+                  std::shared_ptr<IMessage> buzzing_end_msg);
 
-    void run() override {}
-    bool send_message(const IThreadMessage& msg) override;
-
-    void onMessage(const IThreadMessage& msg);
-    void on_waiting(const std::vector<std::string>& payload) override;
-    void on_buzzing(const std::vector<std::string>& payload) override;
-
-    State state() const noexcept { return state_; }
+    void start_buzzing_and_start_timer() override;
+    void stop_buzzing_and_stop_timer() override;
+    void stop_buzzing() override;
 
 private:
-    void startBuzzer();
-    void stopBuzzer();
-
-    std::shared_ptr<ILogger>        logger_;
-    std::shared_ptr<IProcessSender> sender_;
-    std::shared_ptr<IFileLoader>    file_loader_;
-    std::shared_ptr<IBuzzerDriver>  driver_;
-    State                           state_{State::WaitStart};
+    std::shared_ptr<ILogger>       logger_{};
+    std::shared_ptr<IFileLoader>   file_loader_{};
+    std::shared_ptr<IBuzzerDriver> driver_{};
+    std::shared_ptr<ITimerService> timer_service_{};
+    std::shared_ptr<IMessageQueue> buzzer_queue_{};
+    std::shared_ptr<IMessage>      buzzing_end_msg_{};
 };
 
 } // namespace device_reminder
+
