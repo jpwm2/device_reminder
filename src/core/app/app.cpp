@@ -1,33 +1,49 @@
 #include "app/app.hpp"
 
+#include <array>
+#include <string>
+
 namespace device_reminder {
 
-App::App(std::unique_ptr<IMainProcess> main_process,
-         std::unique_ptr<IHumanProcess> human_process,
-         std::unique_ptr<IBluetoothProcess> bluetooth_process,
-         std::unique_ptr<IBuzzerProcess> buzzer_process,
-         std::unique_ptr<ILogger> logger)
-    : main_process_(std::move(main_process))
-    , human_process_(std::move(human_process))
-    , bluetooth_process_(std::move(bluetooth_process))
-    , buzzer_process_(std::move(buzzer_process))
-    , logger_(std::move(logger)) {}
+App::App(IProcess& main_process,
+         IProcess& human_process,
+         IProcess& bluetooth_process,
+         IProcess& buzzer_process,
+         ILogger& logger)
+    : main_process_(main_process)
+    , human_process_(human_process)
+    , bluetooth_process_(bluetooth_process)
+    , buzzer_process_(buzzer_process)
+    , logger_(logger) {}
 
-int App::run() {
+void App::run() {
+    logger_.info("App.run 開始");
     try {
-        if (main_process_) main_process_->run();
-        if (human_process_) human_process_->run();
-        if (bluetooth_process_) bluetooth_process_->run();
-        if (buzzer_process_) buzzer_process_->run();
+        struct ProcessInfo {
+            const char* name;
+            IProcess& process;
+        };
+        std::array<ProcessInfo, 4> processes = {{
+            {"main_process", main_process_},
+            {"human_process", human_process_},
+            {"bluetooth_process", bluetooth_process_},
+            {"buzzer_process", buzzer_process_},
+        }};
+
+        for (auto& info : processes) {
+            logger_.info(std::string(info.name) + " 起動開始");
+            info.process.run();
+            logger_.info(std::string(info.name) + " 起動完了");
+        }
+
+        logger_.info("App.run 成功（全タスク起動）");
     } catch (const std::exception& e) {
-        logger_->error(std::string("[App::run] std::exception caught: ") + e.what());
-        return 1;
+        logger_.error(std::string("App.run 失敗: ") + e.what());
+        throw;
     } catch (...) {
-        logger_->error("[App::run] Unknown exception caught.");
-        return 2;
+        logger_.error("App.run 失敗: 不明な例外");
+        throw;
     }
-    logger_->info("[App::run] Completed successfully.");
-    return 0;
 }
 
 } // namespace device_reminder

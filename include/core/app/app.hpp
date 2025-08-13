@@ -1,10 +1,5 @@
 #pragma once
-#include <memory>
-
-#include "main_task/i_main_process.hpp"
-#include "human_task/i_human_process.hpp"
-#include "bluetooth_task/i_bluetooth_process.hpp"
-#include "buzzer_task/i_buzzer_process.hpp"
+#include "infra/process/process.hpp"
 #include "infra/logger/i_logger.hpp"
 
 namespace device_reminder {
@@ -12,20 +7,20 @@ namespace device_reminder {
 
 class App {
 public:
-    App(std::unique_ptr<IMainProcess> main_process,
-        std::unique_ptr<IHumanProcess> human_process,
-        std::unique_ptr<IBluetoothProcess> bluetooth_process,
-        std::unique_ptr<IBuzzerProcess> buzzer_process,
-        std::unique_ptr<ILogger> logger);
+    App(IProcess& main_process,
+        IProcess& human_process,
+        IProcess& bluetooth_process,
+        IProcess& buzzer_process,
+        ILogger& logger);
 
-    int run();
+    void run();
 
 private:
-    std::unique_ptr<IMainProcess> main_process_;
-    std::unique_ptr<IHumanProcess> human_process_;
-    std::unique_ptr<IBluetoothProcess> bluetooth_process_;
-    std::unique_ptr<IBuzzerProcess> buzzer_process_;
-    std::unique_ptr<ILogger> logger_;
+    IProcess& main_process_;
+    IProcess& human_process_;
+    IProcess& bluetooth_process_;
+    IProcess& buzzer_process_;
+    ILogger& logger_;
 };
 
 } // namespace device_reminder
