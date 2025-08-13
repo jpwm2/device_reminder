@@ -1,24 +1,43 @@
 #pragma once
 
-#include "core/interfaces/i_handler.hpp"
-#include "core/bluetooth_task/i_bluetooth_task.hpp"
 #include "infra/logger/i_logger.hpp"
-#include "infra/process_operation/process_message/i_process_message.hpp"
+#include "infra/message/message.hpp"
 
 #include <memory>
 
 namespace device_reminder {
 
-class BluetoothHandler : public IHandler {
-public:
-    BluetoothHandler(std::shared_ptr<ILogger> logger,
-                     std::shared_ptr<IBluetoothTask> task);
+class IBluetoothHandler;
 
-    void handle(std::shared_ptr<IProcessMessage> msg) override;
+class IBluetoothDispatcher {
+public:
+    IBluetoothDispatcher(std::shared_ptr<ILogger> logger,
+                         std::shared_ptr<IBluetoothHandler> handler,
+                         MessageType message_type);
+    virtual ~IBluetoothDispatcher() = default;
+
+    virtual void dispatch(std::shared_ptr<IMessage> msg) = 0;
+
+protected:
+    std::shared_ptr<ILogger>          logger_;
+    std::shared_ptr<IBluetoothHandler> handler_;
+    MessageType                       message_type_;
+};
+
+class BluetoothDispatcher : public IBluetoothDispatcher {
+public:
+    BluetoothDispatcher(std::shared_ptr<ILogger> logger,
+                        std::shared_ptr<IBluetoothHandler> handler,
+                        MessageType message_type);
+
+    void dispatch(std::shared_ptr<IMessage> msg) override;
 
 private:
-    std::shared_ptr<ILogger>       logger_;
-    std::shared_ptr<IBluetoothTask> task_;
+    enum class State { Ready, Cooldown };
+    State state_{State::Ready};
+
+    const char* state_to_string(State state) const;
 };
 
 } // namespace device_reminder
+
