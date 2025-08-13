@@ -2,9 +2,9 @@
 #include <gmock/gmock.h>
 
 #include "main_task/main_task.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
+#include "infra/message/message.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/message/process_sender.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;

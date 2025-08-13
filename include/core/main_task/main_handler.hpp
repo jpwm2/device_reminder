@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message.hpp"
 #include "infra/message/message_queue.hpp"
 #include "infra/message/process_sender.hpp"

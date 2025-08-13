@@ -1,7 +1,7 @@
 #include "bluetooth_driver/bluetooth_driver.hpp"
 
 #include "bluetooth_driver/bluetooth_scanner.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 
 #include <string>
 #include <utility>

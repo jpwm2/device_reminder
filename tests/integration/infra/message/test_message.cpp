@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/message/message.hpp"
 
 using namespace device_reminder;
 

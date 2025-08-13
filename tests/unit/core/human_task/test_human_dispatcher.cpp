@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "human_task/human_handler.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
+#include "infra/message/message.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;

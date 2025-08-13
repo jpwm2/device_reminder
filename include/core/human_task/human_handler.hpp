@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/pir_driver/pir_driver.hpp"
 #include "infra/timer_service/timer_service.hpp"
 #include "infra/file_loader.hpp"

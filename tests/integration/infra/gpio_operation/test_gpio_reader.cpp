@@ -3,7 +3,7 @@
 
 #include "infra/gpio_operation/gpio_reader/gpio_reader.hpp"
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "stubs/gpiod_stub.h"
 
 using namespace device_reminder;

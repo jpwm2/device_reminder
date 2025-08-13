@@ -3,10 +3,10 @@
 #include <thread>
 
 #include "infra/pir_driver/pir_driver.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/gpio_operation/gpio_reader/i_gpio_reader.hpp"
-#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/gpio_operation/gpio_reader.hpp"
+#include "infra/message/thread_sender.hpp"
+#include "infra/logger.hpp"
 
 using namespace device_reminder;
 using ::testing::StrictMock;

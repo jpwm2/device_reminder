@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/file_loader/file_loader.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/logger.hpp"
 
 #include <fstream>
 

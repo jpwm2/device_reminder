@@ -1,7 +1,6 @@
 #pragma once
 
-#include "infra/logger/logger.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 
 #include <boost/di.hpp>
 #include <memory>

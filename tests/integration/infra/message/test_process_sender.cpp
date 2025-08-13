@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/process_operation/process_sender/process_sender.hpp"
-#include "infra/process_operation/process_queue/i_process_queue.hpp"
-#include "infra/process_operation/process_queue/process_queue.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
-#include "infra/process_operation/message_codec/message_codec.hpp"
-#include "infra/logger/logger.hpp"
+#include "infra/message/process_sender.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message.hpp"
+#include "infra/message/message_codec.hpp"
+#include "infra/logger.hpp"
 #include "posix_mq_stub.h"
 
 using namespace device_reminder;

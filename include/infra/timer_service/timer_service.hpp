@@ -1,7 +1,7 @@
 #pragma once
 
-#include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
+#include "infra/logger.hpp"
+#include "infra/message/thread_sender.hpp"
 
 #include <atomic>
 #include <exception>

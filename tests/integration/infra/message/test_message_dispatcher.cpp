@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/thread_operation/thread_dispatcher/thread_dispatcher.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/message/message_dispatcher.hpp"
+#include "infra/message/message.hpp"
+#include "infra/logger.hpp"
 
 using ::testing::NiceMock;
 

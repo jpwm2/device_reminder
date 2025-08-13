@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message.hpp"
 #include "infra/message/message_queue.hpp"
 #include "infra/message/message_type.hpp"

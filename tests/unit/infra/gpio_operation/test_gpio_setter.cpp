@@ -3,7 +3,7 @@
 #include <gmock/gmock.h>
 
 #include "infra/gpio_operation/gpio_setter/gpio_setter.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "stubs/gpiod_stub.h"
 #include <memory>
 
