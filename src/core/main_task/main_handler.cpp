@@ -45,8 +45,7 @@ void MainHandler::start_device_detect() {
         }
         if (timer_service_ && main_queue_ && device_detect_timeout_msg_) {
             auto thread_sender = std::make_shared<ThreadSender>(logger_);
-            timer_service_->start(0, thread_sender);
-            thread_sender->send(main_queue_, device_detect_timeout_msg_);
+            timer_service_->start(0, thread_sender, main_queue_, device_detect_timeout_msg_);
         }
         if (logger_) logger_->info("[MainHandler::start_device_detect] success");
     } catch (const std::exception& e) {
@@ -92,8 +91,7 @@ void MainHandler::retry_device_detect() {
         }
         if (timer_service_ && main_queue_ && bt_cooldown_end_msg_) {
             auto thread_sender = std::make_shared<ThreadSender>(logger_);
-            timer_service_->start(0, thread_sender);
-            thread_sender->send(main_queue_, bt_cooldown_end_msg_);
+            timer_service_->start(0, thread_sender, main_queue_, bt_cooldown_end_msg_);
         }
         if (logger_) logger_->info("[MainHandler::retry_device_detect] success");
     } catch (const std::exception& e) {

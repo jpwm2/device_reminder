@@ -1,4 +1,5 @@
 #include "watch_dog/watch_dog.hpp"
+#include "infra/message/thread_sender.hpp"
 
 #include <string>
 #include <utility>
@@ -19,7 +20,8 @@ void WatchDog::start() {
         logger_->info("WatchDog start called");
     }
     try {
-        timer_service_->start(message_queue_, message_);
+        auto thread_sender = std::make_shared<ThreadSender>(logger_);
+        timer_service_->start(0, thread_sender, message_queue_, message_);
         if (logger_) {
             logger_->info("WatchDog start succeeded");
         }
@@ -66,7 +68,8 @@ void WatchDog::kick() {
     }
     try {
         timer_service_->stop();
-        timer_service_->start(message_queue_, message_);
+        auto thread_sender = std::make_shared<ThreadSender>(logger_);
+        timer_service_->start(0, thread_sender, message_queue_, message_);
         if (logger_) {
             logger_->info("WatchDog kick succeeded");
         }

@@ -27,8 +27,7 @@ void BuzzerHandler::start_buzzing_and_start_timer() {
 
         if (timer_service_ && buzzer_queue_ && buzzing_end_msg_) {
             auto thread_sender = std::make_shared<ThreadSender>(logger_);
-            timer_service_->start(0, thread_sender);
-            thread_sender->send(buzzer_queue_, buzzing_end_msg_);
+            timer_service_->start(0, thread_sender, buzzer_queue_, buzzing_end_msg_);
         }
 
         if (logger_) logger_->info("[BuzzerHandler::start_buzzing_and_start_timer] success");

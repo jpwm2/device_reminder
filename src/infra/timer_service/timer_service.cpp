@@ -16,10 +16,15 @@ TimerService::~TimerService() {
     }
 }
 
-void TimerService::start(int duration_ms, std::shared_ptr<IThreadSender> sender) {
+void TimerService::start(int duration_ms,
+                         std::shared_ptr<IThreadSender> sender,
+                         std::shared_ptr<IMessageQueue> queue,
+                         std::shared_ptr<IMessage> message) {
     if (logger_) {
         logger_->info("TimerService start: duration_ms=" + std::to_string(duration_ms) +
-                      ", sender=" + (sender ? std::string("valid") : std::string("null")));
+                      ", sender=" + (sender ? std::string("valid") : std::string("null")) +
+                      ", queue=" + (queue ? std::string("valid") : std::string("null")) +
+                      ", message=" + (message ? std::string("valid") : std::string("null")));
     }
 
     if (running_) {
@@ -35,8 +40,18 @@ void TimerService::start(int duration_ms, std::shared_ptr<IThreadSender> sender)
         if (logger_) logger_->error("TimerService start: sender is null");
         throw std::invalid_argument("sender is null");
     }
+    if (!queue) {
+        if (logger_) logger_->error("TimerService start: queue is null");
+        throw std::invalid_argument("queue is null");
+    }
+    if (!message) {
+        if (logger_) logger_->error("TimerService start: message is null");
+        throw std::invalid_argument("message is null");
+    }
 
     sender_ = std::move(sender);
+    queue_ = std::move(queue);
+    message_ = std::move(message);
     cancel_.store(false);
     running_.store(true);
     worker_exception_ = nullptr;
@@ -74,12 +89,16 @@ void TimerService::stop() {
         }
 
         sender_.reset();
+        queue_.reset();
+        message_.reset();
         thread_ = std::thread();
         if (logger_) logger_->info("TimerService stop success");
     } catch (...) {
         if (logger_) logger_->error("TimerService stop failed");
         running_.store(false);
         sender_.reset();
+        queue_.reset();
+        message_.reset();
         thread_ = std::thread();
         throw;
     }
@@ -91,7 +110,7 @@ void TimerService::worker(int duration_ms) {
         if (cancel_.load()) {
             if (logger_) logger_->info("TimerService worker: canceled");
         } else {
-            sender_->send();
+            sender_->send(queue_, message_);
             if (logger_) logger_->info("TimerService worker: send success");
         }
     } catch (...) {
