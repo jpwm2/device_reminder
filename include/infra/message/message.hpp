@@ -1,7 +1,7 @@
 #pragma once
 
 #include "infra/message/message_type.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include <memory>
 #include <string>
 #include <vector>

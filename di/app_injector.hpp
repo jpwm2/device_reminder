@@ -11,10 +11,10 @@
 #include "infra/gpio_operation/gpio_reader/gpio_reader.hpp"
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
-#include "infra/process_operation/process_sender/process_sender.hpp"
-#include "infra/thread_operation/thread_queue/thread_queue.hpp"
-#include "infra/thread_operation/thread_queue/i_thread_queue.hpp"
+#include "infra/message/process_sender.hpp"
+#include "infra/message/process_sender.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message_queue.hpp"
 
 #include <tuple>
 #include <memory>

@@ -1,6 +1,6 @@
 #include "infra/message/process_sender.hpp"
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message_codec.hpp"
 #include "infra/message/message_queue.hpp"
 

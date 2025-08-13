@@ -1,7 +1,7 @@
 #pragma once
 
 #include "buzzer_task/buzzer_handler.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message.hpp"
 
 #include <memory>

@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/process_operation/message_codec/message_codec.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/message/message_codec.hpp"
+#include "infra/message/message.hpp"
+#include "infra/logger.hpp"
 
 using ::testing::StrictMock;
 using ::testing::NiceMock;

@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "core/bluetooth_task/bluetooth_handler.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
+#include "infra/message/message.hpp"
 
 using ::testing::StrictMock;
 

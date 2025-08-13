@@ -2,10 +2,10 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include "infra/thread_operation/thread_receiver/thread_receiver.hpp"
-#include "infra/thread_operation/thread_queue/thread_queue.hpp"
-#include "infra/thread_operation/thread_dispatcher/i_thread_dispatcher.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
+#include "infra/message/message_receiver.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message_dispatcher.hpp"
+#include "infra/message/message.hpp"
 
 using namespace device_reminder;
 

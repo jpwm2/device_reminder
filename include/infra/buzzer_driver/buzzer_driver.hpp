@@ -1,8 +1,8 @@
 #pragma once
 
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/gpio_operation/gpio_setter/i_gpio_setter.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/gpio_operation/gpio_setter.hpp"
+#include "infra/logger.hpp"
 
 #include <memory>
 #include <string>

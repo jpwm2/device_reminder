@@ -1,6 +1,6 @@
 #pragma once
 #include "infra/process/process.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 
 namespace device_reminder {
 

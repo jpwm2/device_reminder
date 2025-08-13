@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message.hpp"
 
 namespace device_reminder {

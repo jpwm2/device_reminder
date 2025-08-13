@@ -2,8 +2,8 @@
 #include <gmock/gmock.h>
 
 #include "infra/buzzer_driver/buzzer_driver.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/gpio_operation/gpio_setter/i_gpio_setter.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/gpio_operation/gpio_setter.hpp"
 
 using namespace device_reminder;
 using ::testing::NiceMock;

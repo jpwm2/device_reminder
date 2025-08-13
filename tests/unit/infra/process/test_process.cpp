@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/process_operation/process_base/process_base.hpp"
-#include "infra/process_operation/process_queue/i_process_queue.hpp"
-#include "infra/process_operation/process_receiver/i_process_receiver.hpp"
-#include "infra/process_operation/process_dispatcher/i_process_dispatcher.hpp"
-#include "infra/process_operation/process_sender/i_process_sender.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/process/process.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message_receiver.hpp"
+#include "infra/message/message_dispatcher.hpp"
+#include "infra/message/process_sender.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/logger.hpp"
 
 #include <thread>
 #include <memory>

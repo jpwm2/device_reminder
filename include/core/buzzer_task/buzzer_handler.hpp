@@ -1,7 +1,7 @@
 #pragma once
 
-#include "infra/logger/i_logger.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
+#include "infra/logger.hpp"
+#include "infra/file_loader.hpp"
 #include "infra/buzzer_driver/buzzer_driver.hpp"
 #include "infra/timer_service/timer_service.hpp"
 #include "infra/message/message_queue.hpp"

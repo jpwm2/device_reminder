@@ -1,9 +1,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "infra/logger/i_logger.hpp"
-#include "infra/thread_operation/thread_message/thread_message.hpp"
-#include "infra/thread_operation/thread_queue/thread_queue.hpp"
+#include "infra/logger.hpp"
+#include "infra/message/message.hpp"
+#include "infra/message/message_queue.hpp"
 
 using namespace device_reminder;
 using ::testing::NiceMock;

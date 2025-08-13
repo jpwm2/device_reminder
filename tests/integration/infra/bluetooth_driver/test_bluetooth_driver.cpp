@@ -2,11 +2,11 @@
 #include <gmock/gmock.h>
 
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
-#include "infra/bluetooth_driver/i_bluetooth_scanner.hpp"
-#include "infra/bluetooth_driver/i_bluetooth_pairer.hpp"
-#include "infra/file_loader/i_file_loader.hpp"
-#include "infra/thread_operation/thread_sender/i_thread_sender.hpp"
-#include "infra/logger/i_logger.hpp"
+#include "infra/bluetooth_driver/bluetooth_scanner.hpp"
+#include "infra/bluetooth_driver/bluetooth_pairer.hpp"
+#include "infra/file_loader.hpp"
+#include "infra/message/thread_sender.hpp"
+#include "infra/logger.hpp"
 
 using ::testing::Return;
 using ::testing::StrictMock;

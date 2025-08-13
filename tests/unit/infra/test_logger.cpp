@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "infra/logger/logger.hpp"
+#include "infra/logger.hpp"
 
 #include <spdlog/logger.h>
 #include <spdlog/sinks/sink.h>

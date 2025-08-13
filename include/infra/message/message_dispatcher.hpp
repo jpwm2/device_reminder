@@ -1,6 +1,6 @@
 #pragma once
 
-#include "infra/logger/i_logger.hpp"
+#include "infra/logger.hpp"
 #include "infra/message/message.hpp"
 
 #include <memory>
