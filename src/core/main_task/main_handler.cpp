@@ -1,151 +1,119 @@
-#include "main_task/main_task.hpp"
-#include "infra/process_operation/process_message/process_message.hpp"
-#include <algorithm>
+#include "main_task/main_handler.hpp"
+#include "infra/message/thread_sender.hpp"
 
 namespace device_reminder {
 
-MainTask::MainTask(std::shared_ptr<ILogger> logger,
-                   std::shared_ptr<IFileLoader> file_loader,
-                   std::shared_ptr<IProcessSender> human_start_sender,
-                   std::shared_ptr<IProcessSender> human_stop_sender,
-                   std::shared_ptr<IProcessSender> bluetooth_sender,
-                   std::shared_ptr<IProcessSender> buzzer_start_sender,
-                   std::shared_ptr<IProcessSender> buzzer_stop_sender,
-                   std::shared_ptr<ITimerService> det_timer,
-                   std::shared_ptr<ITimerService> cooldown_timer)
+MainHandler::MainHandler(std::shared_ptr<ILogger> logger,
+                         std::shared_ptr<IProcessSender> sender,
+                         std::shared_ptr<IFileLoader> file_loader,
+                         std::shared_ptr<ITimerService> timer_service,
+                         std::shared_ptr<IMessageQueue> human_queue,
+                         std::shared_ptr<IMessage> human_start_msg,
+                         std::shared_ptr<IMessage> human_stop_msg,
+                         std::shared_ptr<IMessageQueue> bt_queue,
+                         std::shared_ptr<IMessage> device_scan_msg,
+                         std::shared_ptr<IMessageQueue> buzzer_queue,
+                         std::shared_ptr<IMessage> buzzer_start_msg,
+                         std::shared_ptr<IMessage> buzzer_stop_msg,
+                         std::shared_ptr<IMessageQueue> main_queue,
+                         std::shared_ptr<IMessage> bt_cooldown_end_msg,
+                         std::shared_ptr<IMessage> device_detect_timeout_msg)
     : logger_(std::move(logger))
+    , sender_(std::move(sender))
     , file_loader_(std::move(file_loader))
-    , human_start_sender_(std::move(human_start_sender))
-    , human_stop_sender_(std::move(human_stop_sender))
-    , bluetooth_sender_(std::move(bluetooth_sender))
-    , buzzer_start_sender_(std::move(buzzer_start_sender))
-    , buzzer_stop_sender_(std::move(buzzer_stop_sender))
-    , det_timer_(std::move(det_timer))
-    , cooldown_timer_(std::move(cooldown_timer))
-{
-    if (logger_) logger_->info("MainTask created");
-}
+    , timer_service_(std::move(timer_service))
+    , human_queue_(std::move(human_queue))
+    , human_start_msg_(std::move(human_start_msg))
+    , human_stop_msg_(std::move(human_stop_msg))
+    , bt_queue_(std::move(bt_queue))
+    , device_scan_msg_(std::move(device_scan_msg))
+    , buzzer_queue_(std::move(buzzer_queue))
+    , buzzer_start_msg_(std::move(buzzer_start_msg))
+    , buzzer_stop_msg_(std::move(buzzer_stop_msg))
+    , main_queue_(std::move(main_queue))
+    , bt_cooldown_end_msg_(std::move(bt_cooldown_end_msg))
+    , device_detect_timeout_msg_(std::move(device_detect_timeout_msg)) {}
 
-MainTask::~MainTask() {
-    if (logger_) logger_->info("MainTask destroyed");
-}
-
-void MainTask::run(const IThreadMessage& msg) {
-    auto type = msg.type();
-    switch (state_) {
-    case State::WaitHumanDetect:
-        if (type == ThreadMessageType::HumanDetected) {
-            on_waiting_for_human(msg.payload());
+void MainHandler::start_device_detect() {
+    if (logger_) logger_->info("[MainHandler::start_device_detect] start");
+    try {
+        if (sender_ && bt_queue_ && device_scan_msg_) {
+            sender_->send(bt_queue_, device_scan_msg_);
         }
-        break;
-    case State::WaitDeviceResponse:
-        if (type == ThreadMessageType::RespondDeviceFound) {
-            on_response_to_human_task(msg.payload());
-        } else if (type == ThreadMessageType::RespondDeviceNotFound) {
-            on_response_to_buzzer_task(msg.payload());
-        } else if (type == ThreadMessageType::ProcessingTimeout &&
-                   !msg.payload().empty() &&
-                   msg.payload()[0] == std::to_string(static_cast<int>(TimerId::T_DET_TIMEOUT))) {
-            on_cooldown(msg.payload());
+        if (sender_ && human_queue_ && human_stop_msg_) {
+            sender_->send(human_queue_, human_stop_msg_);
         }
-        break;
-    case State::ScanCooldown:
-        if (type == ThreadMessageType::ProcessingTimeout) {
-            if (!msg.payload().empty() &&
-                msg.payload()[0] == std::to_string(static_cast<int>(TimerId::T_COOLDOWN))) {
-                on_waiting_for_second_response(msg.payload());
-            } else if (!msg.payload().empty() &&
-                       msg.payload()[0] == std::to_string(static_cast<int>(TimerId::T_DET_TIMEOUT))) {
-                on_cooldown(msg.payload());
-            }
+        if (timer_service_ && main_queue_ && device_detect_timeout_msg_) {
+            auto thread_sender = std::make_shared<ThreadSender>(logger_);
+            timer_service_->start(0, thread_sender);
+            thread_sender->send(main_queue_, device_detect_timeout_msg_);
         }
-        break;
+        if (logger_) logger_->info("[MainHandler::start_device_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[MainHandler::start_device_detect] failed: ") + e.what());
+        throw;
     }
 }
 
-void MainTask::on_waiting_for_human(const std::vector<std::string>&) {
-    if (det_timer_)
-        det_timer_->start();
-    if (bluetooth_sender_)
-        bluetooth_sender_->send();
-    state_ = State::WaitDeviceResponse;
-    if (logger_) logger_->info("Human detected -> wait device response");
-}
-
-void MainTask::on_response_to_buzzer_task(const std::vector<std::string>& payload) {
-    bool found = false;
-    if (file_loader_) {
-        auto regs = file_loader_->load_string_list("device_list");
-        for (const auto& d : payload) {
-            if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
-                found = true;
-                break;
-            }
+void MainHandler::end_device_first_detect() {
+    if (logger_) logger_->info("[MainHandler::end_device_first_detect] start");
+    try {
+        if (sender_ && human_queue_ && human_start_msg_) {
+            sender_->send(human_queue_, human_start_msg_);
         }
+        if (logger_) logger_->info("[MainHandler::end_device_first_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[MainHandler::end_device_first_detect] failed: ") + e.what());
+        throw;
     }
-    if (!found) {
-        if (buzzer_start_sender_)
-            buzzer_start_sender_->send();
-        if (cooldown_timer_)
-            cooldown_timer_->start();
-        state_ = State::ScanCooldown;
-    }
-    if (logger_) logger_->info("Device not found -> cooldown");
 }
 
-void MainTask::on_response_to_human_task(const std::vector<std::string>& payload) {
-    bool found = false;
-    if (file_loader_) {
-        auto regs = file_loader_->load_string_list("device_list");
-        for (const auto& d : payload) {
-            if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
-                found = true;
-                break;
-            }
+void MainHandler::end_device_retry_detect() {
+    if (logger_) logger_->info("[MainHandler::end_device_retry_detect] start");
+    try {
+        if (sender_ && human_queue_ && human_start_msg_) {
+            sender_->send(human_queue_, human_start_msg_);
         }
-    }
-    if (found) {
-        if (human_start_sender_)
-            human_start_sender_->send();
-        if (buzzer_stop_sender_)
-            buzzer_stop_sender_->send();
-        if (det_timer_)
-            det_timer_->stop();
-        state_ = State::WaitHumanDetect;
-        if (logger_) logger_->info("Device found -> resume human detect");
-    } else {
-        on_response_to_buzzer_task(payload);
-    }
-}
-
-void MainTask::on_cooldown(const std::vector<std::string>&) {
-    state_ = State::WaitHumanDetect;
-    if (logger_) logger_->info("Timeout -> wait human detect");
-}
-
-void MainTask::on_waiting_for_second_response(const std::vector<std::string>& payload) {
-    bool found = false;
-    if (file_loader_) {
-        auto regs = file_loader_->load_string_list("device_list");
-        for (const auto& d : payload) {
-            if (std::find(regs.begin(), regs.end(), d) != regs.end()) {
-                found = true;
-                break;
-            }
+        if (sender_ && buzzer_queue_ && buzzer_stop_msg_) {
+            sender_->send(buzzer_queue_, buzzer_stop_msg_);
         }
+        if (logger_) logger_->info("[MainHandler::end_device_retry_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[MainHandler::end_device_retry_detect] failed: ") + e.what());
+        throw;
     }
-    if (found) {
-        if (human_start_sender_)
-            human_start_sender_->send();
-        if (buzzer_stop_sender_)
-            buzzer_stop_sender_->send();
-        state_ = State::WaitHumanDetect;
-    } else {
-        if (buzzer_start_sender_)
-            buzzer_start_sender_->send();
-        state_ = State::ScanCooldown;
+}
+
+void MainHandler::retry_device_detect() {
+    if (logger_) logger_->info("[MainHandler::retry_device_detect] start");
+    try {
+        if (sender_ && buzzer_queue_ && buzzer_start_msg_) {
+            sender_->send(buzzer_queue_, buzzer_start_msg_);
+        }
+        if (timer_service_ && main_queue_ && bt_cooldown_end_msg_) {
+            auto thread_sender = std::make_shared<ThreadSender>(logger_);
+            timer_service_->start(0, thread_sender);
+            thread_sender->send(main_queue_, bt_cooldown_end_msg_);
+        }
+        if (logger_) logger_->info("[MainHandler::retry_device_detect] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[MainHandler::retry_device_detect] failed: ") + e.what());
+        throw;
     }
-    if (logger_) logger_->info("Processed second scan result");
+}
+
+void MainHandler::send_bt_request() {
+    if (logger_) logger_->info("[MainHandler::send_bt_request] start");
+    try {
+        if (sender_ && bt_queue_ && device_scan_msg_) {
+            sender_->send(bt_queue_, device_scan_msg_);
+        }
+        if (logger_) logger_->info("[MainHandler::send_bt_request] success");
+    } catch (const std::exception& e) {
+        if (logger_) logger_->error(std::string("[MainHandler::send_bt_request] failed: ") + e.what());
+        throw;
+    }
 }
 
 } // namespace device_reminder
+
