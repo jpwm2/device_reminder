@@ -20,8 +20,10 @@ public:
 TEST(ThreadQueueTest, PushPopWorks) {
   auto logger = std::make_shared<NiceMock<MockLogger>>();
   ThreadQueue q(logger);
-  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                             std::vector<std::string>{"1"});
+  auto msg = std::make_shared<ThreadMessage>(
+      ThreadMessageType::StartBuzzing,
+      std::vector<std::string>{"1"},
+      nullptr);
   q.push(msg);
   auto res = q.pop();
   ASSERT_NE(res, nullptr);
@@ -38,8 +40,10 @@ TEST(ThreadQueueTest, PopOnEmptyReturnsNullptr) {
 TEST(ThreadQueueTest, SizeReflectsQueueState) {
   ThreadQueue q(nullptr);
   EXPECT_EQ(q.size(), 0u);
-  q.push(std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                         std::vector<std::string>{}));
+  q.push(std::make_shared<ThreadMessage>(
+      ThreadMessageType::StartBuzzing,
+      std::vector<std::string>{},
+      nullptr));
   EXPECT_EQ(q.size(), 1u);
 }
 
@@ -53,8 +57,10 @@ TEST(ThreadQueueTest, PushLogsWhenLoggerProvided) {
   auto logger = std::make_shared<NiceMock<MockLogger>>();
   EXPECT_CALL(*logger, info("ThreadQueue push"));
   ThreadQueue q(logger);
-  auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                             std::vector<std::string>{"2"});
+  auto msg = std::make_shared<ThreadMessage>(
+      ThreadMessageType::StartBuzzing,
+      std::vector<std::string>{"2"},
+      nullptr);
   q.push(msg);
   auto res = q.pop();
   ASSERT_NE(res, nullptr);
@@ -64,10 +70,14 @@ TEST(ThreadQueueTest, PushLogsWhenLoggerProvided) {
 
 TEST(ThreadQueueTest, PushMultipleMaintainsFIFO) {
   ThreadQueue q(nullptr);
-  auto msg1 = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                              std::vector<std::string>{"a"});
-  auto msg2 = std::make_shared<ThreadMessage>(ThreadMessageType::StopBuzzing,
-                                              std::vector<std::string>{"b"});
+  auto msg1 = std::make_shared<ThreadMessage>(
+      ThreadMessageType::StartBuzzing,
+      std::vector<std::string>{"a"},
+      nullptr);
+  auto msg2 = std::make_shared<ThreadMessage>(
+      ThreadMessageType::StopBuzzing,
+      std::vector<std::string>{"b"},
+      nullptr);
   q.push(msg1);
   q.push(msg2);
   auto first = q.pop();

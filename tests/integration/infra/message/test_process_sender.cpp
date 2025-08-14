@@ -41,7 +41,10 @@ TEST(ProcessSenderTest, ValueNormal_EnqueuesMessage) {
     std::shared_ptr<ILogger> logger{};
     auto codec = std::make_shared<MessageCodec>(nullptr);
     auto queue = std::make_shared<ProcessQueue>(logger, codec, unique_name("sender1_"));
-    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{"1"});
+    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{"1"},
+        nullptr);
     ProcessSender sender(queue, msg);
 
     sender.send();
@@ -58,13 +61,19 @@ TEST(ProcessSenderTest, ValueAbnormal_LongPayload) {
     auto codec = std::make_shared<MessageCodec>(nullptr);
     auto queue = std::make_shared<ProcessQueue>(logger, codec, unique_name("sender2_"));
     std::string long_str(1024, 'x');
-    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{long_str});
+    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{long_str},
+        nullptr);
     ProcessSender sender(queue, msg);
     EXPECT_NO_THROW(sender.send());
 }
 
 TEST(ProcessSenderTest, PointerNormal_NullQueue) {
-    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     ProcessSender sender(nullptr, msg);
     EXPECT_NO_THROW(sender.send());
 }
@@ -83,7 +92,10 @@ TEST(ProcessSenderTest, PointerAbnormal_BothNull) {
 
 TEST(ProcessSenderTest, MockNormal_PushCalledOnce) {
     StrictMock<MockQueue> queue;
-    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     EXPECT_CALL(queue, push(msg)).Times(1);
     ProcessSender sender(std::shared_ptr<IProcessQueue>(&queue, [](IProcessQueue*){}), msg);
     sender.send();
@@ -91,7 +103,10 @@ TEST(ProcessSenderTest, MockNormal_PushCalledOnce) {
 
 TEST(ProcessSenderTest, MockAbnormal_ThrowsFromQueue) {
     StrictMock<MockQueue> queue;
-    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    std::shared_ptr<IProcessMessage> msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     EXPECT_CALL(queue, push(msg)).WillOnce(Throw(std::runtime_error("fail")));
     ProcessSender sender(std::shared_ptr<IProcessQueue>(&queue, [](IProcessQueue*){}), msg);
     EXPECT_THROW(sender.send(), std::runtime_error);

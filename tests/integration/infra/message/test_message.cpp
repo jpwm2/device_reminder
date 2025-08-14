@@ -4,20 +4,20 @@
 using namespace device_reminder;
 
 TEST(ThreadMessageTest, ConstructorStoresValues) {
-    ThreadMessage msg(ThreadMessageType::StartBuzzing, {"1"});
+    ThreadMessage msg(ThreadMessageType::StartBuzzing, {"1"}, nullptr);
     EXPECT_EQ(msg.type(), ThreadMessageType::StartBuzzing);
     std::vector<std::string> expected{"1"};
     EXPECT_EQ(msg.payload(), expected);
 }
 
 TEST(ThreadMessageTest, HandlesUnknownType) {
-    ThreadMessage msg(ThreadMessageType::Unknown, {});
+    ThreadMessage msg(ThreadMessageType::Unknown, {}, nullptr);
     EXPECT_EQ(msg.type(), ThreadMessageType::Unknown);
     EXPECT_TRUE(msg.payload().empty());
 }
 
 TEST(ThreadMessageTest, HandlesInvalidEnum) {
-    ThreadMessage msg(static_cast<ThreadMessageType>(999), {"x"});
+    ThreadMessage msg(static_cast<ThreadMessageType>(999), {"x"}, nullptr);
     EXPECT_EQ(static_cast<int>(msg.type()), 999);
     std::vector<std::string> expected{"x"};
     EXPECT_EQ(msg.payload(), expected);
@@ -25,7 +25,7 @@ TEST(ThreadMessageTest, HandlesInvalidEnum) {
 }
 
 TEST(ThreadMessageTest, CloneCreatesEqualCopy) {
-    ThreadMessage original(ThreadMessageType::RespondDeviceFound, {"phone", "watch"});
+    ThreadMessage original(ThreadMessageType::RespondDeviceFound, {"phone", "watch"}, nullptr);
     auto copy = original.clone();
     ASSERT_NE(copy, nullptr);
     EXPECT_EQ(copy->type(), original.type());
@@ -33,7 +33,7 @@ TEST(ThreadMessageTest, CloneCreatesEqualCopy) {
 }
 
 TEST(ThreadMessageTest, ToStringFormatsCorrectly) {
-    ThreadMessage msg(ThreadMessageType::StartBuzzing, {"1"});
+    ThreadMessage msg(ThreadMessageType::StartBuzzing, {"1"}, nullptr);
     EXPECT_EQ(msg.to_string(), std::string("ThreadMessage{7,[1]}"));
 }
 

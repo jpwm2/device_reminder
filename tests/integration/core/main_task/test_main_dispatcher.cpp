@@ -32,7 +32,10 @@ TEST(MainHandlerTest, HumanDetectedCallsTask) {
 
     EXPECT_CALL(*task, on_waiting_for_human(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::HumanDetected, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::HumanDetected,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -43,7 +46,10 @@ TEST(MainHandlerTest, DeviceFoundCallsHumanControl) {
 
     EXPECT_CALL(*task, on_response_to_human_task(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::ResponseDevicePresence, std::vector<std::string>{"found"});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::ResponseDevicePresence,
+        std::vector<std::string>{"found"},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -54,7 +60,10 @@ TEST(MainHandlerTest, DeviceNotFoundCallsBuzzerControl) {
 
     EXPECT_CALL(*task, on_response_to_buzzer_task(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::ResponseDevicePresence, std::vector<std::string>{"none"});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::ResponseDevicePresence,
+        std::vector<std::string>{"none"},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -65,7 +74,10 @@ TEST(MainHandlerTest, CooldownCallsTask) {
 
     EXPECT_CALL(*task, on_cooldown(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::CooldownTimeout, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::CooldownTimeout,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -103,8 +115,10 @@ TEST(MainHandlerExtendedTest, ScanTimeoutCallsWaitingSecondResponse) {
 
     EXPECT_CALL(*task, on_waiting_for_second_response(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::ScanTimeout,
-                                                std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::ScanTimeout,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -117,7 +131,8 @@ TEST(MainHandlerExtendedTest, InvalidPayloadCallsBuzzerTask) {
 
     auto msg = std::make_shared<ProcessMessage>(
         ProcessMessageType::ResponseDevicePresence,
-        std::vector<std::string>{"invalid"});
+        std::vector<std::string>{"invalid"},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -133,7 +148,9 @@ TEST(MainHandlerExtendedTest, UnknownMessageTypeDoesNothing) {
     EXPECT_CALL(*task, on_waiting_for_second_response(testing::_)).Times(0);
 
     auto msg = std::make_shared<ProcessMessage>(
-        static_cast<ProcessMessageType>(999), std::vector<std::string>{});
+        static_cast<ProcessMessageType>(999),
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -163,7 +180,9 @@ TEST(MainHandlerExtendedTest, NullTaskCausesNoCall) {
     EXPECT_CALL(*dummy_task, on_waiting_for_second_response(testing::_)).Times(0);
 
     auto msg = std::make_shared<ProcessMessage>(
-        ProcessMessageType::HumanDetected, std::vector<std::string>{});
+        ProcessMessageType::HumanDetected,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 

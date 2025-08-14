@@ -39,8 +39,10 @@ TEST(MessageCodecTest, EncodeNullReturnsEmpty) {
 
 TEST(MessageCodecTest, EncodeSimpleMessage) {
     MessageCodec codec(nullptr);
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing,
-                                                std::vector<std::string>{"1"});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{"1"},
+        nullptr);
     auto out = codec.encode(msg);
     std::vector<uint8_t> expected = make_bytes({
         static_cast<uint8_t>(ProcessMessageType::StartBuzzing),
