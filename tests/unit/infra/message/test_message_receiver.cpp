@@ -32,7 +32,10 @@ TEST(ThreadReceiverTest, DispatchesMessages) {
 
     std::thread th{[&]{ receiver.run(); }};
 
-    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing, std::vector<std::string>{"1"});
+    auto msg = std::make_shared<ThreadMessage>(
+        ThreadMessageType::StartBuzzing,
+        std::vector<std::string>{"1"},
+        nullptr);
     queue->push(msg);
 
     {

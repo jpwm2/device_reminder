@@ -18,7 +18,9 @@ public:
 
 class Message : public IMessage {
 public:
-    Message(MessageType type, std::vector<std::string> payload);
+    Message(MessageType type,
+            std::vector<std::string> payload,
+            std::shared_ptr<ILogger> logger);
 
     MessageType type() const override;
     std::vector<std::string> payload() const override;

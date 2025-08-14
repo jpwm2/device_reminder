@@ -53,7 +53,7 @@ TEST(MainTaskTest, HumanDetectedStartsScanAndTimer) {
     EXPECT_CALL(*det_timer, start());
     EXPECT_CALL(*bt_sender, send());
 
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}, nullptr});
     EXPECT_EQ(task.state(), MainTask::State::WaitDeviceResponse);
 }
 
@@ -72,13 +72,13 @@ TEST(MainTaskTest, DeviceDetectedStopsTimerAndNotifies) {
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
 
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}, nullptr});
 
     EXPECT_CALL(*human_start, send());
     EXPECT_CALL(*buz_stop, send());
     EXPECT_CALL(*det_timer, stop());
 
-    task.run(ThreadMessage{ThreadMessageType::RespondDeviceFound, {"phone"}});
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceFound, {"phone"}, nullptr});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 
@@ -96,11 +96,11 @@ TEST(MainTaskTest, DeviceNotDetectedStartsCooldown) {
     EXPECT_CALL(*file_loader, load_string_list("device_list")).WillOnce(testing::Return(std::vector<std::string>{"phone"}));
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}, nullptr});
 
     EXPECT_CALL(*buz_start, send());
     EXPECT_CALL(*cd_timer, start());
-    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}});
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}, nullptr});
     EXPECT_EQ(task.state(), MainTask::State::ScanCooldown);
 }
 
@@ -118,11 +118,11 @@ TEST(MainTaskTest, CooldownTimeoutProcessesSecondScan) {
     EXPECT_CALL(*file_loader, load_string_list("device_list")).WillRepeatedly(testing::Return(std::vector<std::string>{"phone"}));
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
-    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}, nullptr});
+    task.run(ThreadMessage{ThreadMessageType::RespondDeviceNotFound, {"other"}, nullptr});
 
     EXPECT_CALL(*buz_start, send());
-    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_COOLDOWN))}});
+    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_COOLDOWN))}, nullptr});
     EXPECT_EQ(task.state(), MainTask::State::ScanCooldown);
 }
 
@@ -138,9 +138,9 @@ TEST(MainTaskTest, DetectionTimeoutReturnsToWaitHuman) {
     auto logger = std::make_shared<NiceMock<MockLogger>>();
 
     MainTask task(logger, file_loader, human_start, human_stop, bt_sender, buz_start, buz_stop, det_timer, cd_timer);
-    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}});
+    task.run(ThreadMessage{ThreadMessageType::HumanDetected, {}, nullptr});
 
-    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_DET_TIMEOUT))}});
+    task.run(ThreadMessage{ThreadMessageType::ProcessingTimeout, {std::to_string(static_cast<int>(MainTask::TimerId::T_DET_TIMEOUT))}, nullptr});
     EXPECT_EQ(task.state(), MainTask::State::WaitHumanDetect);
 }
 

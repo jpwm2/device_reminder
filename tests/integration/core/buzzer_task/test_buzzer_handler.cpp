@@ -44,11 +44,11 @@ TEST(BuzzerTaskTest, StartAndTimeoutStopsBuzzer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -61,10 +61,10 @@ TEST(BuzzerTaskTest, ManualStopCancelsTimer) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
 
     EXPECT_CALL(*driver, off());
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -77,10 +77,10 @@ TEST(BuzzerTaskTest, IgnoreDuplicateStart) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on());
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 
@@ -113,7 +113,7 @@ TEST(BuzzerTaskTest, StartMessageTurnsOnDriver) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, on()).Times(1);
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 
@@ -126,7 +126,7 @@ TEST(BuzzerTaskTest, StopMessageIgnoredWhenWaiting) {
     BuzzerTask task(logger, sender, loader, driver);
 
     EXPECT_CALL(*driver, off()).Times(0);
-    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StopBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::WaitStart);
 }
 
@@ -137,7 +137,7 @@ TEST(BuzzerTaskTest, StartMessageWorksWithoutDriver) {
 
     BuzzerTask task(logger, sender, loader, nullptr);
 
-    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}});
+    task.send_message(ThreadMessage{ThreadMessageType::StartBuzzing, {}, nullptr});
     EXPECT_EQ(task.state(), BuzzerTask::State::Buzzing);
 }
 

@@ -25,8 +25,10 @@ TEST(ThreadDispatcherTest, CallsRegisteredHandler) {
          [&](std::shared_ptr<IThreadMessage>) { called = true; }}
     };
     ThreadDispatcher disp(nullptr, map);
-    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                               std::vector<std::string>{});
+    auto msg = std::make_shared<ThreadMessage>(
+        ThreadMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     disp.dispatch(msg);
     EXPECT_TRUE(called);
 }
@@ -38,8 +40,10 @@ TEST(ThreadDispatcherTest, IgnoresUnknownMessage) {
          [&](std::shared_ptr<IThreadMessage>) { called = true; }}
     };
     ThreadDispatcher disp(nullptr, map);
-    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StopBuzzing,
-                                               std::vector<std::string>{});
+    auto msg = std::make_shared<ThreadMessage>(
+        ThreadMessageType::StopBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     disp.dispatch(msg);
     EXPECT_FALSE(called);
 }
@@ -67,7 +71,9 @@ TEST(ThreadDispatcherTest, DispatchLogsInfoOnUnhandledMessage) {
 
     ThreadDispatcher::HandlerMap map{};
     ThreadDispatcher disp(std::shared_ptr<ILogger>(&logger, [](ILogger*){}), map);
-    auto msg = std::make_shared<ThreadMessage>(ThreadMessageType::StartBuzzing,
-                                               std::vector<std::string>{});
+    auto msg = std::make_shared<ThreadMessage>(
+        ThreadMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     disp.dispatch(msg);
 }

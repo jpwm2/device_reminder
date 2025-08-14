@@ -35,7 +35,9 @@ TEST(BluetoothHandlerTest, RequestScanCallsTask) {
   EXPECT_CALL(*task, on_waiting(testing::_)).Times(1);
 
   auto msg = std::make_shared<ProcessMessage>(
-      ProcessMessageType::RequestBluetoothScan, std::vector<std::string>{});
+      ProcessMessageType::RequestBluetoothScan,
+      std::vector<std::string>{},
+      nullptr);
   handler.handle(msg);
 }
 
@@ -47,7 +49,9 @@ TEST(BluetoothHandlerTest, OtherMessageIgnored) {
   EXPECT_CALL(*task, on_waiting(testing::_)).Times(0);
 
   auto msg = std::make_shared<ProcessMessage>(
-      ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
+      ProcessMessageType::StartHumanDetection,
+      std::vector<std::string>{},
+      nullptr);
   handler.handle(msg);
 }
 
@@ -76,7 +80,9 @@ TEST(BluetoothHandlerTest, HandleWithoutTaskDoesNothingAndNoLog) {
   EXPECT_CALL(*logger, info(testing::_)).Times(0);
   BluetoothHandler handler(logger, nullptr);
   auto msg = std::make_shared<ProcessMessage>(
-      ProcessMessageType::RequestBluetoothScan, std::vector<std::string>{});
+      ProcessMessageType::RequestBluetoothScan,
+      std::vector<std::string>{},
+      nullptr);
   handler.handle(msg);
 }
 
@@ -90,7 +96,9 @@ TEST(BluetoothHandlerTest, HandleLogsAndCallsTask) {
   EXPECT_CALL(*task, on_waiting(testing::_)).Times(1);
 
   auto msg = std::make_shared<ProcessMessage>(
-      ProcessMessageType::RequestBluetoothScan, std::vector<std::string>{});
+      ProcessMessageType::RequestBluetoothScan,
+      std::vector<std::string>{},
+      nullptr);
   handler.handle(msg);
 }
 

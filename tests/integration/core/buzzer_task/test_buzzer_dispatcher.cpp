@@ -46,7 +46,10 @@ TEST(BuzzerHandlerTest, StartBuzzingStartsTimerAndCallsTask) {
     EXPECT_CALL(*task, on_buzzing(testing::_)).Times(1);
     EXPECT_CALL(*timer, start()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -59,7 +62,10 @@ TEST(BuzzerHandlerTest, StopBuzzingStopsTimerAndCallsTask) {
     EXPECT_CALL(*task, on_waiting(testing::_)).Times(1);
     EXPECT_CALL(*timer, stop()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StopBuzzing, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StopBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -72,7 +78,10 @@ TEST(BuzzerHandlerTest, TimeoutStopsTimerAndCallsTask) {
     EXPECT_CALL(*task, on_waiting(testing::_)).Times(1);
     EXPECT_CALL(*timer, stop()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::BuzzTimeout, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::BuzzTimeout,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -115,7 +124,10 @@ TEST(BuzzerHandlerTest, StartBuzzingWithoutTimer) {
         EXPECT_CALL(logger, info("StartBuzzing")).Times(1);
     }
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -135,7 +147,10 @@ TEST(BuzzerHandlerTest, StartBuzzingLogsMessage) {
                           std::shared_ptr<IBuzzerTask>(&task, [](IBuzzerTask*){}),
                           std::shared_ptr<ITimerService>(&timer, [](ITimerService*){}));
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 

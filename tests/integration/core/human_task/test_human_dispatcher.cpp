@@ -45,7 +45,10 @@ TEST(HumanHandlerTest, StopDetectionStartsTimer) {
     EXPECT_CALL(*task, on_stopping(testing::_)).Times(1);
     EXPECT_CALL(*timer, start()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StopHumanDetection, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StopHumanDetection,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -58,7 +61,10 @@ TEST(HumanHandlerTest, StartDetectionStopsTimer) {
     EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
     EXPECT_CALL(*timer, stop()).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartHumanDetection,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -70,7 +76,10 @@ TEST(HumanHandlerTest, CooldownCallsTask) {
 
     EXPECT_CALL(*task, on_cooldown(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::CooldownTimeout, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::CooldownTimeout,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -111,7 +120,10 @@ TEST(HumanHandlerTest, HandleWithNullTaskDoesNothing) {
     EXPECT_CALL(*timer, start()).Times(0);
     EXPECT_CALL(*timer, stop()).Times(0);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartHumanDetection,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -122,7 +134,10 @@ TEST(HumanHandlerTest, StartDetectionWithNullTimerOnlyCallsTask) {
 
     EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartHumanDetection, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartHumanDetection,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -134,7 +149,10 @@ TEST(HumanHandlerTest, StopDetectionWithNullLoggerWorks) {
     EXPECT_CALL(*timer, start()).Times(1);
     EXPECT_CALL(*task, on_stopping(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StopHumanDetection, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StopHumanDetection,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 
@@ -148,7 +166,10 @@ TEST(HumanHandlerTest, UnknownMessageKeepsDetectingState) {
     EXPECT_CALL(*timer, stop()).Times(0);
     EXPECT_CALL(*task, on_detecting(testing::_)).Times(1);
 
-    auto msg = std::make_shared<ProcessMessage>(ProcessMessageType::StartBuzzing, std::vector<std::string>{});
+    auto msg = std::make_shared<ProcessMessage>(
+        ProcessMessageType::StartBuzzing,
+        std::vector<std::string>{},
+        nullptr);
     handler.handle(msg);
 }
 

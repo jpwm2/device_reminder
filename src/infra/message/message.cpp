@@ -5,8 +5,12 @@
 
 namespace device_reminder {
 
-Message::Message(MessageType type, std::vector<std::string> payload)
-    : type_{type}, payload_{std::move(payload)} {}
+Message::Message(MessageType type,
+                 std::vector<std::string> payload,
+                 std::shared_ptr<ILogger> logger)
+    : type_{type},
+      payload_{std::move(payload)},
+      logger_{std::move(logger)} {}
 
 MessageType Message::type() const {
     if (logger_) logger_->info("type start");
