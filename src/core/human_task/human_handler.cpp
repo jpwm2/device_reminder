@@ -9,6 +9,7 @@ HumanHandler::HumanHandler(std::shared_ptr<ILogger> logger,
                            std::shared_ptr<IProcessSender> sender,
                            std::shared_ptr<IFileLoader> loader,
                            std::shared_ptr<IMessage> cooldown_msg,
+                           std::string main_endpoint,
                            std::shared_ptr<IMessageQueue> main_queue,
                            std::shared_ptr<IMessage> success_msg)
     : logger_(std::move(logger))
@@ -17,14 +18,15 @@ HumanHandler::HumanHandler(std::shared_ptr<ILogger> logger,
     , sender_(std::move(sender))
     , loader_(std::move(loader))
     , cooldown_msg_(std::move(cooldown_msg))
+    , main_endpoint_(std::move(main_endpoint))
     , main_queue_(std::move(main_queue))
     , success_msg_(std::move(success_msg)) {}
 
 void HumanHandler::get_detect() {
     if (logger_) logger_->info("[HumanHandler::get_detect] start");
     try {
-        if (sender_ && main_queue_ && success_msg_) {
-            sender_->send(main_queue_, success_msg_);
+        if (sender_ && !main_endpoint_.empty() && success_msg_) {
+            sender_->send(main_endpoint_, success_msg_);
         }
 
         if (timer_ && main_queue_ && cooldown_msg_) {
