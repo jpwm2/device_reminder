@@ -4,7 +4,6 @@
 #include "infra/file_loader.hpp"
 #include "infra/message/process_sender.hpp"
 #include "infra/bluetooth_driver/bluetooth_driver.hpp"
-#include "infra/message/message_queue.hpp"
 #include "infra/message/message.hpp"
 
 #include <memory>
@@ -25,7 +24,7 @@ public:
                      std::shared_ptr<IFileLoader> loader,
                      std::shared_ptr<IProcessSender> sender,
                      std::shared_ptr<IBluetoothDriver> driver,
-                     std::shared_ptr<IMessageQueue> main_queue,
+                     std::string main_endpoint,
                      std::shared_ptr<IMessage> success_msg,
                      std::shared_ptr<IMessage> failure_msg);
 
@@ -36,7 +35,7 @@ private:
     std::shared_ptr<IFileLoader> loader_{};
     std::shared_ptr<IProcessSender> sender_{};
     std::shared_ptr<IBluetoothDriver> driver_{};
-    std::shared_ptr<IMessageQueue> main_queue_{};
+    std::string main_endpoint_{};
     std::shared_ptr<IMessage> success_msg_{};
     std::shared_ptr<IMessage> failure_msg_{};
 };

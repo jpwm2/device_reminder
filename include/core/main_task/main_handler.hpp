@@ -27,12 +27,12 @@ public:
                 std::shared_ptr<IProcessSender> sender,
                 std::shared_ptr<IFileLoader> file_loader,
                 std::shared_ptr<ITimerService> timer_service,
-                std::shared_ptr<IMessageQueue> human_queue,
+                std::string human_endpoint,
                 std::shared_ptr<IMessage> human_start_msg,
                 std::shared_ptr<IMessage> human_stop_msg,
-                std::shared_ptr<IMessageQueue> bt_queue,
+                std::string bt_endpoint,
                 std::shared_ptr<IMessage> device_scan_msg,
-                std::shared_ptr<IMessageQueue> buzzer_queue,
+                std::string buzzer_endpoint,
                 std::shared_ptr<IMessage> buzzer_start_msg,
                 std::shared_ptr<IMessage> buzzer_stop_msg,
                 std::shared_ptr<IMessageQueue> main_queue,
@@ -50,12 +50,12 @@ private:
     std::shared_ptr<IProcessSender> sender_;
     std::shared_ptr<IFileLoader> file_loader_;
     std::shared_ptr<ITimerService> timer_service_;
-    std::shared_ptr<IMessageQueue> human_queue_;
+    std::string human_endpoint_;
     std::shared_ptr<IMessage> human_start_msg_;
     std::shared_ptr<IMessage> human_stop_msg_;
-    std::shared_ptr<IMessageQueue> bt_queue_;
+    std::string bt_endpoint_;
     std::shared_ptr<IMessage> device_scan_msg_;
-    std::shared_ptr<IMessageQueue> buzzer_queue_;
+    std::string buzzer_endpoint_;
     std::shared_ptr<IMessage> buzzer_start_msg_;
     std::shared_ptr<IMessage> buzzer_stop_msg_;
     std::shared_ptr<IMessageQueue> main_queue_;

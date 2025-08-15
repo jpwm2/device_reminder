@@ -27,6 +27,7 @@ public:
                  std::shared_ptr<IProcessSender> sender,
                  std::shared_ptr<IFileLoader> loader,
                  std::shared_ptr<IMessage> cooldown_msg,
+                 std::string main_endpoint,
                  std::shared_ptr<IMessageQueue> main_queue,
                  std::shared_ptr<IMessage> success_msg);
 
@@ -40,6 +41,7 @@ private:
     std::shared_ptr<IProcessSender> sender_;
     std::shared_ptr<IFileLoader> loader_;
     std::shared_ptr<IMessage> cooldown_msg_;
+    std::string main_endpoint_;
     std::shared_ptr<IMessageQueue> main_queue_;
     std::shared_ptr<IMessage> success_msg_;
 };

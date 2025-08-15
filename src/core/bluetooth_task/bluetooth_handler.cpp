@@ -6,14 +6,14 @@ BluetoothHandler::BluetoothHandler(std::shared_ptr<ILogger> logger,
                                    std::shared_ptr<IFileLoader> loader,
                                    std::shared_ptr<IProcessSender> sender,
                                    std::shared_ptr<IBluetoothDriver> driver,
-                                   std::shared_ptr<IMessageQueue> main_queue,
+                                   std::string main_endpoint,
                                    std::shared_ptr<IMessage> success_msg,
                                    std::shared_ptr<IMessage> failure_msg)
     : logger_(std::move(logger))
     , loader_(std::move(loader))
     , sender_(std::move(sender))
     , driver_(std::move(driver))
-    , main_queue_(std::move(main_queue))
+    , main_endpoint_(std::move(main_endpoint))
     , success_msg_(std::move(success_msg))
     , failure_msg_(std::move(failure_msg)) {}
 
@@ -29,11 +29,11 @@ std::vector<std::string> BluetoothHandler::scan() {
             devices = driver_->scan();
         }
 
-        if (sender_ && main_queue_) {
+        if (sender_ && !main_endpoint_.empty()) {
             if (!devices.empty() && success_msg_) {
-                sender_->send(main_queue_, success_msg_);
+                sender_->send(main_endpoint_, success_msg_);
             } else if (devices.empty() && failure_msg_) {
-                sender_->send(main_queue_, failure_msg_);
+                sender_->send(main_endpoint_, failure_msg_);
             }
         }
 
