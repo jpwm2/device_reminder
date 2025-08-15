@@ -1,6 +1,7 @@
 #pragma once
 
 #include "infra/message/message_receiver.hpp"
+#include "infra/message/message_inbox.hpp"
 #include "infra/file_loader.hpp"
 #include "infra/logger.hpp"
 
@@ -29,6 +30,7 @@ private:
     std::shared_ptr<IMessageReceiver> receiver_;
     std::shared_ptr<IFileLoader> file_loader_;
     std::shared_ptr<ILogger> logger_;
+    std::shared_ptr<IMessageInbox> inbox_;
     std::atomic<bool> running_{false};
 };
 
