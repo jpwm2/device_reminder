@@ -1,4 +1,5 @@
 #include "infra/process/process.hpp"
+#include "infra/message/message_inbox.hpp"
 
 #include <cerrno>
 #include <stdexcept>
@@ -33,12 +34,23 @@ void Process::run() {
     }
 
     try {
-        int priority = file_loader_->load_int(kConfigFile, kPriorityKey);
+        int priority = 0;
+        try {
+            priority = file_loader_->load_int(kConfigFile, kPriorityKey);
+        } catch (const std::exception& e) {
+            if (logger_) {
+                logger_->warn(std::string("Process priority load failed: ") + e.what());
+            }
+        }
         if (priority != 0) {
             if (setpriority(PRIO_PROCESS, 0, priority) != 0) {
                 throw std::runtime_error("failed to set priority");
             }
         }
+
+        inbox_ = std::make_shared<MessageInbox>(logger_, nullptr, nullptr, nullptr);
+        // Connection between receiver_ and inbox_ is implementation-specific
+
         receiver_->run();
         running_.store(true);
         if (logger_) {
@@ -67,6 +79,9 @@ void Process::stop() {
     try {
         if (receiver_) {
             receiver_->stop();
+        }
+        if (inbox_) {
+            inbox_.reset();
         }
         running_.store(false);
         if (logger_) {
