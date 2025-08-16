@@ -1,6 +1,7 @@
 #pragma once
 
-#include "app/app.hpp"
+#include "core/app/app.hpp"
+#include <memory>
 
 namespace device_reminder {
 class AppBuilder {
