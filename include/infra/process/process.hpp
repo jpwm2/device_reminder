@@ -2,7 +2,6 @@
 
 #include "infra/message/message_receiver.hpp"
 #include "infra/message/message_inbox.hpp"
-#include "infra/file_loader.hpp"
 #include "infra/logger.hpp"
 
 #include <atomic>
@@ -20,17 +19,18 @@ public:
 class Process : public IProcess {
 public:
     Process(std::shared_ptr<IMessageReceiver> receiver,
-            std::shared_ptr<IFileLoader> file_loader,
-            std::shared_ptr<ILogger> logger);
+            std::shared_ptr<ILogger> logger,
+            std::shared_ptr<MessageInbox> inbox_dep,
+            MessageInbox inbox);
 
     void run() override;
     void stop() override;
 
 private:
     std::shared_ptr<IMessageReceiver> receiver_;
-    std::shared_ptr<IFileLoader> file_loader_;
     std::shared_ptr<ILogger> logger_;
-    std::shared_ptr<IMessageInbox> inbox_;
+    [[maybe_unused]] std::shared_ptr<MessageInbox> inbox_dep_;
+    [[maybe_unused]] MessageInbox inbox_;
     std::atomic<bool> running_{false};
 };
 
