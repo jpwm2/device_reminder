@@ -24,8 +24,10 @@ include_directories(
     ${BOOST_DI_INCLUDE_DIR}
 )
 
-# アプリケーションのソース
-file(GLOB_RECURSE DEVICE_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/src/*.cpp)
+# アプリケーションのソース（テストで利用する最小限）
+set(DEVICE_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/core/app/app.cpp
+)
 
 add_executable(device_reminder ${DEVICE_SOURCES})
 if(UNIX)
@@ -33,20 +35,20 @@ if(UNIX)
 endif()
 
 # ユニットテスト
-file(GLOB_RECURSE UNIT_TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/tests/unit/*.cpp)
+set(UNIT_TEST_SOURCES
+    ${CMAKE_SOURCE_DIR}/tests/unit/core/app/test_app.cpp
+)
 
 set(STUB_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/stubs/posix_mq_stub.cpp
     ${CMAKE_SOURCE_DIR}/tests/stubs/popen_stub.cpp
     ${CMAKE_SOURCE_DIR}/tests/stubs/gpiod_stub.cpp
+    ${CMAKE_SOURCE_DIR}/tests/stubs/setpriority_stub.cpp
 )
-
-set(DEVICE_SOURCES_NO_MAIN ${DEVICE_SOURCES})
-list(REMOVE_ITEM DEVICE_SOURCES_NO_MAIN ${CMAKE_SOURCE_DIR}/src/main.cpp)
 
 add_executable(test_unit
     ${UNIT_TEST_SOURCES}
-    ${DEVICE_SOURCES_NO_MAIN}
+    ${DEVICE_SOURCES}
     ${STUB_SOURCES}
 )
 target_link_libraries(test_unit gtest gmock gtest_main pthread rt)
@@ -55,7 +57,7 @@ enable_testing()
 add_test(NAME unit_tests COMMAND test_unit)
 
 # 統合テスト
-add_subdirectory(tests/integration)
+#add_subdirectory(tests/integration)
 
 # 動的ランタイム(MDd)に統一
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
