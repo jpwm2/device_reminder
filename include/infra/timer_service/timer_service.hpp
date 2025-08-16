@@ -6,9 +6,8 @@
 #include "infra/message/message.hpp"
 
 #include <atomic>
-#include <exception>
+#include <future>
 #include <memory>
-#include <thread>
 
 namespace device_reminder {
 
@@ -40,10 +39,9 @@ private:
     std::shared_ptr<IThreadSender> sender_{};
     std::shared_ptr<IMessageQueue> queue_{};
     std::shared_ptr<IMessage> message_{};
-    std::thread thread_{};
+    std::future<void> worker_future_{};
     std::atomic<bool> cancel_{false};
     std::atomic<bool> running_{false};
-    std::exception_ptr worker_exception_{};
 };
 
 } // namespace device_reminder
