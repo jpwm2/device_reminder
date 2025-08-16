@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <stdexcept>
+#include <thread>
 
 namespace device_reminder {
 
@@ -29,8 +30,8 @@ void TimerService::start(int duration_ms,
 
     if (running_) {
         cancel_.store(true);
-        if (thread_.joinable()) {
-            thread_.join();
+        if (worker_future_.valid()) {
+            worker_future_.get();
         }
         running_.store(false);
         if (logger_) logger_->warn("TimerService start: existing timer stopped");
@@ -54,10 +55,19 @@ void TimerService::start(int duration_ms,
     message_ = std::move(message);
     cancel_.store(false);
     running_.store(true);
-    worker_exception_ = nullptr;
 
     try {
-        thread_ = std::thread(&TimerService::worker, this, duration_ms);
+        worker_future_ = std::async(std::launch::async, [this, duration_ms] {
+            try {
+                worker(duration_ms);
+            } catch (...) {
+                if (logger_) logger_->error("TimerService worker: exception");
+                throw;
+            }
+        });
+        if (worker_future_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            worker_future_.get();
+        }
         if (logger_) logger_->info("TimerService start success");
     } catch (...) {
         running_.store(false);
@@ -76,22 +86,15 @@ void TimerService::stop() {
 
     cancel_.store(true);
     try {
-        if (thread_.joinable()) {
-            thread_.join();
+        if (worker_future_.valid()) {
+            worker_future_.get();
         }
         running_.store(false);
-
-        if (worker_exception_) {
-            if (logger_) logger_->error("TimerService stop: worker exception");
-            auto ex = worker_exception_;
-            worker_exception_ = nullptr;
-            throw;
-        }
 
         sender_.reset();
         queue_.reset();
         message_.reset();
-        thread_ = std::thread();
+        worker_future_ = std::future<void>();
         if (logger_) logger_->info("TimerService stop success");
     } catch (...) {
         if (logger_) logger_->error("TimerService stop failed");
@@ -99,23 +102,18 @@ void TimerService::stop() {
         sender_.reset();
         queue_.reset();
         message_.reset();
-        thread_ = std::thread();
+        worker_future_ = std::future<void>();
         throw;
     }
 }
 
 void TimerService::worker(int duration_ms) {
-    try {
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration_ms));
-        if (cancel_.load()) {
-            if (logger_) logger_->info("TimerService worker: canceled");
-        } else {
-            sender_->send(queue_, message_);
-            if (logger_) logger_->info("TimerService worker: send success");
-        }
-    } catch (...) {
-        worker_exception_ = std::current_exception();
-        if (logger_) logger_->error("TimerService worker: exception");
+    std::this_thread::sleep_for(std::chrono::milliseconds(duration_ms));
+    if (cancel_.load()) {
+        if (logger_) logger_->info("TimerService worker: canceled");
+    } else {
+        sender_->send(queue_, message_);
+        if (logger_) logger_->info("TimerService worker: send success");
     }
     running_.store(false);
 }
