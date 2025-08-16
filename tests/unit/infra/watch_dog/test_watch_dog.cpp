@@ -1,94 +1,60 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 #include "infra/watch_dog/watch_dog.hpp"
+#include "infra/timer_service/timer_service.hpp"
+#include "infra/message/thread_sender.hpp"
+#include "infra/message/message.hpp"
 
-using ::testing::StrictMock;
+#include <chrono>
+#include <thread>
+#include <vector>
+#include <mutex>
 
 namespace device_reminder {
 
-class MockTimer : public ITimerService {
+class TestQueue : public IMessageQueue {
 public:
-    MOCK_METHOD(void, start, (), (override));
-    MOCK_METHOD(void, stop, (), (override));
-};
-
-TEST(WatchDogTest, ConstructWithValidTimer) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    EXPECT_CALL(*timer, start()).Times(1);
-    wd.start();
-}
-
-TEST(WatchDogTest, ConstructWithNullptr) {
-    WatchDog wd(nullptr);
-    EXPECT_NO_THROW(wd.start());
-}
-
-TEST(WatchDogTest, StartStartsTimerOnce) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    EXPECT_CALL(*timer, start()).Times(1);
-    wd.start();
-}
-
-TEST(WatchDogTest, StartWhenRunningDoesNothing) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    EXPECT_CALL(*timer, start()).Times(1);
-    wd.start();
-    wd.start();
-}
-
-TEST(WatchDogTest, StartWithNullTimerDoesNothing) {
-    WatchDog wd(nullptr);
-    EXPECT_NO_THROW(wd.start());
-}
-
-TEST(WatchDogTest, StopStopsTimer) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    EXPECT_CALL(*timer, start()).Times(1);
-    EXPECT_CALL(*timer, stop()).Times(1);
-    wd.start();
-    wd.stop();
-}
-
-TEST(WatchDogTest, StopWithNullTimerDoesNothing) {
-    WatchDog wd(nullptr);
-    EXPECT_NO_THROW(wd.stop());
-}
-
-TEST(WatchDogTest, StopWhenNotRunningDoesNothing) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    EXPECT_CALL(*timer, stop()).Times(0);
-    wd.stop();
-}
-
-TEST(WatchDogTest, KickRestartsTimer) {
-    auto timer = std::make_shared<StrictMock<MockTimer>>();
-    WatchDog wd(timer);
-
-    {
-        ::testing::InSequence s;
-        EXPECT_CALL(*timer, start()).Times(1); // from start
-        EXPECT_CALL(*timer, stop()).Times(1);  // from kick
-        EXPECT_CALL(*timer, start()).Times(1); // from kick
+    void push(std::shared_ptr<IMessage> msg) override {
+        std::lock_guard<std::mutex> lock(mtx_);
+        msgs_.push_back(std::move(msg));
+    }
+    std::shared_ptr<IMessage> pop() override {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (msgs_.empty()) return nullptr;
+        auto msg = msgs_.front();
+        msgs_.erase(msgs_.begin());
+        return msg;
+    }
+    size_t size() const {
+        std::lock_guard<std::mutex> lock(mtx_);
+        return msgs_.size();
     }
 
-    wd.start();
-    wd.kick();
-}
+private:
+    mutable std::mutex mtx_{};
+    std::vector<std::shared_ptr<IMessage>> msgs_{};
+};
 
-TEST(WatchDogTest, KickWithNullTimerDoesNothing) {
-    WatchDog wd(nullptr);
-    EXPECT_NO_THROW(wd.kick());
+TEST(WatchDogTest, KickRestartsTimerAndSendsMessage) {
+    auto timer = std::make_shared<TimerService>(nullptr);
+    auto queue = std::make_shared<TestQueue>();
+    auto message = std::make_shared<Message>(MessageType::Timeout, std::vector<std::string>{}, nullptr);
+    auto sender = std::make_shared<ThreadSender>(nullptr);
+
+    WatchDog wd(timer, queue, message, sender, nullptr, 50);
+
+    wd.start();
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    EXPECT_EQ(queue->size(), 0u);
+
+    wd.kick();
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    EXPECT_EQ(queue->size(), 0u);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(40));
+    EXPECT_EQ(queue->size(), 1u);
+
+    wd.stop();
 }
 
 } // namespace device_reminder

@@ -1,5 +1,8 @@
 #include "watch_dog/watch_dog.hpp"
-#include "infra/message/thread_sender.hpp"
+#include "infra/timer_service/timer_service.hpp"
+#include "infra/message/message_queue.hpp"
+#include "infra/message/message.hpp"
+#include "infra/logger.hpp"
 
 #include <string>
 #include <utility>
@@ -9,19 +12,22 @@ namespace device_reminder {
 WatchDog::WatchDog(std::shared_ptr<ITimerService> timer_service,
                    std::shared_ptr<IMessageQueue> message_queue,
                    std::shared_ptr<IMessage> message,
-                   std::shared_ptr<ILogger> logger)
+                   std::shared_ptr<IThreadSender> thread_sender,
+                   std::shared_ptr<ILogger> logger,
+                   int duration_ms)
     : timer_service_(std::move(timer_service))
     , message_queue_(std::move(message_queue))
     , message_(std::move(message))
-    , logger_(std::move(logger)) {}
+    , thread_sender_(std::move(thread_sender))
+    , logger_(std::move(logger))
+    , duration_ms_(duration_ms) {}
 
 void WatchDog::start() {
     if (logger_) {
         logger_->info("WatchDog start called");
     }
     try {
-        auto thread_sender = std::make_shared<ThreadSender>(logger_);
-        timer_service_->start(0, thread_sender, message_queue_, message_);
+        timer_service_->start(duration_ms_, thread_sender_, message_queue_, message_);
         if (logger_) {
             logger_->info("WatchDog start succeeded");
         }
@@ -68,8 +74,7 @@ void WatchDog::kick() {
     }
     try {
         timer_service_->stop();
-        auto thread_sender = std::make_shared<ThreadSender>(logger_);
-        timer_service_->start(0, thread_sender, message_queue_, message_);
+        timer_service_->start(duration_ms_, thread_sender_, message_queue_, message_);
         if (logger_) {
             logger_->info("WatchDog kick succeeded");
         }
