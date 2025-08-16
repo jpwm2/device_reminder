@@ -104,7 +104,18 @@ void GPIOSetter::buzz_stop() {
         if (gpiod_line_set_value(line_, 0) < 0) {
             throw std::runtime_error("Failed to stop buzzer");
         }
-        if (logger_) logger_->info("GPIOSetter::buzz_stop success");
+
+        int value = gpiod_line_get_value(line_);
+        if (value < 0) {
+            throw std::runtime_error("Failed to read buzzer state");
+        }
+        if (value != 0) {
+            throw std::runtime_error("Buzzer did not stop");
+        }
+
+        if (logger_)
+            logger_->info(std::string("GPIOSetter::buzz_stop success: value=") +
+                           (value ? "1" : "0"));
     } catch (const std::exception& e) {
         if (logger_) logger_->error(std::string("GPIOSetter::buzz_stop failed: ") + e.what());
         throw;

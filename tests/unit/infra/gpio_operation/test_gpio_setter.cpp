@@ -126,6 +126,29 @@ TEST_F(GPIOSetterTest, WriteFailureLogsError) {
     }
 }
 
+// ---- Buzz Stop Tests ----
+
+TEST_F(GPIOSetterTest, BuzzStopSuccess) {
+    GPIOSetter setter(nullptr, 1);
+    gpiod_stub_set_set_value_result(0);
+    gpiod_stub_set_get_value_result(0);
+    EXPECT_NO_THROW(setter.buzz_stop());
+}
+
+TEST_F(GPIOSetterTest, BuzzStopThrowsWhenStateHigh) {
+    GPIOSetter setter(nullptr, 1);
+    gpiod_stub_set_set_value_result(0);
+    gpiod_stub_set_get_value_result(1);
+    EXPECT_THROW(setter.buzz_stop(), std::runtime_error);
+}
+
+TEST_F(GPIOSetterTest, BuzzStopThrowsWhenGetValueFails) {
+    GPIOSetter setter(nullptr, 1);
+    gpiod_stub_set_set_value_result(0);
+    gpiod_stub_set_get_value_result(-1);
+    EXPECT_THROW(setter.buzz_stop(), std::runtime_error);
+}
+
 // ---- Destructor Tests ----
 
 TEST_F(GPIOSetterTest, DestructorLogsInfo) {
