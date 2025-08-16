@@ -5,6 +5,7 @@
 namespace device_reminder {
 
 class IBluetoothScanner;
+class IBluetoothPairer;
 class ILogger;
 
 class IBluetoothDriver {
@@ -17,6 +18,7 @@ public:
 class BluetoothDriver : public IBluetoothDriver {
 public:
     BluetoothDriver(std::shared_ptr<IBluetoothScanner> scanner,
+                    std::shared_ptr<IBluetoothPairer> pairer,
                     std::shared_ptr<ILogger> logger);
 
     void run() override;
@@ -24,6 +26,7 @@ public:
 
 private:
     std::shared_ptr<IBluetoothScanner> scanner_{};
+    std::shared_ptr<IBluetoothPairer> pairer_{};
     std::shared_ptr<ILogger> logger_{};
     bool running_{false};
 };
