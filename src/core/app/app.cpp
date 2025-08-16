@@ -3,6 +3,7 @@
 #include <array>
 #include <string>
 #include <utility>
+#include <sys/resource.h>
 
 namespace device_reminder {
 
@@ -23,17 +24,19 @@ void App::run() {
         struct ProcessInfo {
             const char* name;
             IProcess* process;
+            int priority;
         };
         std::array<ProcessInfo, 4> processes = {{
-            {"main_process", main_process_.get()},
-            {"human_process", human_process_.get()},
-            {"bluetooth_process", bluetooth_process_.get()},
-            {"buzzer_process", buzzer_process_.get()},
+            {"main_process", main_process_.get(), 0},
+            {"human_process", human_process_.get(), 0},
+            {"bluetooth_process", bluetooth_process_.get(), 0},
+            {"buzzer_process", buzzer_process_.get(), 0},
         }};
 
         for (auto& info : processes) {
             logger_->info(std::string(info.name) + " 起動開始");
-            info.process->run();
+            pid_t pid = info.process->spawn();
+            setpriority(PRIO_PROCESS, pid, info.priority);
             logger_->info(std::string(info.name) + " 起動完了");
         }
 

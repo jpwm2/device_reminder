@@ -6,12 +6,14 @@
 
 #include <atomic>
 #include <memory>
+#include <sys/types.h>
 
 namespace device_reminder {
 
 class IProcess {
 public:
     virtual ~IProcess() = default;
+    virtual pid_t spawn() = 0;
     virtual void run() = 0;
     virtual void stop() = 0;
 };
@@ -23,6 +25,7 @@ public:
             std::shared_ptr<MessageInbox> inbox_dep,
             MessageInbox inbox);
 
+    pid_t spawn() override;
     void run() override;
     void stop() override;
 

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <unistd.h>
 
 namespace device_reminder {
 
@@ -15,6 +16,25 @@ Process::Process(std::shared_ptr<IMessageReceiver> receiver,
     , logger_(std::move(logger))
     , inbox_dep_(std::move(inbox_dep))
     , inbox_(std::move(inbox)) {}
+
+pid_t Process::spawn() {
+    pid_t pid = fork();
+    if (pid < 0) {
+        if (logger_) {
+            logger_->error("Process spawn failed: fork error");
+        }
+        throw std::runtime_error("fork failed");
+    }
+    if (pid == 0) {
+        try {
+            run();
+            _exit(0);
+        } catch (...) {
+            _exit(1);
+        }
+    }
+    return pid;
+}
 
 void Process::run() {
     if (logger_) {
