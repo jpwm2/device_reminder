@@ -27,6 +27,8 @@ include_directories(
 # アプリケーションのソース（テストで利用する最小限）
 set(DEVICE_SOURCES
     ${CMAKE_SOURCE_DIR}/src/core/app/app.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/bluetooth_task/bluetooth_dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/buzzer_task/buzzer_dispatcher.cpp
     ${CMAKE_SOURCE_DIR}/src/core/human_task/human_dispatcher.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/file_loader.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/logger.cpp
@@ -35,6 +37,7 @@ set(DEVICE_SOURCES
     ${CMAKE_SOURCE_DIR}/src/infra/buzzer_driver/buzzer_driver.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/bluetooth_driver/bluetooth_driver.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/message/message.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/message/thread_sender.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/message/message_queue.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/message/message_inbox.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/timer_service/timer_service.cpp
@@ -46,6 +49,8 @@ set(DEVICE_SOURCES
 # ユニットテスト
 set(UNIT_TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unit/core/app/test_app.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/core/bluetooth_task/test_bluetooth_dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/core/buzzer_task/test_buzzer_dispatcher.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/core/human_task/test_human_dispatcher.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_logger.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_file_loader.cpp

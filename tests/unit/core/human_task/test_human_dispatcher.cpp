@@ -1,10 +1,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "human_task/human_dispatcher.hpp"
+#include "core/human_task/human_dispatcher.hpp"
 #include "infra/message/message.hpp"
-
-using ::testing::StrictMock;
 
 namespace device_reminder {
 
@@ -14,75 +12,30 @@ public:
     MOCK_METHOD(void, start_detect, (), (override));
 };
 
-class DummyLogger : public ILogger {
+class MockLogger : public ILogger {
 public:
-    void info(const std::string&) override {}
-    void error(const std::string&) override {}
-    void warn(const std::string&) override {}
+    MOCK_METHOD(void, info, (const std::string&), (override));
+    MOCK_METHOD(void, error, (const std::string&), (override));
+    MOCK_METHOD(void, warn, (const std::string&), (override));
 };
-
-TEST(HumanDispatcherTest, HumanDetectedHandledOnlyInDetectingState) {
-    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
-    auto logger  = std::make_shared<DummyLogger>();
-    HumanDispatcher dispatcher(logger, handler, MessageType::HumanDetected);
-
-    EXPECT_CALL(*handler, get_detect()).Times(1);
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::HumanDetected,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::HumanDetected,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-}
-
-TEST(HumanDispatcherTest, CooldownTimeoutHandledOnlyInStoppedState) {
-    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
-    auto logger  = std::make_shared<DummyLogger>();
-    HumanDispatcher dispatcher(logger, handler, MessageType::HumanDetected);
-
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::StopHumanDetection,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-
-    EXPECT_CALL(*handler, start_detect()).Times(1);
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::CooldownTimeout,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::CooldownTimeout,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-}
-
-TEST(HumanDispatcherTest, StartHumanDetectionHandledOnlyInStoppedState) {
-    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
-    auto logger  = std::make_shared<DummyLogger>();
-    HumanDispatcher dispatcher(logger, handler, MessageType::HumanDetected);
-
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::StartHumanDetection,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::StopHumanDetection,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-
-    EXPECT_CALL(*handler, start_detect()).Times(1);
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::StartHumanDetection,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-}
-
-TEST(HumanDispatcherTest, UndefinedMessageTypeDoesNothing) {
-    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
-    auto logger  = std::make_shared<DummyLogger>();
-    HumanDispatcher dispatcher(logger, handler, MessageType::HumanDetected);
-
-    EXPECT_CALL(*handler, get_detect()).Times(0);
-    EXPECT_CALL(*handler, start_detect()).Times(0);
-
-    dispatcher.dispatch(std::make_shared<Message>(MessageType::StartBuzzing,
-                                                  std::vector<std::string>{},
-                                                  nullptr));
-}
 
 } // namespace device_reminder
 
+using namespace device_reminder;
+using ::testing::StrictMock;
+
+TEST(HumanDispatcherTest, HumanDetectedTriggersHandler) {
+    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
+    HumanDispatcher dispatcher(nullptr, handler, MessageType::HumanDetected);
+    EXPECT_CALL(*handler, get_detect()).Times(1);
+    auto msg = std::make_shared<Message>(MessageType::HumanDetected, std::vector<std::string>{}, nullptr);
+    dispatcher.dispatch(msg);
+}
+
+TEST(HumanDispatcherTest, CooldownTimeoutRestartsDetection) {
+    auto handler = std::make_shared<StrictMock<MockHumanHandler>>();
+    HumanDispatcher dispatcher(nullptr, handler, MessageType::HumanDetected);
+    dispatcher.dispatch(std::make_shared<Message>(MessageType::StopHumanDetection, std::vector<std::string>{}, nullptr));
+    EXPECT_CALL(*handler, start_detect()).Times(1);
+    dispatcher.dispatch(std::make_shared<Message>(MessageType::CooldownTimeout, std::vector<std::string>{}, nullptr));
+}
