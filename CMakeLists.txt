@@ -27,16 +27,14 @@ include_directories(
 # アプリケーションのソース（テストで利用する最小限）
 set(DEVICE_SOURCES
     ${CMAKE_SOURCE_DIR}/src/core/app/app.cpp
+    ${CMAKE_SOURCE_DIR}/src/core/human_task/human_dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/message/message.cpp
 )
-
-add_executable(device_reminder ${DEVICE_SOURCES})
-if(UNIX)
-    target_link_libraries(device_reminder pthread)
-endif()
 
 # ユニットテスト
 set(UNIT_TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unit/core/app/test_app.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/core/human_task/test_human_dispatcher.cpp
 )
 
 set(STUB_SOURCES
