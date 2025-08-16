@@ -47,44 +47,31 @@ void HumanDispatcher::dispatch(std::shared_ptr<IMessage> msg) {
 
         switch (type) {
         case MessageType::HumanDetected:
+            if (state_ != State::Detecting) return;
             if (handler_) handler_->get_detect();
-            action = "get_detect";
-            if (state_ == State::Detecting) {
-                state_ = State::Stopped;
-            } else if (logger_) {
-                logger_->info("state mismatch, transition skipped");
-            }
+            action  = "get_detect";
+            state_  = State::Stopped;
             break;
         case MessageType::CooldownTimeout:
+            if (state_ != State::Stopped) return;
             if (handler_) handler_->start_detect();
-            action = "start_detect";
-            if (state_ == State::Stopped) {
-                state_ = State::Detecting;
-            } else if (logger_) {
-                logger_->info("state mismatch, transition skipped");
-            }
+            action  = "start_detect";
+            state_  = State::Detecting;
             break;
         case MessageType::StopHumanDetection:
-            if (state_ == State::Detecting) {
-                state_ = State::Stopped;
-            } else if (logger_) {
-                logger_->info("state mismatch, transition skipped");
-            }
+            if (state_ != State::Detecting) return;
             action = "none";
+            state_ = State::Stopped;
             break;
         case MessageType::StartHumanDetection:
+            if (state_ != State::Stopped) return;
             if (handler_) handler_->start_detect();
-            action = "start_detect";
-            if (state_ == State::Stopped) {
-                state_ = State::Detecting;
-            } else if (logger_) {
-                logger_->info("state mismatch, transition skipped");
-            }
+            action  = "start_detect";
+            state_  = State::Detecting;
             break;
         default:
             if (logger_) logger_->warn("undefined message type");
-            action = "none";
-            break;
+            return;
         }
 
         if (logger_) {
