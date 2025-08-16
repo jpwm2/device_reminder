@@ -2,7 +2,6 @@
 
 #include "app_builder/app_builder.hpp"
 
-#include "app/app.hpp"
 #include "di/app_injector.hpp"  // make_app_injector()を想定
 
 namespace device_reminder {
@@ -11,17 +10,17 @@ std::unique_ptr<App> AppBuilder::build() {
     auto injector = make_app_injector();
 
     
-    std::unique_ptr<IMainTask> main_process;
-    std::unique_ptr<IHumanTask> human_process;
-    std::unique_ptr<IBluetoothTask> bluetooth_process;
-    std::unique_ptr<IBuzzerTask> buzzer_process;
+    std::unique_ptr<IProcess> main_process;
+    std::unique_ptr<IProcess> human_process;
+    std::unique_ptr<IProcess> bluetooth_process;
+    std::unique_ptr<IProcess> buzzer_process;
     std::unique_ptr<ILogger> logger;
 
     try{
-        main_process = injector.create<std::unique_ptr<IMainTask>>();
-        human_process = injector.create<std::unique_ptr<IHumanTask>>();
-        bluetooth_process = injector.create<std::unique_ptr<IBluetoothTask>>();
-        buzzer_process = injector.create<std::unique_ptr<IBuzzerTask>>();
+        main_process = injector.create<std::unique_ptr<IProcess>>();
+        human_process = injector.create<std::unique_ptr<IProcess>>();
+        bluetooth_process = injector.create<std::unique_ptr<IProcess>>();
+        buzzer_process = injector.create<std::unique_ptr<IProcess>>();
         logger = injector.create<std::unique_ptr<ILogger>>();
 
         return std::make_unique<App>(std::move(main_process),
