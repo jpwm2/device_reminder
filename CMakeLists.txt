@@ -28,13 +28,37 @@ include_directories(
 set(DEVICE_SOURCES
     ${CMAKE_SOURCE_DIR}/src/core/app/app.cpp
     ${CMAKE_SOURCE_DIR}/src/core/human_task/human_dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/file_loader.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/logger.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/gpio_operation/gpio_reader.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/gpio_operation/gpio_setter.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/buzzer_driver/buzzer_driver.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/bluetooth_driver/bluetooth_driver.cpp
     ${CMAKE_SOURCE_DIR}/src/infra/message/message.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/message/message_queue.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/message/message_inbox.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/timer_service/timer_service.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/pir_driver/pir_driver.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/watch_dog/watch_dog.cpp
+    ${CMAKE_SOURCE_DIR}/src/infra/process/process.cpp
 )
 
 # ユニットテスト
 set(UNIT_TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unit/core/app/test_app.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/core/human_task/test_human_dispatcher.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_logger.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_file_loader.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_gpio_reader.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_gpio_setter.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_message.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_message_queue.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_bluetooth_driver.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_buzzer_driver.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_pir_driver.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_timer_service.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_watch_dog.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/infra/test_process.cpp
 )
 
 set(STUB_SOURCES
@@ -59,4 +83,3 @@ add_test(NAME unit_tests COMMAND test_unit)
 
 # 動的ランタイム(MDd)に統一
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
