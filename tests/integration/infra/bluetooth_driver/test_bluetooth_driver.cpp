@@ -14,6 +14,8 @@ namespace device_reminder {
 class MockScanner : public IBluetoothScanner {
 public:
     MOCK_METHOD(std::vector<BluetoothDevice>, scan, (), (override));
+    MOCK_METHOD(void, stop, (), (override));
+    MOCK_METHOD(void, wait_for_stop, (), (override));
 };
 
 class MockPairer : public IBluetoothPairer {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <atomic>
 
 namespace device_reminder {
 
@@ -28,7 +29,7 @@ private:
     std::shared_ptr<IBluetoothScanner> scanner_{};
     std::shared_ptr<IBluetoothPairer> pairer_{};
     std::shared_ptr<ILogger> logger_{};
-    bool running_{false};
+    std::atomic<bool> running_{false};
 };
 
 } // namespace device_reminder

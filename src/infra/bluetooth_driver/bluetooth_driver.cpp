@@ -63,6 +63,12 @@ void BluetoothDriver::stop() {
     }
     try {
         running_ = false;
+        if (scanner_) {
+            scanner_->stop();
+            scanner_->wait_for_stop();
+            scanner_.reset();
+        }
+        pairer_.reset();
         if (logger_) {
             logger_->info("BluetoothDriver stop succeeded");
         }
