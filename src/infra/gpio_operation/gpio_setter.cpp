@@ -3,6 +3,7 @@
 #include <gpiod.h>
 #include <stdexcept>
 #include <string>
+#include <fstream>
 
 namespace device_reminder {
 
@@ -82,6 +83,36 @@ void GPIOSetter::buzz_start(int frequency_hz) {
         if (frequency_hz <= 0) {
             throw std::invalid_argument("frequency must be greater than 0");
         }
+        if (!loader_) {
+            throw std::runtime_error("File loader not initialized");
+        }
+
+        constexpr char kPwmConfigFile[]      = "/etc/device_reminder/pwm.conf";
+        constexpr char kPwmFrequencyPathKey[] = "pwm_frequency_path";
+
+        std::string pwm_path =
+            loader_->load_string(kPwmConfigFile, kPwmFrequencyPathKey);
+
+        {
+            std::ofstream ofs(pwm_path);
+            if (!ofs) {
+                throw std::runtime_error("Failed to open PWM path: " + pwm_path);
+            }
+            ofs << frequency_hz;
+        }
+
+        {
+            std::ifstream ifs(pwm_path);
+            if (!ifs) {
+                throw std::runtime_error("Failed to read PWM path: " + pwm_path);
+            }
+            int read_freq = 0;
+            ifs >> read_freq;
+            if (read_freq != frequency_hz) {
+                throw std::runtime_error("PWM frequency mismatch");
+            }
+        }
+
         if (gpiod_line_set_value(line_, 1) < 0) {
             throw std::runtime_error("Failed to start buzzer");
         }
