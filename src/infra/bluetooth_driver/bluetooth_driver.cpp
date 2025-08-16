@@ -1,6 +1,7 @@
 #include "bluetooth_driver/bluetooth_driver.hpp"
 
 #include "bluetooth_driver/bluetooth_scanner.hpp"
+#include "bluetooth_driver/bluetooth_pairer.hpp"
 #include "infra/logger.hpp"
 
 #include <string>
@@ -10,8 +11,10 @@
 namespace device_reminder {
 
 BluetoothDriver::BluetoothDriver(std::shared_ptr<IBluetoothScanner> scanner,
+                                 std::shared_ptr<IBluetoothPairer> pairer,
                                  std::shared_ptr<ILogger> logger)
     : scanner_(std::move(scanner))
+    , pairer_(std::move(pairer))
     , logger_(std::move(logger)) {}
 
 void BluetoothDriver::run() {
@@ -25,9 +28,11 @@ void BluetoothDriver::run() {
             bool paired = false;
             for (const auto& dev : devices) {
                 if (dev.rssi >= -50) {
-                    paired = true;
-                    running_ = false;
-                    break;
+                    if (pairer_ && pairer_->pair(dev.mac)) {
+                        paired    = true;
+                        running_ = false;
+                        break;
+                    }
                 }
             }
             if (paired) {
